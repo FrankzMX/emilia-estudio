@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7eb3"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+<rect width="180" height="180" fill="url(#g)"/>
+<path d="M90 128 C40 95 38 62 60 52 C74 46 86 54 90 64 C94 54 106 46 120 52 C142 62 140 95 90 128Z" fill="#fff" opacity=".95"/>
+<path d="M90 118 C52 92 52 68 66 61 C76 57 85 63 90 72 C95 63 104 57 114 61 C128 68 128 92 90 118Z" fill="#ff3d7f"/>
+<text x="90" y="34" font-family="Arial Rounded MT Bold,Arial,sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle">Examen</text>
+<text x="90" y="163" font-family="Arial Rounded MT Bold,Arial,sans-serif" font-weight="900" font-size="34" fill="#fff" text-anchor="middle">Emi</text>
+</svg>
