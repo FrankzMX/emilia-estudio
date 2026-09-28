@@ -130,6 +130,22 @@ mark{background:#ffe066; border-radius:6px; padding:0 3px;}
 .think .tlabel{font-size:22px; font-weight:bold; color:#1c64d6; margin-bottom:6px;}
 .think .tsteps{font-size:20px; color:#555; margin-bottom:12px;}
 .think .model{margin-top:14px; background:#fff; border-radius:16px; padding:12px 16px; font-size:23px; line-height:1.45; text-align:left; box-shadow:0 3px 0 rgba(0,0,0,.06);}
+.calbox{background:#fff; border-radius:18px; padding:10px 12px; box-shadow:0 3px 0 rgba(0,0,0,.06); margin:6px;}
+.caltitle{text-align:center; font-weight:bold; font-size:22px; color:var(--pink); margin-bottom:4px;}
+table.cal{border-collapse:collapse; margin:0 auto; font-size:21px;}
+table.cal th{font-size:15px; color:#6b6790; padding:2px 6px;}
+table.cal td{width:44px; height:38px; text-align:center; border-radius:10px;}
+table.cal td.we{color:#d9480f;}
+table.cal td.mk{background:#ffd43b; font-weight:bold; color:var(--ink);}
+table.colop{border-collapse:collapse; font-size:56px; font-family:ui-monospace,Menlo,monospace; margin:6px 24px;}
+table.colop td{width:46px; text-align:center; line-height:1.15;}
+table.colop tr.line td{border-bottom:5px solid var(--ink);}
+table.colop tr.ans td{height:40px;}
+.clockcard{text-align:center; font-size:20px; background:#fff; border-radius:18px; padding:8px 12px;}
+.tline{display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:10px 0;}
+.tstep{display:flex; flex-direction:column; align-items:center; background:#ede9fe; border-radius:14px; padding:8px 12px; font-size:19px; position:relative;}
+.tstep b{font-size:22px; color:var(--purple);}
+.tstep:not(:last-child)::after{content:'➜'; position:absolute; right:-14px; top:30%; color:#999;}
 .opts.one .opt{min-height:70px; font-size:23px; justify-content:flex-start; text-align:left;}
 
 .shake{animation:shake .4s;}
@@ -1083,10 +1099,218 @@ const HOWTO_Q = [
   () => mc('Para saber qué significa una palabra nueva, ¿qué te ayuda?', 'Leer las oraciones que están alrededor', ['Contar sus letras', 'Ver de qué color está escrita'], { layout: 'one', explain: 'Las palabras de alrededor (el contexto) dan pistas.' }),
 ];
 /* ============================================================
+   CONCEPTOS MATEMÁTICOS (AMCO Pensamiento matemático, p. 35-37 y 52-53)
+   Todas las respuestas se calculan con código (fechas con Date).
+   ============================================================ */
+const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const CAL_YEAR = 2026;
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const dow = (m, d) => new Date(CAL_YEAR, m, d).getDay();          // m: 0-11
+const daysIn = m => new Date(CAL_YEAR, m + 1, 0).getDate();
+const fullDate = (m, d) => `${DIAS[dow(m, d)]} ${d} de ${MESES[m]}`;
+const numQ = (prompt, ans, o = {}) => ({ type: 'type', numeric: true, prompt, answer: [String(ans)], placeholder: 'Escribe el número', ...o });
+const uniq = (correct, cands) => { const out = []; for (const c of cands) if (String(c) !== String(correct) && !out.map(String).includes(String(c))) out.push(c); return out; };
+
+/* ---- Reloj (SVG) ---- */
+function clockSVG(hh, mm, size = 230) {
+  const c = 100, num = [];
+  for (let i = 1; i <= 12; i++) { const a = i * Math.PI / 6; num.push(`<text x="${c + 72 * Math.sin(a)}" y="${c - 72 * Math.cos(a) + 8}" font-size="22" font-weight="bold" text-anchor="middle" fill="#3a2e6e">${i}</text>`); }
+  const ticks = [];
+  for (let i = 0; i < 60; i++) { const a = i * Math.PI / 30, r1 = i % 5 ? 88 : 83; ticks.push(`<line x1="${c + r1 * Math.sin(a)}" y1="${c - r1 * Math.cos(a)}" x2="${c + 92 * Math.sin(a)}" y2="${c - 92 * Math.cos(a)}" stroke="#9b93c9" stroke-width="${i % 5 ? 1 : 3}"/>`); }
+  const ha = ((hh % 12) + mm / 60) * 30, ma = mm * 6;
+  const hand = (ang, len, w, col) => `<line x1="${c}" y1="${c}" x2="${c + len * Math.sin(ang * Math.PI / 180)}" y2="${c - len * Math.cos(ang * Math.PI / 180)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96" fill="#fff" stroke="#7c4dff" stroke-width="6"/>${ticks.join('')}${num.join('')}${hand(ha, 45, 8, '#ff4f9a')}${hand(ma, 70, 5, '#2196f3')}<circle cx="100" cy="100" r="6" fill="#3a2e6e"/></svg>`;
+}
+const clockName = (hh, mm) => mm === 0 ? `las ${hh} en punto` : mm === 30 ? `las ${hh} y media` : mm === 15 ? `las ${hh} y cuarto` : `las ${hh}:${String(mm).padStart(2, '0')}`;
+const hhmm = (hh, mm) => `${hh}:${String(mm).padStart(2, '0')}`;
+const fixOne = s => s.replace(/^las 1 /, 'la 1 ');
+
+/* ---- Calendario (tabla del mes) ---- */
+function calHTML(m, marks = []) {
+  const first = dow(m, 1), n = daysIn(m);
+  let cells = '<tr>' + ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => `<th>${d}</th>`).join('') + '</tr><tr>';
+  for (let i = 0; i < first; i++) cells += '<td></td>';
+  for (let d = 1; d <= n; d++) {
+    cells += `<td class="${marks.includes(d) ? 'mk' : ''}${[0, 6].includes(dow(m, d)) ? ' we' : ''}">${d}</td>`;
+    if ((first + d) % 7 === 0 && d < n) cells += '</tr><tr>';
+  }
+  return `<div class="calbox"><div class="caltitle">${MESES[m]} ${CAL_YEAR}</div><table class="cal">${cells}</tr></table></div>`;
+}
+
+/* ---- Operación en columna ---- */
+function columnHTML(a, op, b) {
+  const w = Math.max(String(a).length, String(b).length) + 1;
+  const pad = x => String(x).padStart(w, ' ').split('').map(ch => `<td>${ch === ' ' ? '' : ch}</td>`).join('');
+  const bRow = String(b).padStart(w, ' ').split('').map((ch, i) => `<td>${i === 0 ? (op === '-' ? '−' : '+') : ch === ' ' ? '' : ch}</td>`).join('');
+  return `<table class="colop"><tr>${pad(a)}</tr><tr class="line">${bRow}</tr><tr class="ans">${'<td>?</td>'.repeat(0)}${'<td></td>'.repeat(w)}</tr></table>`;
+}
+function columnSteps(a, op, b) {
+  const au = a % 10, ad = Math.floor(a / 10), bu = b % 10, bd = Math.floor(b / 10);
+  if (op === '+') {
+    const u = au + bu;
+    if (u < 10) return `Unidades: ${au} + ${bu} = ${u}. Decenas: ${ad} + ${bd} = ${ad + bd}. Resultado: ${a + b}.`;
+    return `Unidades: ${au} + ${bu} = ${u} ➜ escribo ${u % 10} y LLEVO 1. Decenas: ${ad} + ${bd} + 1 (que llevaba) = ${ad + bd + 1}. Resultado: ${a + b}.`;
+  }
+  if (au >= bu) return `Unidades: ${au} − ${bu} = ${au - bu}. Decenas: ${ad} − ${bd} = ${ad - bd}. Resultado: ${a - b}.`;
+  return `Unidades: a ${au} no le puedo quitar ${bu} ➜ le pido 1 decena al ${ad} y el ${au} se vuelve ${au + 10}: ${au + 10} − ${bu} = ${au + 10 - bu}. Decenas: el ${ad} se volvió ${ad - 1}: ${ad - 1} − ${bd} = ${ad - 1 - bd}. Resultado: ${a - b}.`;
+}
+const opWord = op => op === '+' ? 'más' : 'menos';
+function colQ(a, op, b) {
+  const ans = op === '+' ? a + b : a - b;
+  return numQ(`Resuelve en columna: ${a} ${op === '-' ? '−' : '+'} ${b}`, ans, { visual: columnHTML(a, op, b), say: `¿Cuánto es ${a} ${opWord(op)} ${b}?`, explain: columnSteps(a, op, b), key: `col-${a}${op}${b}` });
+}
+const COL_BOOK = [[85, '-', 74], [46, '+', 18], [86, '+', 39], [26, '+', 56], [85, '+', 25]];
+function randCol(kind) {
+  for (;;) {
+    const a = ri(11, 99), b = ri(11, 99);
+    if (kind === 'add' && (a % 10) + (b % 10) < 10) continue;          // con llevar
+    if (kind === 'addno' && (a % 10) + (b % 10) >= 10) continue;       // sin llevar
+    if (kind === 'sub') { if (a <= b || a % 10 >= b % 10) continue; return [a, '-', b]; } // con pedir
+    if (kind === 'subno') { if (a <= b || a % 10 < b % 10) continue; return [a, '-', b]; }
+    return [a, '+', b];
+  }
+}
+
+/* ---- Cálculo mental con centenas (de izquierda a derecha) ---- */
+const MENTAL_BOOK = [[100, '+', 100, '+', 20], [500, '-', 100, '+', 43, '-', 1], [300, '+', 100, '+', 5], [200, '+', 200, '-', 50], [500, '+', 200, '-', 100]];
+function evalLR(t) { let v = t[0]; const steps = []; for (let i = 1; i < t.length; i += 2) { const nv = t[i] === '+' ? v + t[i + 1] : v - t[i + 1]; steps.push(`${v} ${t[i] === '+' ? '+' : '−'} ${t[i + 1]} = ${nv}`); v = nv; } return { v, steps }; }
+const exprStr = t => t.map(x => x === '-' ? '−' : x).join(' ');
+function mentalQ(t) {
+  const { v, steps } = evalLR(t);
+  return numQ(`Calcula: ${exprStr(t)} = ?`, v, { big: exprStr(t), say: `¿Cuánto es ${t.map(x => x === '+' ? 'más' : x === '-' ? 'menos' : x).join(' ')}?`, explain: 'De izquierda a derecha: ' + steps.join(' ➜ '), key: 'ment-' + t.join('') });
+}
+function randMental() {
+  for (;;) {
+    const a = ri(1, 6) * 100, b = ri(1, 3) * 100, c = pick([ri(1, 9), ri(10, 60), 50]);
+    const t = pick([[a, '+', b, '+', c], [a + b, '-', b, '+', c], [a, '+', b, '-', 100], [a, '+', b, '-', c]]);
+    const r = evalLR(t);
+    if (r.v > 0 && r.v <= 999 && r.steps.every(s => +s.split('= ')[1] >= 0)) return t;
+  }
+}
+
+/* ---- Comparar ---- */
+const CMP_OPTS = [{ label: '<', value: '<', sub: 'menor que' }, { label: '>', value: '>', sub: 'mayor que' }, { label: '=', value: '=', sub: 'igual a' }];
+function cmpQ(a, b) {
+  const ans = a < b ? '<' : a > b ? '>' : '=';
+  const why = ans === '=' ? 'Son el mismo número.' : `Compara primero las centenas, luego las decenas y al final las unidades. La boca del cocodrilo 🐊 se come al más grande: ${Math.max(a, b)}.`;
+  return { type: 'mc', prompt: '¿Qué signo va? 🐊', big: `${a} ☐ ${b}`, say: `¿Qué signo va entre ${a} y ${b}?`, options: CMP_OPTS, answer: ans, layout: 'three', explain: `${a} ${ans} ${b}. ${why}`, key: `cmp-${a}-${b}` };
+}
+function randCmp() {
+  const r = Math.random(), a = ri(100, 999);
+  if (r < 0.15) return [a, a];
+  if (r < 0.55) { const h = Math.floor(a / 100) * 100; let b; do { b = h + ri(0, 99); } while (b === a); return [a, b]; } // mismas centenas
+  let b; do { b = ri(100, 999); } while (b === a); return [a, b];
+}
+
+/* ---- Antecesor y sucesor ---- */
+const ANTSUC_BOOK = [[999, 'suc'], [899, 'suc'], [650, 'ant'], [1000, 'ant'], [900, 'ant'], [500, 'ant'], [309, 'suc'], [199, 'suc']];
+function antsucQ(n, k) {
+  const ans = k === 'suc' ? n + 1 : n - 1;
+  return numQ(`¿Cuál es el ${k === 'suc' ? 'SUCESOR (el que va después)' : 'ANTECESOR (el que va antes)'} de ${n}?`, ans, { big: k === 'suc' ? `${n} ➜ ?` : `? ➜ ${n}`, explain: k === 'suc' ? `Sucesor = número + 1: ${n} + 1 = ${ans}.` : `Antecesor = número − 1: ${n} − 1 = ${ans}.`, key: `as-${n}-${k}` });
+}
+
+/* ---- Dictado de números ---- */
+function numDictQ(n) {
+  n = n || (Math.random() < 0.1 ? 1000 : ri(100, 999));
+  return numQ('Escucha 🎧 y escribe el número', n, { dict: true, speak: String(n), autoSpeak: true, speakButtons: [{ label: '🔊 Otra vez', text: String(n) }, { label: '🐢 Lento', text: String(n), rate: 0.5 }], key: 'nd-' + n, placeholder: 'Escribe el número con cifras' });
+}
+
+/* ---- Preguntas de tiempo, línea de tiempo y calendario ---- */
+const DURA = [['Dormir en la noche', 'Bañarte'], ['Un partido de futbol', 'Lavarte los dientes'], ['Las vacaciones de verano', 'Un fin de semana'], ['Ver una película', 'Comerte una paleta'], ['Un año', 'Un mes'], ['Un día de escuela', 'El recreo']];
+const AMPM = [['Desayunas a las 7:00 de la mañana', 'a.m.'], ['Sales de la escuela a las 2:00 de la tarde', 'p.m.'], ['Cenas a las 8:00 de la noche', 'p.m.'], ['Te levantas a las 6:30 de la mañana', 'a.m.'], ['Entras a la escuela a las 7:30 de la mañana', 'a.m.'], ['Haces la tarea a las 4:00 de la tarde', 'p.m.']];
+const AMPM_OPTS = [{ label: 'a.m.', value: 'a.m.', sub: 'de la medianoche al mediodía' }, { label: 'p.m.', value: 'p.m.', sub: 'del mediodía a la medianoche' }];
+const LIFE = ['Nací', 'Aprendí a caminar', 'Entré al preescolar', 'Entré a la primaria', 'Estoy en 2° de primaria'];
+const FIRST = [['Preescolar', 'Primaria'], ['Aprender a caminar', 'Aprender a leer'], ['1° de primaria', '2° de primaria'], ['Nacer', 'Entrar al preescolar'], ['2019', '2022'], ['El desayuno', 'La cena']];
+const M = {
+  clock: () => {
+    const hh = ri(1, 12), mm = pick([0, 30, 15]);
+    const others = [0, 30, 15].filter(x => x !== mm);
+    const wrongs = [hhmm(hh, others[0]), hhmm(hh === 12 ? 1 : hh + 1, mm)];
+    const lab = (a, b) => `${hhmm(a, b)} · ${fixOne(clockName(a, b))}`;
+    const opts = [{ label: lab(hh, mm), value: hhmm(hh, mm) }, { label: lab(hh, others[0]), value: wrongs[0] }, { label: lab(hh === 12 ? 1 : hh + 1, mm), value: wrongs[1] }];
+    return { type: 'mc', prompt: '¿Qué hora marca el reloj? 🕐', say: '¿Qué hora marca el reloj?', visual: clockSVG(hh, mm), options: shuffle(opts), answer: hhmm(hh, mm), layout: 'one',
+      explain: `La aguja pequeña (HORARIO, rosa) marca la hora; la aguja grande (MINUTERO, azul) marca los minutos. En el 12 = en punto, en el 3 = y cuarto, en el 6 = y media. Son ${fixOne(clockName(hh, mm))}.`, key: `clk-${hh}-${mm}` };
+  },
+  ampm: it => { it = it || pick(AMPM); return { type: 'mc', prompt: '¿a.m. o p.m.?', show: it[0], options: AMPM_OPTS, answer: it[1], layout: 'two', explain: 'a.m. = de la medianoche al mediodía (la mañana). p.m. = del mediodía a la medianoche (tarde y noche).', key: 'ap-' + it[0] }; },
+  hours: () => {
+    const e = pick([7, 8]), x = pick([12, 1, 2, 3]);
+    const ans = (x < e ? x + 12 : x) - e;
+    return mc(`Entras a la escuela a las ${e}:00 a.m. y sales a ${x === 1 ? 'la 1:00' : 'las ' + x + ':00'} p.m. ¿Cuántas horas estás en la escuela?`, String(ans), uniq(ans, [ans + 1, ans - 1, ans + 2]).slice(0, 2).map(String), { layout: 'three', explain: `Cuenta de hora en hora: de las ${e} a las 12 son ${12 - e} horas${x === 12 ? '' : ` y de las 12 a ${x === 1 ? 'la 1' : 'las ' + x} son ${x} más`}: ${ans} horas.`, key: `hrs-${e}-${x}` });
+  },
+  dura: it => { it = it || pick(DURA); return mc('¿Qué dura MÁS tiempo? ⏳', it[0], [it[1]], { layout: 'two', explain: `${it[0]} dura más que ${it[1].toLowerCase()}.`, key: 'dura-' + it[0] }); },
+  dayAfter: () => {
+    const i = ri(0, 6), after = Math.random() < 0.5, ans = DIAS[(i + (after ? 1 : 6)) % 7];
+    return mc(`¿Qué día va ${after ? 'DESPUÉS' : 'ANTES'} del ${DIAS[i]}?`, ans, sample(DIAS.filter(d => d !== ans && d !== DIAS[i]), 2), { layout: 'three', explain: 'Domingo, lunes, martes, miércoles, jueves, viernes, sábado… y otra vez domingo.', key: `da-${i}-${after}` });
+  },
+  weekend: () => { const d = pick(DIAS), we = d === 'sábado' || d === 'domingo'; return mc(`El ${d}, ¿es día entre semana o de fin de semana?`, we ? 'Fin de semana' : 'Entre semana', [we ? 'Entre semana' : 'Fin de semana'], { layout: 'two', keep: true, explain: 'Entre semana: lunes a viernes (vamos a la escuela). Fin de semana: sábado y domingo.', key: 'we-' + d }); },
+  timeDef: () => mc('El tiempo es…', 'La duración de un suceso', ['El lugar donde pasa algo', 'La cantidad de cosas que hay'], { layout: 'one', explain: '"Tiempo es la duración de un suceso": cuánto dura algo.' }),
+  age: () => { const b = ri(2017, 2020), k = ri(2, 7); return numQ(`Si naciste en ${b}, ¿cuántos años cumpliste en ${b + k}?`, k, { explain: `${b + k} − ${b} = ${k}. Cuenta en la línea de tiempo: ${Array.from({ length: k + 1 }, (_, i) => b + i).join(', ')}.`, key: `age-${b}-${k}` }); },
+  yearAt: () => { const b = ri(2017, 2020), k = ri(1, 6); return numQ(`Naciste en ${b}. ¿En qué año cumpliste ${k} ${k === 1 ? 'año' : 'años'}?`, b + k, { explain: `${b} + ${k} = ${b + k}.`, key: `ya-${b}-${k}` }); },
+  lifeOrder: () => ({ type: 'order', prompt: 'Ordena la línea de tiempo de una vida 📏', sub: 'Del suceso más antiguo al más reciente', items: LIFE, answer: LIFE, sep: ' ➜ ', long: true, key: 'life' }),
+  first: it => { it = it || pick(FIRST); return mc('En una línea de tiempo, ¿qué va PRIMERO?', it[0], [it[1]], { layout: 'two', explain: `${it[0]} pasa antes que ${it[1].toLowerCase()}.`, key: 'first-' + it[0] }); },
+  lineDef: () => mc('Una línea de tiempo sirve para…', 'Ordenar sucesos del más antiguo al más reciente', ['Medir cuánto pesa algo', 'Sumar números grandes'], { layout: 'one' }),
+  weekday: m => { m = m == null ? pick([8, 9]) : m; const d = ri(1, daysIn(m)), ans = DIAS[dow(m, d)];
+    return mc(`Mira el calendario. ¿Qué día de la semana es el ${d} de ${MESES[m]}?`, ans, sample(DIAS.filter(x => x !== ans), 2), { visual: calHTML(m, [d]), layout: 'three', explain: `El ${d} de ${MESES[m]} de ${CAL_YEAR} cae en ${ans}: busca el número y sube a ver la columna.`, key: `wd-${m}-${d}` }); },
+  plus15: m => { m = m == null ? pick([8, 9]) : m; const d = ri(1, daysIn(m) - 15), t = d + 15;
+    const opts = [fullDate(m, t), fullDate(m, t - 1), DIAS[dow(m, t)]];
+    return mc(`Hoy es ${fullDate(m, d)}. ¿Qué FECHA será dentro de 15 días?`, cap(opts[0]), [cap(opts[1]), cap(opts[2])], { visual: calHTML(m, [d]), layout: 'one', explain: `${d} + 15 = ${t}. La fecha completa es: ${fullDate(m, t)}. (Solo "${DIAS[dow(m, t)]}" no es una fecha: falta el número y el mes.)`, key: `p15-${m}-${d}` }); },
+  between: () => { const m = pick([8, 9]), d1 = ri(1, 15), k = ri(3, 14), d2 = d1 + k;
+    return numQ(`Hoy es ${d1} de ${MESES[m]}. ¿Cuántos días faltan para el ${d2} de ${MESES[m]}?`, k, { visual: calHTML(m, [d1, d2]), explain: `${d2} − ${d1} = ${k} días.`, key: `bt-${m}-${d1}-${d2}` }); },
+  sameWeekday: () => { const m = pick([8, 9]), d = ri(1, daysIn(m) - 7), ans = DIAS[dow(m, d)];
+    return mc(`Si el ${d} de ${MESES[m]} es ${ans}, ¿qué día de la semana es el ${d + 7}?`, ans, sample(DIAS.filter(x => x !== ans), 2), { layout: 'three', explain: '7 días = 1 semana: una semana después cae el mismo día.', key: `sw-${m}-${d}` }); },
+  monthNext: () => { const i = ri(0, 11), after = Math.random() < 0.5, ans = MESES[(i + (after ? 1 : 11)) % 12];
+    return mc(`¿Qué mes va ${after ? 'DESPUÉS' : 'ANTES'} de ${MESES[i]}?`, ans, sample(MESES.filter(x => x !== ans && x !== MESES[i]), 2), { layout: 'three', explain: '1 enero, 2 febrero, 3 marzo, 4 abril, 5 mayo, 6 junio, 7 julio, 8 agosto, 9 septiembre, 10 octubre, 11 noviembre, 12 diciembre (en español se escriben con minúscula).', key: `mn-${i}-${after}` }); },
+  monthOrder: n => { n = n || 4; const s = ri(0, 12 - n), ms = MESES.slice(s, s + n); return { type: 'order', prompt: 'Ordena los meses 📅', sub: 'Del primero al último', items: ms, answer: ms, sep: ', ', long: n > 5, key: 'mo-' + s + '-' + n }; },
+  monthNum: () => { const i = ri(0, 11); return Math.random() < 0.5
+    ? numQ(`¿Qué número de mes es ${MESES[i]}?`, i + 1, { explain: `${MESES[i]} es el mes número ${i + 1}.`, key: 'mnum-' + i })
+    : mc(`¿Cuál es el mes número ${i + 1}?`, MESES[i], sample(MESES.filter((_, j) => j !== i), 2), { layout: 'three', explain: `El mes número ${i + 1} es ${MESES[i]}.`, key: 'mnum2-' + i }); },
+  monthType: () => { const i = ri(0, 11); return { type: 'type', prompt: `Escribe el mes número ${i + 1} ✍️`, sub: 'Recuerda: en español los meses se escriben con minúscula', answer: [MESES[i]], placeholder: 'Escribe el mes', explain: `El mes número ${i + 1} es ${MESES[i]} (con minúscula).`, key: 'mtype-' + i }; },
+  monthCase: () => mc('¿Cómo se escriben los meses en español?', 'Con minúscula: septiembre', ['Con mayúscula: Septiembre'], { layout: 'two', explain: 'En español los meses (y los días de la semana) se escriben con minúscula, a menos que vayan al inicio de una oración.' }),
+  worksheet: () => pick([
+    () => mc('¿Cuál es el PRIMER mes del año?', 'enero', ['diciembre', 'marzo'], { layout: 'three', key: 'ws-1' }),
+    () => mc('¿Cuál es el ÚLTIMO mes del año?', 'diciembre', ['enero', 'noviembre'], { layout: 'three', key: 'ws-2' }),
+    () => mc('¿En qué mes celebramos el Día de la Bandera? 🇲🇽', 'febrero', ['septiembre', 'mayo'], { layout: 'three', explain: 'El Día de la Bandera es el 24 de febrero.', key: 'ws-3' }),
+    () => mc('¿En qué mes celebramos a mamá? 💐', 'mayo', ['febrero', 'diciembre'], { layout: 'three', explain: 'El Día de las Madres es el 10 de mayo.', key: 'ws-4' }),
+    () => numQ('¿Cuántos meses tiene el año?', 12, { key: 'ws-5' }),
+    () => ({ type: 'think', prompt: '¿En qué mes es tu cumpleaños? 🎂 Dilo con la fecha completa y el número del mes.', model: 'Mi cumpleaños es el 14 de marzo. Marzo es el mes número 3.', key: 'ws-6' }),
+  ])(),
+  instrument: () => pick([
+    () => mc('¿Qué instrumento sirve para medir el tiempo?', 'El reloj', ['La regla', 'La báscula'], { layout: 'three', explain: 'El reloj mide horas, minutos y segundos.', key: 'in-1' }),
+    () => mc('¿Qué instrumento sirve para medir el tiempo de un año?', 'El calendario', ['El reloj', 'El termómetro'], { layout: 'three', explain: 'El calendario muestra los 365 días del año en 12 meses.', key: 'in-2' }),
+    () => mc('El reloj mide…', 'Horas, minutos y segundos', ['Días, meses y años', 'Kilos y metros'], { layout: 'one', key: 'in-3' }),
+  ])(),
+  hands: () => pick([
+    () => mc('¿Cómo se llama la aguja PEQUEÑA del reloj?', 'Horario', ['Minutero', 'Segundero'], { layout: 'three', explain: 'La aguja pequeña mide las horas: se llama horario.', key: 'hd-1' }),
+    () => mc('¿Cómo se llama la aguja GRANDE del reloj?', 'Minutero', ['Horario', 'Calendario'], { layout: 'three', explain: 'La aguja grande mide los minutos: se llama minutero.', key: 'hd-2' }),
+    () => mc('¿Qué mide el HORARIO?', 'Las horas', ['Los minutos', 'Los días'], { layout: 'three', key: 'hd-3' }),
+    () => mc('¿Qué mide el MINUTERO?', 'Los minutos', ['Las horas', 'Los meses'], { layout: 'three', key: 'hd-4' }),
+  ])(),
+  calFact: () => pick([
+    () => numQ('¿Cuántos días tiene 1 semana?', 7, { key: 'cf-sem' }),
+    () => numQ('¿Cuántos días tiene un año?', 365, { explain: 'El calendario muestra 365 días agrupados en 12 meses.', key: 'cf-365' }),
+    () => mc('El calendario nos permite…', 'Organizar las actividades en orden (cronológicamente)', ['Medir cuánto pesamos', 'Saber la temperatura'], { layout: 'one', key: 'cf-org' }),
+    () => numQ('¿Cuántos meses tiene 1 año?', 12, { key: 'cf-año' }),
+    () => numQ('¿Cuántos días tiene septiembre?', daysIn(8), { explain: 'Septiembre tiene 30 días.', key: 'cf-sep' }),
+    () => numQ('¿Cuántos días tiene octubre?', daysIn(9), { explain: 'Octubre tiene 31 días.', key: 'cf-oct' }),
+    () => mc('El calendario es…', 'Un instrumento para medir el tiempo de un año: días, semanas y meses', ['Un aparato para medir la temperatura', 'Un libro de cuentos'], { layout: 'one', key: 'cf-def' }),
+  ])(),
+};
+const MATE_CUIDADO = [
+  () => mentalQ([500, '+', 200, '-', 100]),
+  () => colQ(85, '-', 74),
+  () => colQ(85, '+', 25),
+  () => { const q = M.plus15(8); return q; },
+  () => mc('Te preguntan "¿Qué fecha será…?". ¿Cuál respuesta está COMPLETA?', 'Sábado 26 de septiembre', ['Sábado', '26'], { layout: 'three', explain: 'Una fecha lleva: día de la semana + número + mes.', key: 'cu-fecha' }),
+  () => colQ(86, '+', 39),
+];
+/* ============================================================
    SECCIONES Y TEMAS
    ============================================================ */
 const SECTIONS = [
   { id: 'comprension', name: 'Comprensión Lectora', emoji: '🔍', examN: 10, examLabel: '📝 Mini examen de Comprensión', buildExam: compExam },
+  { id: 'mate', name: 'Conceptos matemáticos', emoji: '🔢', examN: 15, examLabel: '📝 Mini examen de Mate' },
   { id: 'lenguajes', name: 'Lenguajes', emoji: '📖', examN: 12 },
   { id: 'ortografia', name: 'Ortografía', emoji: '✏️', examN: 10 },
   { id: 'dictado', name: 'Dictado', emoji: '🎧', examN: 10 },
@@ -1136,6 +1360,105 @@ const TOPICS = [
     exam: () => sample(HOWTO_Q, 3).map(f => f()),
   },
   ...TEXTS.map((tx, i) => i === 1 ? null : textTopic(tx, 'otros', 'comp-' + i)).filter(Boolean),
+  /* ===================== CONCEPTOS MATEMÁTICOS ===================== */
+  {
+    id: 'm-tiempo', section: 'mate', title: 'El tiempo y el reloj', es: 'Horario, minutero, a.m./p.m.', emoji: '🕐', color: '#7c4dff', pages: 'p. 35 y cuaderno', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      KEY('⏳ El ', B('tiempo'), ' es la ', B('duración que mide un suceso'), ': cuánto dura algo.'),
+      P('Un instrumento para medir el tiempo es el ', B('reloj'), ': mide ', B('horas, minutos y segundos'), '.'),
+      P('🩷 La aguja ', B('pequeña'), ' mide las horas y se llama ', B('horario'), '. 💙 La aguja ', B('grande'), ' mide los minutos y se llama ', B('minutero'), '.'),
+      h('div', { class: 'row' }, [[3, 0], [3, 15], [3, 30]].map(([a, b]) => h('div', { class: 'clockcard' }, h('div', { html: clockSVG(a, b, 150) }), h('div', null, B(hhmm(a, b))), h('div', null, clockName(a, b))))),
+      P('Minutero en el ', B('12'), ' = en punto · en el ', B('3'), ' = y cuarto · en el ', B('6'), ' = y media.'),
+      KEY('🌅 ', B('a.m.'), ' = de la medianoche al mediodía (mañana) · 🌙 ', B('p.m.'), ' = del mediodía a la medianoche (tarde y noche)'),
+      P('⏱️ ¿Cuántas horas pasan? Entras a las ', B('7:00 a.m.'), ' y sales a las ', B('2:00 p.m.'), ': cuenta de hora en hora 8, 9, 10, 11, 12, 1, 2 ➜ ', B('7 horas'), '.'),
+      P('📅 ', B('Lunes a viernes'), ' = entre semana · ', B('sábado y domingo'), ' = fin de semana.'),
+      P('⚖️ ¿Qué dura más? Dormir en la noche dura más que bañarte.')),
+    practice: () => [M.instrument(), M.hands(), M.hands(), M.clock(), M.clock(), M.clock(), M.ampm(), M.ampm(), M.hours(), M.hours(), M.dura(), M.dayAfter(), M.weekend(), M.timeDef()],
+    exam: () => [M.hands(), M.instrument(), M.clock(), M.clock(), M.ampm(), M.hours(), M.dura(), M.dayAfter(), M.weekend()],
+  },
+  {
+    id: 'm-linea', section: 'mate', title: 'Línea de tiempo', es: 'Ordenar sucesos por año', emoji: '📏', color: '#ff4f9a', pages: 'p. 36', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      P('Una ', B('línea de tiempo'), ' ordena los sucesos del ', B('más antiguo'), ' al ', B('más reciente'), '. Empieza en el año en que naciste.'),
+      h('div', { class: 'tline' }, [['2019', '👶 Nací'], ['2020', '🚶 Caminé'], ['2022', '🎨 Preescolar'], ['2025', '🏫 1° primaria'], ['2026', '⭐ 2° primaria']].map(([y, t]) => h('div', { class: 'tstep' }, h('b', null, y), h('span', null, t)))),
+      KEY('🎂 Si naciste en 2019, en 2022 cumpliste: 2022 − 2019 = ', B('3 años'), '.'),
+      P('👉 El ', B('preescolar'), ' va antes que la ', B('primaria'), '. Primero se aprende a caminar y después a leer.')),
+    practice: () => [M.lifeOrder(), M.first(), M.first(), M.first(), M.age(), M.age(), M.yearAt(), M.yearAt(), M.lineDef()],
+    exam: () => [M.first(), M.age(), M.yearAt(), M.lifeOrder()],
+  },
+  {
+    id: 'm-calendario', section: 'mate', title: 'El calendario', es: 'Días, semanas, meses y años', emoji: '📅', color: '#ff7a45', pages: 'p. 37 y cuaderno', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      KEY('📅 El ', B('calendario'), ' es un instrumento que sirve para ', B('medir el tiempo de un año'), '. Permite organizar las actividades en orden (de forma cronológica).'),
+      P('Muestra ', B('365 días'), ' agrupados en ', B('12 meses'), '. Los meses se dividen en ', B('semanas'), ', cada una de ', B('7 días'), '.'),
+      h('div', { class: 'row', html: calHTML(8, [28, 29, 30]) + calHTML(9, [1]) }),
+      KEY('⚠️ Una ', B('FECHA'), ' lleva día + número + mes: ', B('sábado 26 de septiembre'), '. Si solo contestas "sábado", ¡está incompleta!'),
+      P('➕ 15 días después del 11 de septiembre: 11 + 15 = 26 ➜ ', B('sábado 26 de septiembre'), '.'),
+      P('🗓️ Los meses en orden (en español se escriben con ', B('minúscula'), '):'),
+      h('div', { class: 'chips' }, MESES.map((m, i) => h('span', { class: 'chip' }, B(String(i + 1)), ' ' + m))),
+      P('📌 Primer mes: ', B('enero'), ' · último: ', B('diciembre'), ' · 🇲🇽 Día de la Bandera: ', B('24 de febrero'), ' · 💐 Día de las Madres: ', B('10 de mayo'), '.')),
+    practice: () => [M.weekday(8), M.weekday(9), M.plus15(), M.plus15(), M.between(), M.sameWeekday(), M.monthNext(), M.monthNum(), M.monthNum(), M.monthOrder(12), M.monthType(), M.monthCase(), M.worksheet(), M.worksheet(), M.worksheet(), M.calFact(), M.calFact()],
+    exam: () => [M.weekday(), M.plus15(), M.between(), M.monthNext(), M.monthNum(), M.worksheet(), M.calFact(), M.sameWeekday(), M.monthOrder()],
+  },
+  {
+    id: 'm-centenas', section: 'mate', title: 'Operaciones con centenas', es: 'Cálculo mental', emoji: '💯', color: '#2196f3', pages: 'p. 52', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      P('Resuelve ', B('de izquierda a derecha'), ', un paso a la vez:'),
+      h('p', { class: 'story' }, '500 + 200 − 100', h('br'), '➜ 500 + 200 = ', B('700'), h('br'), '➜ 700 − 100 = ', B('600')),
+      KEY('💡 Con centenas piensa en "cientos": 5 cientos + 2 cientos = 7 cientos = 700.'),
+      P('Ejemplo: 500 − 100 + 43 − 1 ➜ 400 ➜ 443 ➜ ', B('442'), '.')),
+    practice: () => [...MENTAL_BOOK.map(mentalQ), ...[1, 2, 3, 4].map(() => mentalQ(randMental()))],
+    exam: () => [...sample(MENTAL_BOOK, 2).map(mentalQ), mentalQ(randMental()), mentalQ(randMental())],
+  },
+  {
+    id: 'm-comparar', section: 'mate', title: 'Comparar números', es: 'Mayor que, menor que, igual', emoji: '🐊', color: '#22c55e', pages: 'p. 53', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      h('table', null, h('tr', null, h('th', null, '<'), h('th', null, '>'), h('th', null, '=')), h('tr', null, h('td', null, 'menor que'), h('td', null, 'mayor que'), h('td', null, 'igual a'))),
+      KEY('🐊 La boca del cocodrilo siempre se come al número ', B('más grande'), ': 345 ', B('<'), ' 354 · 720 ', B('>'), ' 702'),
+      P('Compara primero las ', B('centenas'), '; si son iguales, las ', B('decenas'), '; si también, las ', B('unidades'), '.')),
+    practice: () => [1, 2, 3, 4, 5, 6, 7, 8].map(() => cmpQ(...randCmp())),
+    exam: () => [1, 2, 3, 4].map(() => cmpQ(...randCmp())),
+  },
+  {
+    id: 'm-antsuc', section: 'mate', title: 'Antecesor y sucesor', es: 'El de antes y el de después', emoji: '↔️', color: '#e91e63', pages: 'p. 53', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      KEY('⬅️ ', B('Antecesor'), ' = el que va antes (−1) · ', B('Sucesor'), ' = el que va después (+1) ➡️'),
+      h('p', { class: 'story center' }, '649 ⬅️ ', B('650'), ' ➡️ 651'),
+      P('⚠️ ¡Cuidado! El sucesor de ', B('999'), ' es ', B('1000'), ' y el sucesor de ', B('899'), ' es ', B('900'), '. El antecesor de 900 es 899.')),
+    practice: () => [...sample(ANTSUC_BOOK, 6).map(([n, k]) => antsucQ(n, k)), antsucQ(ri(101, 998), 'suc'), antsucQ(ri(101, 998), 'ant')],
+    exam: () => [...sample(ANTSUC_BOOK, 2).map(([n, k]) => antsucQ(n, k)), antsucQ(ri(101, 998), pick(['suc', 'ant']))],
+  },
+  {
+    id: 'm-columna', section: 'mate', title: 'Sumas y restas en columna', es: 'Llevar y pedir prestado', emoji: '🧮', color: '#00acc1', pages: 'p. 52', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      P('Acomoda los números: ', B('unidades debajo de unidades'), ' y ', B('decenas debajo de decenas'), '. Empieza por las ', B('unidades'), ' (a la derecha).'),
+      h('div', { class: 'row', html: columnHTML(46, '+', 18) + columnHTML(52, '-', 17) }),
+      KEY('➕ 46 + 18: 6 + 8 = 14 ➜ escribo ', B('4'), ' y ', B('llevo 1'), ' a las decenas. 4 + 1 + 1 = ', B('6'), ' ➜ ', B('64')),
+      KEY('➖ 52 − 17: a 2 no le puedo quitar 7 ➜ ', B('pido 1 decena'), ': 12 − 7 = 5. El 5 se vuelve 4: 4 − 1 = 3 ➜ ', B('35')),
+      P('⚠️ 85 + 25 = ', B('110'), ' (5 + 5 = 10: escribo 0 y llevo 1; 8 + 2 + 1 = 11).')),
+    practice: () => [...COL_BOOK.map(c => colQ(...c)), ...['add', 'addno', 'sub', 'subno'].map(k => colQ(...randCol(k)))],
+    exam: () => [...sample(COL_BOOK, 2).map(c => colQ(...c)), colQ(...randCol('add')), colQ(...randCol('sub'))],
+  },
+  {
+    id: 'm-dictado', section: 'mate', title: 'Dictado de números', es: 'Escucha y escribe', emoji: '🎧', color: '#8e24aa', pages: '100 a 1000', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      P('El iPad dice un número y tú lo escribes ', B('con cifras'), '.'),
+      h('div', { class: 'chips' }, [[105, 'ciento cinco'], [340, 'trescientos cuarenta'], [718, 'setecientos dieciocho'], [1000, 'mil']].map(([n, t]) => sayChip(h('span', null, B(String(n)), ' · ' + t), String(n)))),
+      KEY('💡 Piensa en centenas, decenas y unidades: "ciento cinco" = 1 centena, 0 decenas, 5 unidades ➜ ', B('105'), ' (¡no 1005!).')),
+    practice: () => [1, 2, 3, 4, 5, 6, 7].map(() => numDictQ()).concat([numDictQ(1000)]),
+    exam: () => [numDictQ(), numDictQ(), numDictQ()],
+  },
+  {
+    id: 'm-cuidado', section: 'mate', title: '¡Cuidado con estas!', es: 'Errores comunes', emoji: '⚠️', color: '#f4511e', pages: 'repaso', book: 'Pensamiento matemático', badge: '⚠️ ¡Ojo!',
+    explain: () => h('div', { class: 'explain' },
+      KEY('⚠️ 500 + 200 − 100 = ', B('600'), ' (no 800): primero 500 + 200 = 700, luego 700 − 100 = 600.'),
+      KEY('⚠️ 85 − 74 = ', B('11'), ': 5 − 4 = 1 y 8 − 7 = 1.'),
+      KEY('⚠️ 85 + 25 = ', B('110'), ': 5 + 5 = 10, escribo 0 y llevo 1; 8 + 2 + 1 = 11.'),
+      KEY('⚠️ "¿Qué fecha será…?" ➜ contesta la fecha completa: ', B('sábado 26 de septiembre'), ', no solo "sábado".'),
+      KEY('⚠️ Los meses se escriben con minúscula: ', B('octubre'), ', no "Octubre" (salvo al inicio de una oración).')),
+    practice: () => MATE_CUIDADO.map(f => f()).concat([M.monthCase()]),
+    exam: () => sample(MATE_CUIDADO, 2).map(f => f()),
+  },
   /* ===================== LENGUAJES ===================== */
   {
     id: 'cuento', section: 'lenguajes', title: 'El cuento', es: 'Inicio, desarrollo y cierre', emoji: '📖', color: '#7c4dff', pages: 'p. 4 y cuaderno',
@@ -1289,7 +1612,7 @@ function goHome() { showHome(); window.scrollTo(0, homeScroll); }
 
 function showHome() {
   const content = [
-    h('div', { class: 'hello' }, '¡Hola! 👋 ¡Vamos a estudiar! Español: lunes 28 · Comprensión Lectora: martes 29. Elige un tema.'),
+    h('div', { class: 'hello' }, '¡Hola! 👋 ¡Vamos a estudiar! Martes 29: Comprensión Lectora y Conceptos matemáticos. Elige un tema.'),
     h('button', { class: 'topic-card exam-card', onclick: () => { homeScroll = window.scrollY; startExam(); } },
       h('div', { class: 'emo' }, '🏆'), h('div', null, h('div', { class: 't' }, 'Mini examen'), h('div', { class: 's' }, '20 preguntas revueltas de TODOS los temas')),
       h('div', { class: 'stars' }, starStr(progress.exam || 0))),
@@ -1315,7 +1638,7 @@ function showHome() {
 function showExplain(id) {
   const t = TOPICS.find(x => x.id === id);
   screen(t.emoji + ' ' + t.title, goHome,
-    h('div', { class: 'card' }, h('div', { class: 'sub' }, t.noBook ? t.es + ' · Comprensión Lectora' : t.es + ' · Libro AMCO 2T1C1 ' + t.pages), t.badge && !t.noBook ? h('p', { class: 'center', style: { fontSize: '22px', color: '#d9480f', fontWeight: 'bold', margin: '0 0 6px' } }, '⭐ Tu libro dice "Examen" en este tema: ¡estúdialo muy bien!') : null, t.explain()),
+    h('div', { class: 'card' }, h('div', { class: 'sub' }, t.noBook ? t.es + ' · Comprensión Lectora' : t.es + ' · Libro AMCO ' + (t.book || '2T1C1') + ' ' + t.pages), t.badge === '⭐ ¡EXAMEN!' ? h('p', { class: 'center', style: { fontSize: '22px', color: '#d9480f', fontWeight: 'bold', margin: '0 0 6px' } }, '⭐ Tu libro dice "Examen" en este tema: ¡estúdialo muy bien!') : null, t.explain()),
     h('div', { class: 'actions' }, h('button', { class: 'big-btn green', onclick: () => startPractice(id) }, '¡A practicar! ▶')));
 }
 
@@ -1534,13 +1857,14 @@ function runQuiz({ title, questions, mode, onDone }) {
 
     if (q.type === 'type') {
       if (q.hint) body.append(h('div', { class: 'hint' }, q.hint));
-      const input = h('input', { type: 'text', autocapitalize: 'off', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'done', placeholder: q.placeholder || '', 'aria-label': 'Respuesta' });
+      const input = h('input', { type: 'text', inputmode: q.numeric ? 'numeric' : null, autocapitalize: 'off', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'done', placeholder: q.placeholder || '', 'aria-label': 'Respuesta' });
       input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
       const check = h('button', { class: 'big-btn', onclick: doCheck }, 'Comprobar ✔');
       const norm = s => s.normalize('NFC').trim().replace(/\s+/g, ' ').replace(/[.!]+$/, '').trim();
       function doCheck() {
         if (done) return;
-        const v = norm(input.value);
+        let v = norm(input.value);
+        if (q.numeric) v = v.replace(/[\s,]/g, '');
         if (!v) { input.focus(); return; }
         const answers = q.answer.map(norm);
         const same = (a, b, ci, na) => { if (na) { a = noAccent(a); b = noAccent(b); } if (ci) { a = a.toLowerCase(); b = b.toLowerCase(); } return a === b; };
