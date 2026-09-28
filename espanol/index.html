@@ -6,13 +6,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Examen Emi">
+<meta name="apple-mobile-web-app-title" content="Mi Examen">
 <meta name="theme-color" content="#ff7a45">
 <meta name="format-detection" content="telephone=no">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23ff7a45'/%3E%3Ctext x='50' y='72' font-size='64' text-anchor='middle'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Espa%C3%B1ol%20con%20Emilia%22%2C%22short_name%22%3A%22Espa%C3%B1ol%20Emilia%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23fff1e0%22%2C%22theme_color%22%3A%22%23ff7a45%22%7D">
-<title>Español con Emilia 📚</title>
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Mi%20Examen%20-%20Espa%C3%B1ol%22%2C%22short_name%22%3A%22Mi%20Examen%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23fff1e0%22%2C%22theme_color%22%3A%22%23ff7a45%22%7D">
+<title>Mi Examen · Español 📚</title>
 <style>
 :root{
   --purple:#7c4dff; --pink:#ff4f9a; --orange:#ff7a45; --green:#22c55e; --red:#ef4444;
@@ -245,11 +245,11 @@ function confetti(n = 30) {
     document.body.append(c); setTimeout(() => c.remove(), 5000);
   }
 }
-const PRAISE = ['¡Muy bien! 🎉', '¡Excelente, Emilia! 🌟', '¡Súper! 💪', '¡Lo lograste! 🥳', '¡Genial! 🦄', '¡Perfecto! ✨'];
+const PRAISE = ['¡Muy bien! 🎉', '¡Excelente! 🌟', '¡Súper! 💪', '¡Lo lograste! 🥳', '¡Genial! 🦄', '¡Perfecto! ✨'];
 const TRY_AGAIN = ['¡Casi! Intenta otra vez 💪', 'Uy, todavía no. ¡Tú puedes! 🌈', 'Mmm… piénsalo otra vez 🤔'];
 
 /* ---------- Progreso guardado ---------- */
-const STORE_KEY = 'emilia-espanol-v1';
+const STORE_KEY = 'mi-examen-espanol-v1';
 const progress = (() => { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; } })();
 function saveBest(id, stars) { if ((progress[id] || 0) < stars) { progress[id] = stars; try { localStorage.setItem(STORE_KEY, JSON.stringify(progress)); } catch (e) {} } }
 const starsFor = (score, total) => { const p = total ? score / total : 0; return p >= 0.9 ? 3 : p >= 0.7 ? 2 : p >= 0.4 ? 1 : 0; };
@@ -264,7 +264,7 @@ const mc = (prompt, correct, wrongs, o = {}) => {
 };
 
 /* ============================================================
-   DATOS (del libro AMCO 2T1C1 y del cuaderno de Emilia)
+   DATOS (del libro AMCO 2T1C1 y del cuaderno de clase)
    ============================================================ */
 /* ---- El cuento ---- */
 const PARTS = [
@@ -410,7 +410,7 @@ const KAREN = [
 ];
 const KAREN_TEXT = KAREN.map(k => k[0]).join(' ');
 
-/* ---- Dictado: palabras difíciles del cuaderno ---- */
+/* ---- Dictado: palabras difíciles (práctica) ---- */
 const NW = [
   { w: 'problema', s: 'Los personajes del cuento tienen un problema.', tip: 'pro-ble-ma: con bl (¡no "progrema"!).' },
   { w: 'imaginaria', s: 'El cuento es una narración imaginaria.', tip: 'i-ma-gi-na-ria: con g y termina en -ria (¡no "imaginania"!).' },
@@ -492,7 +492,7 @@ const Q = {
       () => mc('Tu SEGUNDO apellido viene de… 👩', 'mamá', ['papá', 'tu abuelito'], { layout: 'three', explain: 'Primer apellido: de papá. Segundo apellido: de mamá.' }),
       () => mc('Sofía López Martínez. ¿Cuál es el apellido de papá?', 'López', ['Martínez', 'Sofía', 'Martha'], { layout: 'two', explain: 'López es el primer apellido: viene de papá.' }),
       () => mc('Sofía López Martínez. ¿Cuál es el apellido de mamá?', 'Martínez', ['López', 'Sofía', 'Martha'], { layout: 'two', explain: 'Martínez es el segundo apellido: viene de mamá.' }),
-      () => mc('Tu nombre (Emilia) es un sustantivo…', 'propio', ['común'], { layout: 'two', explain: 'Tu nombre es un sustantivo propio: lo eligieron tus papás y va con mayúscula.' }),
+      () => mc('Tu nombre es un sustantivo…', 'propio', ['común'], { layout: 'two', explain: 'Tu nombre es un sustantivo propio: lo eligieron tus papás y va con mayúscula.' }),
     ];
     return (i != null ? L[i] : pick(L))();
   },
@@ -723,7 +723,7 @@ const TOPICS = [
     exam: () => sample(CW, 4).map(x => Q.dictC(x)),
   },
   {
-    id: 'dictn', section: 'dictado', title: 'Dictado: palabras del cuaderno', es: 'Las más difíciles', emoji: '📓', color: '#e91e63', pages: 'cuaderno',
+    id: 'dictn', section: 'dictado', title: 'Dictado: palabras difíciles', es: 'Para practicar más', emoji: '📓', color: '#e91e63', pages: 'cuaderno',
     explain: () => dictExplain(NW, [KEY('⚠️ ¡Cuidado con estas! ', h('br'),
       h('span', { class: 'good' }, 'bicicleta'), ' no ', h('span', { class: 'bad' }, 'bicicelta'), ' · ',
       h('span', { class: 'good' }, 'autor'), ' no ', h('span', { class: 'bad' }, 'auter'), ' · ',
@@ -755,14 +755,14 @@ function goHome() { showHome(); window.scrollTo(0, homeScroll); }
 
 function showHome() {
   const content = [
-    h('div', { class: 'hello' }, '¡Hola, Emilia! 👋 Examen de Español: lunes 28 de septiembre. Elige un tema.'),
+    h('div', { class: 'hello' }, '¡Hola! 👋 ¡Vamos a estudiar! Examen de Español: lunes 28 de septiembre. Elige un tema.'),
     h('button', { class: 'topic-card exam-card', onclick: () => { homeScroll = window.scrollY; startExam(); } },
       h('div', { class: 'emo' }, '🏆'), h('div', null, h('div', { class: 't' }, 'Mini examen'), h('div', { class: 's' }, '20 preguntas revueltas de TODOS los temas')),
       h('div', { class: 'stars' }, starStr(progress.exam || 0))),
   ];
   for (const sec of SECTIONS) {
     const topics = TOPICS.filter(t => t.section === sec.id);
-    content.push(h('div', { class: 'section-head' },
+    content.push(h('div', { class: 'section-head', id: 'sec-' + sec.id },
       h('h2', null, sec.emoji + ' ' + sec.name),
       h('button', { class: 'sec-exam', onclick: () => { homeScroll = window.scrollY; startExam(sec.id); } }, '📝 Examen de ' + sec.name + ' ' + starStr(progress['exam-' + sec.id] || 0))));
     content.push(h('div', { class: 'topics' }, topics.map(t => h('button', { class: 'topic-card', style: { background: t.color }, onclick: () => { homeScroll = window.scrollY; showExplain(t.id); } },
@@ -770,7 +770,7 @@ function showHome() {
       h('div', { class: 'emo' }, t.emoji), h('div', { class: 't' }, t.title), h('div', { class: 's' }, t.es + ' · ' + t.pages),
       h('div', { class: 'stars' }, starStr(progress[t.id] || 0))))));
   }
-  screen('Español con Emilia 📚', null, ...content);
+  screen('Español · 2° 📚', null, ...content);
 }
 
 function showExplain(id) {
@@ -818,7 +818,7 @@ function startExam(sectionId) {
 function showResults({ title, score, total, review, id, again, next, nextLabel }) {
   const stars = starsFor(score, total);
   saveBest(id, stars);
-  const msg = stars === 3 ? '¡Increíble, Emilia! Eres una estrella 🌟' : stars === 2 ? '¡Muy bien! Ya casi lo dominas 💪' : stars === 1 ? '¡Buen intento! Vamos a practicar un poquito más 🌈' : '¡No te rindas! Repasa la explicación y vuelve a intentar 💖';
+  const msg = stars === 3 ? '¡Increíble! Eres una estrella 🌟' : stars === 2 ? '¡Muy bien! Ya casi lo dominas 💪' : stars === 1 ? '¡Buen intento! Vamos a practicar un poquito más 🌈' : '¡No te rindas! Repasa la explicación y vuelve a intentar 💖';
   const mistakes = review.filter(r => !r.ok);
   screen(title, goHome,
     h('div', { class: 'card center' },
@@ -1022,6 +1022,8 @@ function runQuiz({ title, questions, mode, onDone }) {
 }
 
 showHome();
+// Enlace directo a una sección desde el calendario (p. ej. #grammar)
+if (location.hash) { const el = document.getElementById('sec-' + location.hash.slice(1)); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 50); }
 </script>
 <a href="../" style="position:fixed;right:12px;bottom:12px;background:rgba(255,255,255,.85);padding:8px 14px;border-radius:14px;font:600 16px -apple-system,system-ui,sans-serif;color:#555;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.15);z-index:5">📚 Materias</a></body>
 </html>

@@ -1,3 +1,89 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Examen Emi</title><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Examen Emi"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<style>body{font-family:-apple-system,system-ui,sans-serif;background:linear-gradient(135deg,#ffe4f1,#e4f0ff);min-height:100vh;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}h1{font-size:2.4em}a{display:block;width:320px;padding:28px;border-radius:24px;color:#fff;text-decoration:none;font-size:1.8em;font-weight:700;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.15)}.en{background:#7c4dff}.es{background:#ff4d8d}</style></head>
-<body><h1>💗 Examen Emi</h1><a class="en" href="ingles/">🇺🇸 Inglés</a><a class="es" href="espanol/">🇲🇽 Español</a></body></html>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi Examen · 2° CEDEH</title><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mi Examen"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+*{box-sizing:border-box}
+body{font-family:-apple-system,system-ui,sans-serif;background:linear-gradient(135deg,#ffe4f1,#e4f0ff);min-height:100vh;margin:0;padding:28px 16px 40px;display:flex;flex-direction:column;align-items:center;gap:22px;color:#333}
+h1{font-size:2.4em;margin:8px 0 0;text-align:center}
+.sub{font-size:1.25em;margin:-10px 0 0;text-align:center;color:#555}
+.btns{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.btns a{display:block;width:300px;padding:26px;border-radius:24px;color:#fff;text-decoration:none;font-size:1.8em;font-weight:700;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.btns a:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.en{background:#7c4dff}.es{background:#ff4d8d}
+.cal{width:100%;max-width:900px;background:#fff;border-radius:26px;padding:20px;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.cal h2{margin:0 0 4px;font-size:1.7em;text-align:center}
+.cal .info{margin:0 0 14px;text-align:center;color:#666;font-size:1.05em}
+.legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;font-size:1em}
+.legend span{padding:6px 12px;border-radius:14px}
+.day{display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;align-items:stretch;padding:12px;border-radius:20px;margin-bottom:12px;background:#f7f5ff;border:3px solid transparent}
+.day.today{border-color:#ff4d8d;background:#fff0f6;box-shadow:0 0 0 4px rgba(255,77,141,.15)}
+.date{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border-radius:16px;padding:8px;text-align:center}
+.date .dn{font-size:1.15em;font-weight:700;color:#7c4dff}
+.date .num{font-size:2.2em;font-weight:800;line-height:1.1}
+.date .mo{font-size:.95em;color:#777}
+.date .hoy{display:none;margin-top:6px;background:#ff4d8d;color:#fff;border-radius:12px;padding:3px 10px;font-weight:700;font-size:.9em}
+.today .date .hoy{display:inline-block}
+.subj{background:#fff;border-radius:16px;padding:10px 12px}
+.subj h3{margin:0 0 8px;font-size:1.05em}
+.subj.es-s h3{color:#e0336f}.subj.en-s h3{color:#6a3df0}
+.item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;margin-bottom:6px;font-size:1.08em;text-decoration:none;color:#333}
+.item:last-child{margin-bottom:0}
+a.item{background:#e6f9ec;font-weight:600}
+a.item .tag{background:#2e9d52;color:#fff;border-radius:10px;padding:3px 10px;font-size:.85em;white-space:nowrap}
+a.item:active{transform:translateY(2px)}
+.item.soon{background:#f1f1f4;color:#666}
+.item.soon .tag{background:#d9d9e0;color:#555;border-radius:10px;padding:3px 10px;font-size:.85em;white-space:nowrap}
+@media (max-width:700px){.day{grid-template-columns:1fr}.date{flex-direction:row;gap:10px}.date .num{font-size:1.6em}}
+</style></head>
+<body>
+<h1>💗 Mi Examen · 2° CEDEH</h1>
+<p class="sub">¡Vamos a estudiar! Elige una materia 👇</p>
+<div class="btns"><a class="en" href="ingles/">🇺🇸 Inglés</a><a class="es" href="espanol/">🇲🇽 Español</a></div>
+
+<section class="cal">
+<h2>📅 Calendario de exámenes</h2>
+<p class="info">Ciclo 2026-2027 · 1°, 2° y 3° · 28 de septiembre al 1 de octubre</p>
+<div class="legend"><span style="background:#e6f9ec">✅ Ya puedes practicar aquí (tócalo)</span><span style="background:#f1f1f4">⏳ Próximamente</span></div>
+
+<div class="day" data-date="2026-09-28">
+ <div class="date"><span class="dn">Lunes</span><span class="num">28</span><span class="mo">septiembre</span><span class="hoy">⭐ HOY</span></div>
+ <div class="subj es-s"><h3>🇲🇽 Español</h3>
+  <a class="item" href="espanol/#lenguajes">📖 Lenguajes <span class="tag">▶ Practicar</span></a>
+  <a class="item" href="espanol/#ortografia">✏️ Ortografía <span class="tag">▶ Practicar</span></a></div>
+ <div class="subj en-s"><h3>🇺🇸 Inglés</h3>
+  <a class="item" href="ingles/#grammar">🧩 Grammar <span class="tag">▶ Practicar</span></a>
+  <a class="item" href="ingles/#writing">✍️ Writing <span class="tag">▶ Practicar</span></a></div>
+</div>
+
+<div class="day" data-date="2026-09-29">
+ <div class="date"><span class="dn">Martes</span><span class="num">29</span><span class="mo">septiembre</span><span class="hoy">⭐ HOY</span></div>
+ <div class="subj es-s"><h3>🇲🇽 Español y Mate</h3>
+  <div class="item soon">📚 Comprensión Lectora <span class="tag">⏳ Próximamente</span></div>
+  <div class="item soon">🔢 Conceptos matemáticos <span class="tag">⏳ Próximamente</span></div></div>
+ <div class="subj en-s"><h3>🇺🇸 Inglés</h3>
+  <a class="item" href="ingles/#vocab">🔤 Vocabulary <span class="tag">▶ Practicar</span></a>
+  <a class="item" href="ingles/#spelling">🐝 Spelling <span class="tag">▶ Practicar</span></a></div>
+</div>
+
+<div class="day" data-date="2026-09-30">
+ <div class="date"><span class="dn">Miércoles</span><span class="num">30</span><span class="mo">septiembre</span><span class="hoy">⭐ HOY</span></div>
+ <div class="subj es-s"><h3>➕ Matemáticas</h3>
+  <div class="item soon">🧮 Mecanizados-Razonados <span class="tag">⏳ Próximamente</span></div>
+  <div class="item soon">🧠 Cálculo mental <span class="tag">⏳ Próximamente</span></div></div>
+ <div class="subj en-s"><h3>🇺🇸 Inglés</h3>
+  <div class="item soon">📖 Reading <span class="tag">⏳ Próximamente</span></div>
+  <div class="item soon">🗣️ Speaking <span class="tag">⏳ Próximamente</span></div></div>
+</div>
+
+<div class="day" data-date="2026-10-01">
+ <div class="date"><span class="dn">Jueves</span><span class="num">1</span><span class="mo">octubre</span><span class="hoy">⭐ HOY</span></div>
+ <div class="subj es-s"><h3>🌎 Ética y STEAM</h3>
+  <div class="item soon">🌱 Ética, Naturaleza y Soc. <span class="tag">⏳ Próximamente</span></div>
+  <div class="item soon">🔬 Proyecto STEAM <span class="tag">⏳ Próximamente</span></div></div>
+ <div class="subj en-s"><h3>🇺🇸 Inglés</h3>
+  <a class="item" href="ingles/#listening">🎧 Listening <span class="tag">▶ Practicar</span></a>
+  <a class="item" href="ingles/#steam">🚀 STEAM Project <span class="tag">▶ Practicar</span></a></div>
+</div>
+</section>
+<script>
+(function(){var d=new Date(),p=function(n){return(n<10?'0':'')+n},k=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());var el=document.querySelector('.day[data-date="'+k+'"]');if(el){el.classList.add('today');}})();
+</script>
+</body></html>
