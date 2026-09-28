@@ -154,6 +154,9 @@ table.colop tr.ans td{height:40px;}
 .blocks .bc{width:80px; height:80px; background-color:#2196f3; background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px); background-size:8px 8px; border:2px solid #1565c0;}
 .blocks .bd{width:10px; height:80px; background-color:#22c55e; background-image:linear-gradient(#fff 1px,transparent 1px); background-size:8px 8px; border:1px solid #15803d;}
 .blocks .bu{width:10px; height:10px; background:#ff7a45; border:1px solid #c2410c;}
+table.cdu{border-collapse:separate; border-spacing:6px; font-size:36px; margin:6px auto;}
+table.cdu th{background:#ede9fe; color:var(--purple); border-radius:10px; width:70px;}
+table.cdu td{background:#fff; border:3px solid #c7c2ff; border-radius:12px; width:70px; height:56px; text-align:center; font-weight:bold;}
 .opts.one .opt{min-height:70px; font-size:23px; justify-content:flex-start; text-align:left;}
 
 .shake{animation:shake .4s;}
@@ -1137,8 +1140,8 @@ const fixOne = s => s.replace(/^las 1 /, 'la 1 ');
 
 /* ---- Calendario (tabla del mes) ---- */
 function calHTML(m, marks = []) {
-  const first = dow(m, 1), n = daysIn(m);
-  let cells = '<tr>' + ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => `<th>${d}</th>`).join('') + '</tr><tr>';
+  const first = (dow(m, 1) + 6) % 7, n = daysIn(m);   // semana de LUNES a DOMINGO
+  let cells = '<tr>' + ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map(d => `<th>${d}</th>`).join('') + '</tr><tr>';
   for (let i = 0; i < first; i++) cells += '<td></td>';
   for (let d = 1; d <= n; d++) {
     cells += `<td class="${marks.includes(d) ? 'mk' : ''}${[0, 6].includes(dow(m, d)) ? ' we' : ''}">${d}</td>`;
@@ -1306,6 +1309,8 @@ const M = {
   ])(),
 };
 const MATE_CUIDADO = [
+  () => posExpandMC(304),
+  () => posExpandType(pick(ZERO_MID)),
   () => mentalQ([500, '+', 200, '-', 100]),
   () => colQ(85, '-', 74),
   () => colQ(85, '+', 25),
@@ -1371,6 +1376,27 @@ const pvFacts = () => pick([
   () => { const k = ri(2, 9); return numQ(`¿Cuántas centenas hay en ${k * 100}?`, k, { explain: `${k * 100} = ${k} centenas.`, key: 'pf-c' + k }); },
   () => mc('Cada elemento de una colección es una…', 'unidad', ['decena', 'centena'], { layout: 'three', key: 'pf-u' }),
 ])();
+/* ---- Cuenta los bloques y valor posicional (hojas del cuaderno) ---- */
+const BLOCK_BOOK = [[2, 0, 0], [3, 0, 0], [0, 5, 0], [2, 1, 5], [0, 0, 8], [0, 10, 0], [0, 2, 6], [0, 6, 7], [1, 4, 0], [1, 9, 4]];
+const blockWords = (c, d, u) => [c ? `${c} ${c === 1 ? 'centena' : 'centenas'} = ${c * 100}` : '', d ? `${d} ${d === 1 ? 'decena' : 'decenas'} = ${d * 10}` : '', u ? `${u} ${u === 1 ? 'unidad' : 'unidades'} = ${u}` : ''].filter(Boolean);
+const blockQ = (c, d, u) => { const n = c * 100 + d * 10 + u, parts = blockWords(c, d, u);
+  return numQ('Cuenta los bloques. ¿Qué número forman? 🧱', n, { visual: blocksHTML(c, d, u), say: 'Cuenta los bloques. ¿Qué número forman?', explain: parts.join(' · ') + (parts.length > 1 ? ` ➜ ${[c * 100, d * 10, u].filter(Boolean).join(' + ')} = ${n}` : '') + (d === 10 ? ' (10 decenas = 1 centena = 100)' : ''), key: `blk-${c}-${d}-${u}` }); };
+const randBlock = () => { let c, d, u; do { c = ri(0, 4); d = ri(0, 9); u = ri(0, 9); } while (c + d + u === 0); return [c, d, u]; };
+
+const POS_BOOK = [389, 208, 197, 390, 304, 131, 299];
+const digits = n => [Math.floor(n / 100), Math.floor(n / 10) % 10, n % 10];
+const expStr = n => { const [c, d, u] = digits(n); return `${c * 100} + ${d * 10} + ${u}`; };
+const cduHTML = (vals) => `<table class="cdu"><tr><th>C</th><th>D</th><th>U</th></tr><tr>${vals.map(v => `<td>${v}</td>`).join('')}</tr></table>`;
+const posTable = n => { n = n || ri(101, 999); const v = digits(n), k = ri(0, 2), names = ['centenas (C)', 'decenas (D)', 'unidades (U)'];
+  return numQ(`Llena la tabla del número ${n}. ¿Qué número va en las ${names[k]}?`, v[k], { big: String(n), visual: cduHTML(v.map((x, i) => i === k ? '?' : x)), explain: `${n} ➜ C = ${v[0]}, D = ${v[1]}, U = ${v[2]}.${v[1] === 0 ? ' ¡El 0 también se escribe en la tabla!' : ''}`, key: `pt-${n}-${k}` }); };
+const posExpandMC = n => { n = n || ri(101, 999); const [c, d, u] = digits(n);
+  const wrongs = uniq(expStr(n), [`${c} + ${d} + ${u}`, `${c * 100} + ${d} + ${u}`, `${c * 10} + ${d} + ${u}`, `100 + ${d * 10} + ${u}`, `${c * 100} + ${u * 10} + ${d}`]).slice(0, 2);
+  return mc(`¿Cómo se descompone ${n}?`, expStr(n), wrongs, { big: String(n), layout: 'one', explain: `${n} = ${c} centenas + ${d} decenas + ${u} unidades = ${expStr(n)}.${d === 0 ? ' Hay 0 decenas: por eso va + 0 +.' : ''} El ${c} vale ${c * 100} porque está en las centenas.`, key: `pe-${n}` }); };
+const posExpandType = n => { n = n || ri(101, 999); const [c, d, u] = digits(n), k = ri(0, 2), vals = [c * 100, d * 10, u];
+  const shown = vals.map((v, i) => i === k ? '?' : v).join(' + ');
+  return numQ(`${n} = ${shown}. ¿Qué número va en el "?"`, vals[k], { big: `${n} = ${shown}`, say: `${n} es igual a ${shown.replace('?', 'cuánto')}`, explain: `${n} = ${expStr(n)}.`, key: `pet-${n}-${k}` }); };
+const posCompose = n => { n = n || ri(101, 999); return numQ(`${expStr(n)} = ?`, n, { big: `${expStr(n)} = ?`, explain: `${expStr(n)} = ${n}.`, key: `pc-${n}` }); };
+const ZERO_MID = [304, 208, 509, 701, 406];
 /* ============================================================
    SECCIONES Y TEMAS
    ============================================================ */
@@ -1497,6 +1523,28 @@ const TOPICS = [
     exam: () => [pvPart(), pvCompose(), pvFacts()],
   },
   {
+    id: 'm-bloques', section: 'mate', title: 'Cuenta los bloques', es: 'Centenas, decenas y unidades', emoji: '🟦', color: '#1e88e5', pages: 'cuaderno', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      h('div', { class: 'row', html: '<div class="clockcard">' + blocksHTML(1, 0, 0) + '<b>centena = 100</b></div><div class="clockcard">' + blocksHTML(0, 1, 0) + '<b>decena = 10</b></div><div class="clockcard">' + blocksHTML(0, 0, 1) + '<b>unidad = 1</b></div>' }),
+      KEY('🧱 Cuenta primero los ', B('cuadros'), ' (de 100 en 100), luego las ', B('barras'), ' (de 10 en 10) y al final los ', B('cubitos'), ' (de 1 en 1).'),
+      h('div', { class: 'visual', html: blocksHTML(2, 1, 5) }),
+      P('2 cuadros + 1 barra + 5 cubitos = 200 + 10 + 5 = ', B('215'), '.'),
+      P('⚠️ 10 barras = 10 decenas = ', B('100'), '.')),
+    practice: () => [...BLOCK_BOOK.map(b => blockQ(...b)), ...[1, 2, 3].map(() => blockQ(...randBlock()))],
+    exam: () => [...sample(BLOCK_BOOK, 2).map(b => blockQ(...b)), blockQ(...randBlock())],
+  },
+  {
+    id: 'm-posicional', section: 'mate', title: 'Valor posicional', es: 'Tabla C | D | U y descomposición', emoji: '🔢', color: '#6d4c41', pages: 'cuaderno', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      P('Cada cifra vale según su ', B('lugar'), ': ', B('C'), ' = centenas, ', B('D'), ' = decenas, ', B('U'), ' = unidades.'),
+      h('div', { class: 'row', html: cduHTML([3, 8, 9]) }),
+      KEY('389 = ', B('300 + 80 + 9'), ' (el 3 vale 300, el 8 vale 80, el 9 vale 9)'),
+      KEY('⚠️ Con cero en medio: 304 = ', B('300 + 0 + 4'), ' (¡no 100 + 0 + 4!). 208 = ', B('200 + 0 + 8'), '.'),
+      P('Con cero al final: 390 = ', B('300 + 90 + 0'), '.')),
+    practice: () => [posTable(389), posTable(304), ...shuffle(POS_BOOK).slice(0, 4).map(posExpandMC), posExpandType(208), posExpandType(), posCompose(390), posCompose()],
+    exam: () => [posExpandMC(pick(POS_BOOK)), posExpandMC(), posTable(), posExpandType(pick(ZERO_MID)), posCompose()],
+  },
+  {
     id: 'm-centenas', section: 'mate', title: 'Operaciones con centenas', es: 'Cálculo mental', emoji: '💯', color: '#2196f3', pages: 'p. 52', book: 'Pensamiento matemático',
     explain: () => h('div', { class: 'explain' },
       P('Resuelve ', B('de izquierda a derecha'), ', un paso a la vez:'),
@@ -1551,7 +1599,8 @@ const TOPICS = [
       KEY('⚠️ 85 − 74 = ', B('11'), ': 5 − 4 = 1 y 8 − 7 = 1.'),
       KEY('⚠️ 85 + 25 = ', B('110'), ': 5 + 5 = 10, escribo 0 y llevo 1; 8 + 2 + 1 = 11.'),
       KEY('⚠️ "¿Qué fecha será…?" ➜ contesta la fecha completa: ', B('sábado 26 de septiembre'), ', no solo "sábado".'),
-      KEY('⚠️ Los meses se escriben con minúscula: ', B('octubre'), ', no "Octubre" (salvo al inicio de una oración).')),
+      KEY('⚠️ Los meses se escriben con minúscula: ', B('octubre'), ', no "Octubre" (salvo al inicio de una oración).'),
+      KEY('⚠️ 304 = ', B('300 + 0 + 4'), ', no 100 + 0 + 4: el 3 está en las centenas y vale 300. Lo mismo con 208 = 200 + 0 + 8.')),
     practice: () => MATE_CUIDADO.map(f => f()).concat([M.monthCase()]),
     exam: () => sample(MATE_CUIDADO, 2).map(f => f()),
   },
