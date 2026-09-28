@@ -118,6 +118,14 @@ mark{background:#ffe066; border-radius:6px; padding:0 3px;}
 .opt.correct{background:#dcfce7; border-color:var(--green);}
 .opt.wrong{background:#fee2e2; border-color:var(--red);}
 .opt:disabled{color:var(--ink);}
+.passage{background:#fffaf0; border:3px solid #ffe0b2; border-radius:22px; padding:14px 18px; margin:0 0 14px; text-align:left;}
+.passage-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;}
+.passage .ptitle{font-size:24px; font-weight:bold; color:#d9480f;}
+.passage .pkind{display:inline-block; margin-left:10px; background:#ffe0b2; border-radius:12px; padding:2px 10px; font-size:17px; color:#8a4b12; vertical-align:middle;}
+.passage .ptext{white-space:pre-line; font-size:22px; line-height:1.5;}
+.big-btn.small-btn{min-height:52px; font-size:19px; padding:0 16px; border-radius:18px;}
+.opts.one .opt{min-height:70px; font-size:23px; justify-content:flex-start; text-align:left;}
+
 .shake{animation:shake .4s;}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
 .pop{animation:pop .35s;}
@@ -582,9 +590,320 @@ const Q = {
   dictN: it => dictQ(it || pick(NW)),
 };
 /* ============================================================
+   COMPRENSIÓN LECTORA (textos originales, nivel 2°)
+   Cada pregunta: [tipo, pregunta, correcta, [incorrectas], explicación]
+   Tipos: L literal · S secuencia · V vocabulario · I idea principal · F inferencia · T tipo de texto/propósito
+   ============================================================ */
+const QTYPE = { L: '🔎 Busca la respuesta en el texto', S: '🔢 ¿En qué orden pasó?', V: '📖 ¿Qué significa la palabra?', I: '💡 ¿De qué trata?', F: '🤔 Piensa: la respuesta no está escrita tal cual', T: '🗂️ ¿Qué tipo de texto es? ¿Para qué sirve?' };
+const TEXTS = [
+  { id: 'cometa', kind: 'Cuento', emoji: '🪁', color: '#7c4dff', title: 'La cometa de Tomás',
+    text: `Había una vez un niño llamado Tomás que vivía cerca del mar. Un sábado, su abuelo le regaló una cometa roja con una cola muy larga. Tomás corrió a la playa para volarla, pero el viento era tan fuerte que la cometa se atoró en una palmera. Tomás se puso muy triste.
+
+Entonces llegó su amiga Rosa con una escoba larga. Entre los dos bajaron la cometa con mucho cuidado. Al final, la volaron juntos toda la tarde y Tomás aprendió que con ayuda todo es más fácil.`,
+    tip: '📖 Un cuento tiene personajes, un problema y un final. Fíjate en el inicio, el desarrollo y el cierre.',
+    qs: [
+      ['L', '¿Quién le regaló la cometa a Tomás?', 'Su abuelo', ['Su amiga Rosa', 'Su mamá'], 'El texto dice: "su abuelo le regaló una cometa roja".'],
+      ['L', '¿Dónde se atoró la cometa?', 'En una palmera', ['En el techo de su casa', 'En un barco'], '"La cometa se atoró en una palmera."'],
+      ['S', '¿Qué pasó DESPUÉS de que la cometa se atoró?', 'Llegó Rosa con una escoba', ['El abuelo le regaló la cometa', 'Tomás corrió a la playa'], 'Primero le regalaron la cometa, luego corrió a la playa, se atoró y después llegó Rosa.'],
+      ['F', '¿Cómo se sintió Tomás al final del cuento?', 'Feliz', ['Triste', 'Enojado'], 'Al final volaron la cometa juntos toda la tarde: estaba feliz. (Estuvo triste antes, cuando se atoró.)'],
+      ['I', '¿Qué aprendió Tomás?', 'Que con ayuda todo es más fácil', ['Que las cometas son peligrosas', 'Que no hay que ir a la playa'], 'Lo dice la última oración del cuento.'],
+    ] },
+  { id: 'ardilla', kind: 'Fábula', emoji: '🐿️', color: '#8d6e63', title: 'La ardilla que no compartía',
+    text: `En un bosque vivía una ardilla que guardaba muchas nueces en su árbol. Un día de invierno, un ratoncito le pidió una nuez porque tenía hambre.
+—¡No! Son todas mías —dijo la ardilla.
+
+Esa noche cayó una tormenta y el agua entró en el árbol de la ardilla. Sus nueces se mojaron y ella tuvo mucho frío. El ratoncito la vio y la invitó a su cueva calientita. Le dio de cenar y le prestó una cobija.
+La ardilla sintió vergüenza y le dijo:
+—Gracias, amigo. Desde hoy compartiré lo que tengo.
+
+Moraleja: Comparte con los demás, porque algún día tú también necesitarás ayuda.`,
+    tip: '🦊 Una fábula es una historia corta con animales que hablan y una moraleja: una enseñanza.',
+    qs: [
+      ['L', '¿Qué le pidió el ratoncito a la ardilla?', 'Una nuez', ['Una cobija', 'Su árbol'], '"Un ratoncito le pidió una nuez porque tenía hambre."'],
+      ['V', '"Esa noche cayó una tormenta." ¿Qué es una tormenta?', 'Mucha lluvia con viento fuerte', ['Un día de mucho sol', 'Una fiesta en el bosque'], 'Por eso el agua entró en el árbol y las nueces se mojaron.'],
+      ['F', '¿Por qué la ardilla sintió vergüenza?', 'Porque ella no compartió y el ratón sí la ayudó', ['Porque se le mojaron las nueces', 'Porque el ratón le quitó sus nueces'], 'El ratoncito fue amable con ella aunque ella no quiso compartir.'],
+      ['I', '¿Qué nos enseña la moraleja?', 'Que debemos compartir', ['Que hay que guardar todo para uno', 'Que el invierno es frío'], '"Comparte con los demás, porque algún día tú también necesitarás ayuda."'],
+      ['T', '¿Por qué este texto es una fábula?', 'Tiene animales que hablan y una moraleja', ['Explica cómo preparar una receta', 'Da información real sobre las ardillas'], 'Fábula = animales que hablan + moraleja.'],
+    ] },
+  { id: 'ajolote', kind: 'Texto informativo', emoji: '🦎', color: '#ec407a', title: 'El ajolote',
+    text: `El ajolote es un anfibio que vive en México, en los canales de Xochimilco. Tiene la piel suave, una cola larga y unas ramitas a los lados de la cabeza que se llaman branquias. Con ellas respira debajo del agua.
+
+Los ajolotes comen gusanos, insectos pequeños y peces chiquitos. Algo sorprendente es que pueden regenerar partes de su cuerpo: si pierden una pata, ¡les vuelve a crecer!
+
+Hoy quedan muy pocos ajolotes porque el agua de los canales está sucia. Por eso es importante cuidar el agua y no tirar basura.`,
+    tip: '🔎 Un texto informativo da datos reales. No tiene personajes inventados.',
+    qs: [
+      ['L', '¿Dónde vive el ajolote?', 'En los canales de Xochimilco', ['En el desierto', 'En el mar'], '"Vive en México, en los canales de Xochimilco."'],
+      ['L', '¿Para qué le sirven las branquias?', 'Para respirar debajo del agua', ['Para comer gusanos', 'Para caminar'], '"Con ellas respira debajo del agua."'],
+      ['V', '¿Qué quiere decir "regenerar" en el texto?', 'Que una parte del cuerpo le vuelve a crecer', ['Que se esconde en el agua', 'Que cambia de color'], 'El texto lo explica: "si pierden una pata, ¡les vuelve a crecer!"'],
+      ['L', '¿Por qué quedan muy pocos ajolotes?', 'Porque el agua de los canales está sucia', ['Porque comen demasiados gusanos', 'Porque les crecen las patas'], 'Lo dice el último párrafo.'],
+      ['T', '¿Para qué se escribió este texto?', 'Para dar información sobre el ajolote', ['Para contar un cuento de un ajolote', 'Para invitar a una fiesta'], 'Es un texto informativo: da datos reales.'],
+    ] },
+  { id: 'recado', kind: 'Recado', emoji: '📝', color: '#ff7a45', title: 'Un recado en el refri',
+    text: `Martes 29 de septiembre
+
+Mateo:
+Fui a la tienda a comprar tortillas y regreso a las 2:00. Tu comida está en el refrigerador; caliéntala en el microondas un minuto. No olvides darle agua a Canela y hacer tu tarea de matemáticas. Por favor, no le abras la puerta a nadie. Si necesitas algo, llama a tu tía Carmen.
+
+Te quiere,
+Mamá`,
+    tip: '📝 Un recado es un mensaje corto para alguien. Tiene fecha, para quién es, el mensaje y quién lo escribe (firma).',
+    qs: [
+      ['L', '¿Quién escribió el recado?', 'Mamá', ['Mateo', 'La tía Carmen'], 'Al final dice quién lo escribe: "Te quiere, Mamá".'],
+      ['L', '¿Para quién es el recado?', 'Para Mateo', ['Para Canela', 'Para la tía Carmen'], 'Al inicio dice el nombre de quien lo va a leer: "Mateo:".'],
+      ['L', '¿A qué hora regresa mamá?', 'A las 2:00', ['A la 1:00', 'A las 5:00'], '"Regreso a las 2:00."'],
+      ['F', '¿Quién es Canela, probablemente?', 'La mascota de la casa', ['La maestra de Mateo', 'Una tienda'], 'A Canela hay que "darle agua": seguramente es una mascota.'],
+      ['T', '¿Para qué sirve un recado?', 'Para dejarle un mensaje corto a alguien', ['Para contar una historia con moraleja', 'Para explicar cómo es un animal'], 'Mamá no estaba y le dejó un mensaje a Mateo.'],
+    ] },
+  { id: 'feria', kind: 'Cartel', emoji: '🎪', color: '#2196f3', title: '¡Gran feria del libro!',
+    text: `📚 ¡GRAN FERIA DEL LIBRO! 📚
+
+¿Te gustan los cuentos, las adivinanzas y las historias de dinosaurios?
+¡Ven a la feria del libro de tu escuela!
+
+📅 Viernes 16 de octubre
+🕘 De 9:00 a 1:00
+📍 Patio principal
+
+Habrá cuentacuentos, juegos y un taller para hacer separadores.
+Cada niño que compre un libro recibirá un separador de regalo.
+
+¡Entrada gratis! Trae a tu familia.`,
+    tip: '📢 Un cartel tiene un título llamativo, textos breves e imágenes. Sirve para dar a conocer un evento o un mensaje.',
+    qs: [
+      ['I', '¿Qué anuncia el cartel?', 'Una feria del libro', ['Un partido de futbol', 'Una venta de dulces'], 'Lo dice el título: "¡GRAN FERIA DEL LIBRO!".'],
+      ['L', '¿Dónde será la feria?', 'En el patio principal', ['En la biblioteca de la ciudad', 'En el salón de música'], '📍 Patio principal.'],
+      ['L', '¿Cuánto cuesta entrar?', 'Nada, es gratis', ['10 pesos', 'Hay que comprar un libro'], '"¡Entrada gratis!"'],
+      ['V', '¿Qué es un "cuentacuentos"?', 'Una persona que cuenta cuentos en voz alta', ['Un libro para colorear', 'Un juego de mesa'], 'La palabra lo dice: alguien que cuenta cuentos.'],
+      ['T', '¿Por qué este texto es un cartel?', 'Tiene título llamativo, textos breves y anuncia un evento', ['Cuenta una historia con inicio, desarrollo y cierre', 'Tiene una moraleja al final'], 'El cartel da a conocer un evento con pocas palabras.'],
+    ] },
+  { id: 'brochetas', kind: 'Receta', emoji: '🍓', color: '#e53935', title: 'Brochetas de fruta',
+    text: `🍓 BROCHETAS DE FRUTA 🍌
+
+Ingredientes:
+• 1 plátano
+• 6 fresas
+• 1 rebanada de melón
+• Miel
+
+Materiales: palitos de madera, un cuchillo sin punta y un plato.
+
+Procedimiento:
+1. Lávate las manos y lava las fresas.
+2. Con ayuda de un adulto, corta la fruta en cuadritos.
+3. Mete los trozos de fruta en el palito, alternando los colores.
+4. Pon las brochetas en el plato y échales un poquito de miel.
+5. ¡Listo! Compártelas con tu familia.`,
+    tip: '🥣 Una receta dice los ingredientes y los pasos en orden (procedimiento). Los números te ayudan a saber qué va primero.',
+    qs: [
+      ['S', '¿Qué es lo PRIMERO que debes hacer?', 'Lavarte las manos y lavar las fresas', ['Cortar la fruta', 'Echar la miel'], 'Paso 1: "Lávate las manos y lava las fresas".'],
+      ['S', '¿Qué haces DESPUÉS de cortar la fruta?', 'Meter los trozos en el palito', ['Lavarte las manos', 'Comprar las fresas'], 'Después del paso 2 (cortar) viene el paso 3 (meter la fruta en el palito).'],
+      ['F', '¿Por qué necesitas la ayuda de un adulto?', 'Porque hay que usar un cuchillo', ['Porque la miel es muy cara', 'Porque las fresas están muy altas'], 'Cortar con cuchillo puede ser peligroso para un niño.'],
+      ['V', '¿Qué quiere decir "alternando los colores"?', 'Poner un color y luego otro diferente', ['Usar solo fruta roja', 'Pintar la fruta'], 'Por ejemplo: fresa roja, plátano amarillo, melón naranja…'],
+      ['T', '¿Qué tipo de texto es?', 'Una receta', ['Un poema', 'Una noticia'], 'Tiene ingredientes y procedimiento: es una receta.'],
+    ] },
+  { id: 'luna', kind: 'Poema', emoji: '🌙', color: '#3949ab', title: 'Mi amiga la luna',
+    text: `La luna redonda
+se asoma al balcón,
+parece una tortilla
+de puro algodón.
+
+De noche me cuida,
+me canta al dormir,
+y al salir el sol
+se tiene que ir.
+
+Si el cielo se nubla
+se pone a jugar,
+se esconde en las nubes
+y vuelve a brillar.`,
+    tip: '🎵 Un poema está escrito en versos (renglones cortos) y estrofas. Muchas veces rima: balcón – algodón.',
+    qs: [
+      ['I', '¿De quién habla el poema?', 'De la luna', ['Del sol', 'De una tortilla'], 'El título y todo el poema hablan de la luna.'],
+      ['L', 'En el poema, ¿a qué se parece la luna?', 'A una tortilla de algodón', ['A una pelota de futbol', 'A un plato de sopa'], '"Parece una tortilla de puro algodón."'],
+      ['L', '¿Qué hace la luna cuando el cielo se nubla?', 'Se esconde en las nubes', ['Se va a dormir', 'Se cae del cielo'], '"Se esconde en las nubes y vuelve a brillar."'],
+      ['V', '"La luna redonda se asoma al balcón." ¿Qué quiere decir "se asoma"?', 'Se deja ver, aparece', ['Se esconde', 'Se cae'], 'Asomarse es sacar la cara para que te vean, como la luna en el balcón.'],
+      ['T', '¿Cómo sabes que es un poema?', 'Tiene versos cortos, estrofas y rima', ['Tiene ingredientes y pasos', 'Tiene fecha, saludo y firma'], 'Versos + estrofas + rima = poema.'],
+    ] },
+  { id: 'carta', kind: 'Carta', emoji: '💌', color: '#d81b60', title: 'Carta a la abuelita',
+    text: `Monterrey, N. L., a 20 de septiembre de 2026
+
+Querida abuelita Lola:
+
+¿Cómo estás? Te extraño mucho. Te cuento que ya estoy en segundo grado y mi maestra se llama Laura. Me gusta mucho leer cuentos de piratas.
+El domingo fuimos al parque y aprendí a andar en bicicleta sin rueditas. ¡Me caí dos veces, pero no me rendí!
+Quiero visitarte en diciembre para comer tus tamales y jugar lotería contigo.
+
+Te mando muchos besos y abrazos.
+Tu nieta,
+Sofía`,
+    tip: '💌 Una carta tiene lugar y fecha, saludo, mensaje, despedida y firma.',
+    qs: [
+      ['L', '¿Quién escribió la carta?', 'Sofía', ['La abuelita Lola', 'La maestra Laura'], 'La firma al final dice: "Tu nieta, Sofía".'],
+      ['L', '¿Qué aprendió Sofía el domingo?', 'A andar en bicicleta sin rueditas', ['A hacer tamales', 'A leer cuentos de piratas'], '"El domingo fuimos al parque y aprendí a andar en bicicleta sin rueditas."'],
+      ['L', '¿Cuándo quiere visitar a su abuelita?', 'En diciembre', ['En septiembre', 'El domingo'], '"Quiero visitarte en diciembre."'],
+      ['F', '"Me caí dos veces, pero no me rendí." ¿Qué quiere decir?', 'Que siguió intentando hasta lograrlo', ['Que ya no quiso andar en bicicleta', 'Que se lastimó mucho'], 'No rendirse = no dejar de intentar.'],
+      ['T', 'En la carta, "Querida abuelita Lola:" es…', 'El saludo', ['La despedida', 'La firma'], 'El saludo va al inicio, después de la fecha.'],
+    ] },
+  { id: 'jirafa', kind: 'Noticia', emoji: '🦒', color: '#f9a825', title: '¡Nace una jirafa en el zoológico!',
+    text: `¡NACE UNA JIRAFA EN EL ZOOLÓGICO!
+
+Ciudad de México, 25 de septiembre. Ayer por la mañana nació una jirafa bebé en el zoológico de la ciudad. La cría mide casi dos metros y pesa 60 kilos.
+
+Los cuidadores dicen que está sana y que ya camina junto a su mamá. El zoológico invita a los niños a proponer un nombre para la jirafita. Las ideas se pueden dejar en un buzón que está en la entrada, hasta el 10 de octubre.`,
+    tip: '📰 Una noticia cuenta algo real que pasó hace poco. Responde: ¿qué pasó?, ¿dónde?, ¿cuándo? y ¿quiénes?',
+    qs: [
+      ['I', '¿Qué pasó?', 'Nació una jirafa bebé', ['Se escapó una jirafa', 'Llegó un elefante nuevo'], 'Lo dice el título de la noticia.'],
+      ['L', '¿Cuándo nació la jirafa?', 'Ayer por la mañana', ['El 10 de octubre', 'Hace un año'], '"Ayer por la mañana nació una jirafa bebé." (El 10 de octubre es la fecha límite para los nombres.)'],
+      ['V', '"La cría mide casi dos metros." ¿Qué es una cría?', 'Un animal bebé', ['Un cuidador del zoológico', 'Una jaula grande'], 'La cría es la jirafa bebé.'],
+      ['L', '¿Qué pueden hacer los niños?', 'Proponer un nombre para la jirafita', ['Darle de comer a la jirafa', 'Llevarse la jirafa a su casa'], '"El zoológico invita a los niños a proponer un nombre."'],
+      ['T', '¿Qué tipo de texto es?', 'Una noticia', ['Una fábula', 'Un instructivo'], 'Cuenta algo real que pasó, con lugar y fecha: es una noticia.'],
+    ] },
+  { id: 'conejo', kind: 'Leyenda', emoji: '🐇', color: '#5e35b1', title: 'El conejo en la luna',
+    text: `Cuentan que hace mucho tiempo, el dios Quetzalcóatl bajó a la Tierra y caminó todo el día como un hombre. Al anochecer tenía mucha hambre y estaba muy cansado.
+
+Un conejito que comía pasto lo vio y le dijo:
+—No tengo mucho, pero puedes comer de mi pasto.
+—Gracias, pero yo no como pasto —respondió Quetzalcóatl.
+
+Entonces el conejito, muy generoso, se ofreció a sí mismo como comida para que el viajero no pasara hambre. Quetzalcóatl se conmovió tanto que lo levantó hasta la luna para que su imagen quedara ahí para siempre.
+
+Por eso, en las noches de luna llena, todavía se ve la silueta de un conejo.`,
+    tip: '🌕 Una leyenda es una historia antigua que la gente cuenta desde hace mucho tiempo. Muchas veces explica por qué algo es como es.',
+    qs: [
+      ['L', '¿Quién bajó a la Tierra?', 'Quetzalcóatl', ['Un conejo', 'La luna'], '"El dios Quetzalcóatl bajó a la Tierra."'],
+      ['S', '¿Qué le ofreció PRIMERO el conejito?', 'Su pasto', ['Su casa', 'Un vaso de agua'], '"Puedes comer de mi pasto." Después se ofreció a sí mismo.'],
+      ['V', '¿Qué significa "generoso"?', 'Que da lo que tiene para ayudar', ['Que corre muy rápido', 'Que tiene mucho miedo'], 'El conejito dio todo lo que tenía para ayudar.'],
+      ['I', '¿Qué explica esta leyenda?', 'Por qué se ve un conejo en la luna', ['Cómo crece el pasto', 'Por qué los conejos son blancos'], 'La última oración lo dice: "Por eso… se ve la silueta de un conejo".'],
+      ['T', '¿Qué es una leyenda?', 'Una historia antigua que la gente cuenta desde hace mucho', ['Un texto con pasos para cocinar', 'Una nota corta para avisar algo'], 'Empieza con "Cuentan que hace mucho tiempo…".'],
+    ] },
+  { id: 'monarca', kind: 'Texto informativo', emoji: '🦋', color: '#ef6c00', title: 'La mariposa monarca',
+    text: `La mariposa monarca tiene alas de color naranja con líneas negras y puntitos blancos.
+
+Cada año, en otoño, millones de monarcas viajan desde Canadá y Estados Unidos hasta los bosques de Michoacán y del Estado de México. ¡Recorren más de 4,000 kilómetros! Viajan al sur porque en el norte hace demasiado frío en invierno.
+
+En los bosques de oyamel se juntan en las ramas de los árboles para calentarse. En primavera regresan al norte y ponen sus huevecillos en una planta llamada algodoncillo.`,
+    tip: '🔎 Lee con calma: un texto informativo tiene muchos datos (lugares, números, estaciones del año).',
+    qs: [
+      ['L', '¿De qué color son las alas de la monarca?', 'Naranja con líneas negras', ['Azules con puntos amarillos', 'Blancas'], 'Lo dice la primera oración.'],
+      ['L', '¿Por qué las monarcas viajan al sur?', 'Porque en el norte hace demasiado frío en invierno', ['Porque buscan el mar', 'Porque ahí ponen sus huevecillos'], '"Viajan al sur porque en el norte hace demasiado frío en invierno." (Los huevecillos los ponen en el norte.)'],
+      ['L', '¿Cuándo regresan al norte?', 'En primavera', ['En otoño', 'En invierno'], '"En primavera regresan al norte."'],
+      ['L', '¿Para qué se juntan en las ramas del oyamel?', 'Para calentarse', ['Para comer hojas', 'Para jugar'], '"Se juntan en las ramas de los árboles para calentarse."'],
+      ['I', '¿Cuál es el mejor título para este texto?', 'El gran viaje de la mariposa monarca', ['Cómo hacer una mariposa de papel', 'Mi paseo por el bosque'], 'Casi todo el texto habla del viaje de las monarcas.'],
+    ] },
+  { id: 'perrito', kind: 'Historieta', emoji: '🐶', color: '#00897b', title: 'El perrito perdido',
+    text: `Viñeta 1 — LEO: ¡Mira, Ana! Encontré un perrito en la calle. Está mojado y tiembla.
+Viñeta 2 — ANA: ¡Pobrecito! Tiene un collar azul… ¡y dice un número de teléfono!
+Viñeta 3 — LEO: Vamos con mi papá para llamar a su dueño.
+Viñeta 4 — SEÑORA: ¡Muchas gracias, niños! Mi perrita Nube se perdió desde ayer. La busqué por todas partes.
+Viñeta 5 — ANA Y LEO: ¡Qué bueno que Nube ya va a estar en su casa!`,
+    tip: '💬 Una historieta cuenta una historia en cuadros llamados viñetas. Lo que dicen los personajes va en globos de diálogo.',
+    qs: [
+      ['L', '¿Qué encontró Leo en la calle?', 'Un perrito', ['Un gatito', 'Un collar sin perro'], 'Viñeta 1: "Encontré un perrito en la calle".'],
+      ['L', '¿Cómo supieron a quién llamar?', 'El collar tenía un número de teléfono', ['Preguntaron en la escuela', 'El perrito los llevó a su casa'], 'Viñeta 2: el collar "dice un número de teléfono".'],
+      ['S', '¿Qué pasó AL FINAL?', 'La señora encontró a su perrita', ['Leo encontró al perrito', 'Ana vio el collar'], 'Primero lo encontraron, luego vieron el collar, llamaron y al final llegó la señora.'],
+      ['F', '¿Cómo se sentía la señora en la viñeta 4?', 'Contenta y agradecida', ['Enojada con los niños', 'Aburrida'], 'Dijo "¡Muchas gracias, niños!": estaba feliz de recuperar a Nube.'],
+      ['T', '¿Cómo se llaman los cuadros de una historieta?', 'Viñetas', ['Párrafos', 'Versos'], 'Cada cuadro de una historieta es una viñeta.'],
+    ] },
+];
+/* Textos SOLO para el mini examen (se eligen 2 al azar cada vez) */
+const EXAM_TEXTS = [
+  { id: 'dragon', kind: 'Cuento', emoji: '🐉', title: 'El dragón con hipo',
+    text: `En una montaña vivía Chispa, un dragón pequeño y verde. Un día le dio hipo, y cada vez que hacía ¡hip!, le salía una llamarada por la boca. Sin querer, quemó las flores del jardín de su vecina, la señora Oveja. Chispa se sintió muy apenado.
+
+Sus amigos le dieron ideas: el pájaro le dijo que tomara agua y el oso, que aguantara la respiración. Nada funcionó. Por fin, la señora Oveja le dio un gran susto: —¡BUUU! Y el hipo desapareció.
+
+Al día siguiente, Chispa la ayudó a sembrar flores nuevas.`,
+    qs: [
+      ['L', '¿Qué le pasaba a Chispa cada vez que hacía ¡hip!?', 'Le salía una llamarada', ['Se volvía azul', 'Se quedaba dormido'], '"Le salía una llamarada por la boca."'],
+      ['S', '¿Qué pasó PRIMERO?', 'A Chispa le dio hipo', ['La señora Oveja le dio un susto', 'Chispa sembró flores nuevas'], 'Primero le dio hipo; el susto y las flores nuevas vinieron después.'],
+      ['V', '"Chispa se sintió muy apenado." ¿Qué significa "apenado"?', 'Triste y avergonzado por lo que hizo', ['Muy contento', 'Con mucho sueño'], 'Se sintió mal porque quemó las flores.'],
+      ['L', '¿Qué le quitó el hipo a Chispa?', 'Un susto de la señora Oveja', ['Tomar agua', 'Aguantar la respiración'], 'El agua y aguantar la respiración no funcionaron; el susto sí.'],
+      ['F', '¿Por qué Chispa ayudó a sembrar flores nuevas?', 'Porque había quemado las flores de su vecina', ['Porque le gusta ensuciarse', 'Porque el oso se lo ordenó'], 'Quiso reparar lo que hizo sin querer.'],
+    ] },
+  { id: 'frijol', kind: 'Instructivo', emoji: '🌱', title: 'Cómo germinar un frijol',
+    text: `🌱 CÓMO GERMINAR UN FRIJOL
+
+Materiales: un frasco de vidrio, algodón, agua y 3 frijoles.
+
+Instrucciones:
+1. Pon algodón dentro del frasco.
+2. Coloca los frijoles entre el algodón y el vidrio, para que puedas verlos.
+3. Moja el algodón con un poco de agua. ¡No lo inundes!
+4. Deja el frasco cerca de una ventana donde entre luz.
+5. Échale un poquito de agua cada dos días.
+
+En una semana verás salir una raíz y después un tallito con hojas.`,
+    qs: [
+      ['L', '¿Qué materiales necesitas?', 'Frasco, algodón, agua y frijoles', ['Tierra, maceta y semillas de girasol', 'Papel, tijeras y pegamento'], 'Lo dice la parte de "Materiales".'],
+      ['S', '¿Qué haces DESPUÉS de poner el algodón en el frasco?', 'Colocar los frijoles', ['Dejar el frasco en la ventana', 'Echarle agua cada dos días'], 'Paso 1: algodón. Paso 2: frijoles.'],
+      ['V', '"¡No lo inundes!" quiere decir…', 'No le pongas demasiada agua', ['No lo toques', 'No lo tapes'], 'Inundar es llenar de agua de más.'],
+      ['L', '¿Qué sale primero del frijol?', 'Una raíz', ['Una flor', 'Un frijol nuevo'], '"Verás salir una raíz y después un tallito con hojas."'],
+      ['T', '¿Para qué sirve este texto?', 'Para explicar paso a paso cómo hacer algo', ['Para contar una leyenda', 'Para anunciar una fiesta'], 'Es un instructivo: tiene materiales e instrucciones numeradas.'],
+    ] },
+  { id: 'colibri', kind: 'Texto informativo', emoji: '🐦', title: 'Los colibríes',
+    text: `Los colibríes son las aves más pequeñas del mundo. ¡Algunos miden lo mismo que tu dedo pulgar!
+
+Mueven sus alas tan rápido que hacen un zumbido, como el de una abeja. Pueden volar hacia adelante, hacia atrás y hasta quedarse quietos en el aire.
+
+Se alimentan del néctar de las flores, que es un jugo dulce. Con su pico largo y su lengua llegan hasta el fondo de la flor. Al pasar de flor en flor llevan polen, y así ayudan a que nazcan nuevas plantas.`,
+    qs: [
+      ['L', '¿De qué se alimentan los colibríes?', 'Del néctar de las flores', ['De semillas', 'De peces'], '"Se alimentan del néctar de las flores."'],
+      ['V', '¿Qué es el néctar?', 'Un jugo dulce de las flores', ['Una hoja verde', 'Una parte del pico'], 'El texto lo explica: "que es un jugo dulce".'],
+      ['L', '¿Por qué hacen un zumbido?', 'Porque mueven sus alas muy rápido', ['Porque cantan muy fuerte', 'Porque llevan una abeja'], '"Mueven sus alas tan rápido que hacen un zumbido."'],
+      ['L', '¿Cómo ayudan los colibríes a las plantas?', 'Llevan polen de flor en flor', ['Riegan las flores', 'Les quitan las hojas secas'], '"Llevan polen, y así ayudan a que nazcan nuevas plantas."'],
+      ['I', '¿De qué trata el texto?', 'De cómo son y cómo viven los colibríes', ['De un colibrí que perdió a su mamá', 'De cómo hacer un jardín'], 'Es un texto informativo sobre los colibríes.'],
+    ] },
+  { id: 'pez', kind: 'Fábula', emoji: '🐟', title: 'El pez que quería volar',
+    text: `En un lago vivía un pez que miraba a los pájaros todo el día.
+—Quiero volar como ellos —decía.
+
+Un día saltó tan alto que cayó en la orilla. Sin agua no podía respirar y empezó a asustarse. Una garza lo vio y, con su pico, lo regresó al lago.
+—Cada quien es bueno en algo —le dijo la garza—. Tú nadas mejor que cualquier pájaro.
+
+El pez se dio cuenta de que nadar era maravilloso y nunca más se sintió menos que nadie.
+
+Moraleja: Valora lo que eres y lo que sabes hacer.`,
+    qs: [
+      ['L', '¿Qué quería el pez?', 'Volar como los pájaros', ['Vivir en la orilla', 'Comer insectos'], '"Quiero volar como ellos."'],
+      ['S', '¿Qué pasó cuando el pez saltó muy alto?', 'Cayó en la orilla', ['Voló hasta una nube', 'Encontró un tesoro'], '"Saltó tan alto que cayó en la orilla."'],
+      ['L', '¿Quién ayudó al pez?', 'Una garza', ['Un pájaro carpintero', 'Otro pez'], '"Una garza lo vio y, con su pico, lo regresó al lago."'],
+      ['F', '¿Por qué el pez empezó a asustarse?', 'Porque sin agua no podía respirar', ['Porque vio a un gato', 'Porque se hizo de noche'], 'Los peces necesitan el agua para respirar.'],
+      ['I', '¿Qué nos enseña la moraleja?', 'A valorar lo que somos', ['Que los peces pueden volar', 'Que hay que saltar muy alto'], '"Valora lo que eres y lo que sabes hacer."'],
+    ] },
+];
+const compQ = (tx, [ty, prompt, correct, wrongs, explain], i) => mc(prompt, correct, wrongs, { layout: 'one', sub: QTYPE[ty], explain, passage: tx, key: 'comp-' + tx.id + '-' + i });
+const textQs = tx => tx.qs.map((q, i) => compQ(tx, q, i));
+function passageEl(tx) {
+  const read = tx.title + '. ' + tx.text.replace(/Viñeta \d+ —/g, '');
+  return h('div', { class: 'passage' },
+    h('div', { class: 'passage-head' },
+      h('div', null, h('span', { class: 'ptitle' }, tx.emoji + ' ' + tx.title), h('span', { class: 'pkind' }, tx.kind)),
+      h('div', { class: 'row' },
+        h('button', { class: 'big-btn yellow small-btn', onclick: () => speak(read) }, '🔊 Escuchar texto'),
+        h('button', { class: 'big-btn yellow small-btn', onclick: () => speak(read, 0.65) }, '🐢 Lento'))),
+    h('div', { class: 'ptext' }, tx.text));
+}
+function compExam() { return sample(EXAM_TEXTS, 2).flatMap(textQs); }
+const HOWTO_Q = [
+  () => mc('¿Qué conviene hacer PRIMERO?', 'Leer las preguntas', ['Contestar rápido sin leer', 'Adivinar'], { layout: 'one', explain: 'Si lees primero las preguntas, sabes qué buscar en el texto.' }),
+  () => mc('Si no sabes una respuesta, ¿qué haces?', 'Vuelvo a leer el texto y la busco', ['Escojo cualquiera', 'Dejo la pregunta en blanco'], { layout: 'one', explain: '¡La respuesta casi siempre está en el texto!' }),
+  () => ({ type: 'order', prompt: 'Ordena los pasos para contestar 🧩', items: ['Leo la pregunta', 'Leo el texto con atención', 'Busco la respuesta en el texto', 'Reviso mi respuesta'], answer: ['Leo la pregunta', 'Leo el texto con atención', 'Busco la respuesta en el texto', 'Reviso mi respuesta'], sep: ' ➜ ', long: true }),
+  () => mc('La pregunta "¿Dónde vivía el conejo?" busca…', 'Un lugar', ['Una persona', 'Un momento'], { layout: 'three', explain: '¿Dónde? = lugar · ¿Quién? = persona · ¿Cuándo? = tiempo.' }),
+  () => mc('La pregunta "¿Cuándo llegó la abuela?" busca…', 'Un momento (tiempo)', ['Un lugar', 'Una persona'], { layout: 'three', explain: '¿Cuándo? = tiempo: ayer, en la noche, el lunes…' }),
+  () => mc('La pregunta "¿Quién encontró el tesoro?" busca…', 'Un personaje', ['Un lugar', 'Un momento'], { layout: 'three', explain: '¿Quién? = persona o personaje.' }),
+  () => mc('"Primero… después… al final…" nos ayudan a saber…', 'El orden en que pasaron las cosas', ['Qué significa una palabra', 'Quién escribió el texto'], { layout: 'one', explain: 'Son palabras de secuencia.' }),
+  () => mc('Un texto con animales que hablan y una MORALEJA es…', 'Una fábula', ['Una receta', 'Una noticia'], { layout: 'three', explain: 'La moraleja es la enseñanza de la fábula.' }),
+  () => mc('Un texto con ingredientes y pasos numerados es…', 'Una receta', ['Un poema', 'Una carta'], { layout: 'three', explain: 'La receta (o instructivo) dice qué necesitas y qué pasos seguir.' }),
+  () => mc('Un mensaje corto que dejas a alguien, con su nombre y tu firma, es…', 'Un recado', ['Un cuento', 'Un cartel'], { layout: 'three', explain: 'Ejemplo: "Mateo: fui a la tienda. Mamá".' }),
+  () => mc('"¿Por qué lloraba la niña?" La respuesta no está escrita tal cual. ¿Qué haces?', 'Pienso usando las pistas del texto', ['Invento cualquier cosa', 'Me salto la pregunta'], { layout: 'one', explain: 'Eso es inferir: usar pistas del texto para pensar la respuesta.' }),
+  () => mc('Para saber qué significa una palabra nueva, ¿qué te ayuda?', 'Leer las oraciones que están alrededor', ['Contar sus letras', 'Ver de qué color está escrita'], { layout: 'one', explain: 'Las palabras de alrededor (el contexto) dan pistas.' }),
+];
+/* ============================================================
    SECCIONES Y TEMAS
    ============================================================ */
 const SECTIONS = [
+  { id: 'comprension', name: 'Comprensión Lectora', emoji: '🔍', examN: 10, examLabel: '📝 Mini examen de Comprensión', buildExam: compExam },
   { id: 'lenguajes', name: 'Lenguajes', emoji: '📖', examN: 12 },
   { id: 'ortografia', name: 'Ortografía', emoji: '✏️', examN: 10 },
   { id: 'dictado', name: 'Dictado', emoji: '🎧', examN: 10 },
@@ -602,6 +921,103 @@ const dictExplain = (words, tips) => h('div', { class: 'explain' },
   ...tips);
 
 const TOPICS = [
+  /* ===================== COMPRENSIÓN LECTORA ===================== */
+  {
+    id: 'comp-como', section: 'comprension', title: '¿Cómo contestar?', es: 'Pasos y tipos de preguntas', emoji: '🧭', color: '#ff7a45', pages: 'estrategias', noBook: true,
+    explain: () => h('div', { class: 'explain' },
+      P('En el examen vas a leer ', B('textos nuevos'), ' y contestar preguntas. ¡No hay que memorizar nada! Solo leer con atención.'),
+      KEY('🧭 1. Lee la ', B('pregunta'), ' · 2. Lee el ', B('texto'), ' con calma · 3. ', B('Busca'), ' la respuesta en el texto · 4. ', B('Vuelve a leer'), ' para revisar'),
+      h('div', { class: 'cat-grid' },
+        box('#ede9fe', '🔎 Literales', P('¿', B('Quién'), '? ¿', B('Qué'), '? ¿', B('Dónde'), '? ¿', B('Cuándo'), '? La respuesta está escrita en el texto.')),
+        box('#fef3c7', '🔢 Secuencia', P(B('Primero'), ', ', B('después'), ', ', B('al final'), ': el orden en que pasaron las cosas.')),
+        box('#dcfce7', '📖 Vocabulario', P('¿Qué significa una palabra? Lee las oraciones de ', B('alrededor'), ': dan pistas.')),
+        box('#fce7f3', '💡 Idea principal', P('¿De qué trata todo el texto? ¿Cuál sería un buen ', B('título'), '?')),
+        box('#e0f2fe', '🤔 Inferencia', P('¿', B('Por qué'), '? ¿', B('Cómo se sentía'), '? No está escrito tal cual: piensa con las pistas del texto.')),
+        box('#fff7ed', '🗂️ Tipo de texto', P('¿Para qué sirve? ¿Qué tipo de texto es?'))),
+      h('table', null,
+        h('tr', null, h('td', null, '📖 Cuento'), h('td', null, 'personajes, problema y final')),
+        h('tr', null, h('td', null, '🦊 Fábula'), h('td', null, 'animales que hablan + moraleja')),
+        h('tr', null, h('td', null, '🔎 Informativo'), h('td', null, 'datos reales sobre un tema')),
+        h('tr', null, h('td', null, '📝 Recado / nota'), h('td', null, 'mensaje corto, con fecha y firma')),
+        h('tr', null, h('td', null, '📢 Cartel / anuncio'), h('td', null, 'título llamativo, textos breves')),
+        h('tr', null, h('td', null, '🥣 Receta / instructivo'), h('td', null, 'materiales y pasos en orden')),
+        h('tr', null, h('td', null, '🎵 Poema'), h('td', null, 'versos, estrofas y rima'))),
+      KEY('💡 Truco: en las respuestas de opción múltiple, lee ', B('las 3 opciones'), ' antes de escoger.')),
+    practice: () => HOWTO_Q.map(f => f()),
+    exam: () => sample(HOWTO_Q, 3).map(f => f()),
+  },
+  {
+    id: 'comp-0', section: 'comprension', title: TEXTS[0].title, es: TEXTS[0].kind, emoji: TEXTS[0].emoji, color: TEXTS[0].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[0].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[0])),
+    practice: () => textQs(TEXTS[0]),
+    exam: () => textQs(TEXTS[0]),
+  },
+  {
+    id: 'comp-1', section: 'comprension', title: TEXTS[1].title, es: TEXTS[1].kind, emoji: TEXTS[1].emoji, color: TEXTS[1].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[1].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[1])),
+    practice: () => textQs(TEXTS[1]),
+    exam: () => textQs(TEXTS[1]),
+  },
+  {
+    id: 'comp-2', section: 'comprension', title: TEXTS[2].title, es: TEXTS[2].kind, emoji: TEXTS[2].emoji, color: TEXTS[2].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[2].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[2])),
+    practice: () => textQs(TEXTS[2]),
+    exam: () => textQs(TEXTS[2]),
+  },
+  {
+    id: 'comp-3', section: 'comprension', title: TEXTS[3].title, es: TEXTS[3].kind, emoji: TEXTS[3].emoji, color: TEXTS[3].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[3].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[3])),
+    practice: () => textQs(TEXTS[3]),
+    exam: () => textQs(TEXTS[3]),
+  },
+  {
+    id: 'comp-4', section: 'comprension', title: TEXTS[4].title, es: TEXTS[4].kind, emoji: TEXTS[4].emoji, color: TEXTS[4].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[4].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[4])),
+    practice: () => textQs(TEXTS[4]),
+    exam: () => textQs(TEXTS[4]),
+  },
+  {
+    id: 'comp-5', section: 'comprension', title: TEXTS[5].title, es: TEXTS[5].kind, emoji: TEXTS[5].emoji, color: TEXTS[5].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[5].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[5])),
+    practice: () => textQs(TEXTS[5]),
+    exam: () => textQs(TEXTS[5]),
+  },
+  {
+    id: 'comp-6', section: 'comprension', title: TEXTS[6].title, es: TEXTS[6].kind, emoji: TEXTS[6].emoji, color: TEXTS[6].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[6].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[6])),
+    practice: () => textQs(TEXTS[6]),
+    exam: () => textQs(TEXTS[6]),
+  },
+  {
+    id: 'comp-7', section: 'comprension', title: TEXTS[7].title, es: TEXTS[7].kind, emoji: TEXTS[7].emoji, color: TEXTS[7].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[7].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[7])),
+    practice: () => textQs(TEXTS[7]),
+    exam: () => textQs(TEXTS[7]),
+  },
+  {
+    id: 'comp-8', section: 'comprension', title: TEXTS[8].title, es: TEXTS[8].kind, emoji: TEXTS[8].emoji, color: TEXTS[8].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[8].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[8])),
+    practice: () => textQs(TEXTS[8]),
+    exam: () => textQs(TEXTS[8]),
+  },
+  {
+    id: 'comp-9', section: 'comprension', title: TEXTS[9].title, es: TEXTS[9].kind, emoji: TEXTS[9].emoji, color: TEXTS[9].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[9].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[9])),
+    practice: () => textQs(TEXTS[9]),
+    exam: () => textQs(TEXTS[9]),
+  },
+  {
+    id: 'comp-10', section: 'comprension', title: TEXTS[10].title, es: TEXTS[10].kind, emoji: TEXTS[10].emoji, color: TEXTS[10].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[10].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[10])),
+    practice: () => textQs(TEXTS[10]),
+    exam: () => textQs(TEXTS[10]),
+  },
+  {
+    id: 'comp-11', section: 'comprension', title: TEXTS[11].title, es: TEXTS[11].kind, emoji: TEXTS[11].emoji, color: TEXTS[11].color, pages: '5 preguntas', noBook: true,
+    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[11].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[11])),
+    practice: () => textQs(TEXTS[11]),
+    exam: () => textQs(TEXTS[11]),
+  },
   /* ===================== LENGUAJES ===================== */
   {
     id: 'cuento', section: 'lenguajes', title: 'El cuento', es: 'Inicio, desarrollo y cierre', emoji: '📖', color: '#7c4dff', pages: 'p. 4 y cuaderno',
@@ -755,7 +1171,7 @@ function goHome() { showHome(); window.scrollTo(0, homeScroll); }
 
 function showHome() {
   const content = [
-    h('div', { class: 'hello' }, '¡Hola! 👋 ¡Vamos a estudiar! Examen de Español: lunes 28 de septiembre. Elige un tema.'),
+    h('div', { class: 'hello' }, '¡Hola! 👋 ¡Vamos a estudiar! Español: lunes 28 · Comprensión Lectora: martes 29. Elige un tema.'),
     h('button', { class: 'topic-card exam-card', onclick: () => { homeScroll = window.scrollY; startExam(); } },
       h('div', { class: 'emo' }, '🏆'), h('div', null, h('div', { class: 't' }, 'Mini examen'), h('div', { class: 's' }, '20 preguntas revueltas de TODOS los temas')),
       h('div', { class: 'stars' }, starStr(progress.exam || 0))),
@@ -764,7 +1180,7 @@ function showHome() {
     const topics = TOPICS.filter(t => t.section === sec.id);
     content.push(h('div', { class: 'section-head', id: 'sec-' + sec.id },
       h('h2', null, sec.emoji + ' ' + sec.name),
-      h('button', { class: 'sec-exam', onclick: () => { homeScroll = window.scrollY; startExam(sec.id); } }, '📝 Examen de ' + sec.name + ' ' + starStr(progress['exam-' + sec.id] || 0))));
+      h('button', { class: 'sec-exam', onclick: () => { homeScroll = window.scrollY; startExam(sec.id); } }, (sec.examLabel || '📝 Examen de ' + sec.name) + ' ' + starStr(progress['exam-' + sec.id] || 0))));
     content.push(h('div', { class: 'topics' }, topics.map(t => h('button', { class: 'topic-card', style: { background: t.color }, onclick: () => { homeScroll = window.scrollY; showExplain(t.id); } },
       t.badge ? h('span', { class: 'badge' }, t.badge) : null,
       h('div', { class: 'emo' }, t.emoji), h('div', { class: 't' }, t.title), h('div', { class: 's' }, t.es + ' · ' + t.pages),
@@ -776,7 +1192,7 @@ function showHome() {
 function showExplain(id) {
   const t = TOPICS.find(x => x.id === id);
   screen(t.emoji + ' ' + t.title, goHome,
-    h('div', { class: 'card' }, h('div', { class: 'sub' }, t.es + ' · Libro AMCO 2T1C1 ' + t.pages), t.badge ? h('p', { class: 'center', style: { fontSize: '22px', color: '#d9480f', fontWeight: 'bold', margin: '0 0 6px' } }, '⭐ Tu libro dice "Examen" en este tema: ¡estúdialo muy bien!') : null, t.explain()),
+    h('div', { class: 'card' }, h('div', { class: 'sub' }, t.noBook ? t.es + ' · Comprensión Lectora' : t.es + ' · Libro AMCO 2T1C1 ' + t.pages), t.badge ? h('p', { class: 'center', style: { fontSize: '22px', color: '#d9480f', fontWeight: 'bold', margin: '0 0 6px' } }, '⭐ Tu libro dice "Examen" en este tema: ¡estúdialo muy bien!') : null, t.explain()),
     h('div', { class: 'actions' }, h('button', { class: 'big-btn green', onclick: () => startPractice(id) }, '¡A practicar! ▶')));
 }
 
@@ -809,8 +1225,8 @@ function buildExam(topics, n) {
 function startExam(sectionId) {
   const sec = SECTIONS.find(s => s.id === sectionId);
   const topics = sec ? TOPICS.filter(t => t.section === sec.id) : TOPICS;
-  const qs = buildExam(topics, sec ? sec.examN : 20);
-  const title = sec ? `📝 Examen: ${sec.name}` : '🏆 Mini examen';
+  const qs = sec && sec.buildExam ? sec.buildExam() : buildExam(topics, sec ? sec.examN : 20);
+  const title = sec ? (sec.buildExam ? '📝 Mini examen de Comprensión' : `📝 Examen: ${sec.name}`) : '🏆 Mini examen';
   runQuiz({ title, questions: qs, mode: 'exam',
     onDone: (score, total, review) => showResults({ title, score, total, review, id: sec ? 'exam-' + sec.id : 'exam', again: () => startExam(sectionId), exam: true }) });
 }
@@ -852,7 +1268,7 @@ function runQuiz({ title, questions, mode, onDone }) {
     const fb = h('div', { class: 'feedback' });
     const actions = h('div', { class: 'actions' });
     const scoreEl = h('span', null, `⭐ ${score}`);
-    const context = q.dict ? ' (dictado)' : q.show ? ` «${q.show.length > 70 ? q.show.slice(0, 70) + '…' : q.show}»` : q.word ? ` ${q.big || ''} ${q.word}` : q.big ? ` ${q.big}` : '';
+    const context = q.passage ? ` (${q.passage.title})` : q.dict ? ' (dictado)' : q.show ? ` «${q.show.length > 70 ? q.show.slice(0, 70) + '…' : q.show}»` : q.word ? ` ${q.big || ''} ${q.word}` : q.big ? ` ${q.big}` : '';
 
     function finish(ok, answerText) {
       done = true;
@@ -892,6 +1308,7 @@ function runQuiz({ title, questions, mode, onDone }) {
     const body = h('div', { class: 'card' });
     // Bocina para leer la pregunta en voz alta (nunca lee la respuesta)
     const readText = q.dict ? null : q.say !== undefined ? q.say : stripEmoji(q.prompt + (q.show ? '. ' + q.show : ''));
+    if (q.passage) body.append(passageEl(q.passage));
     const head = [h('div', { class: 'prompt' }, q.prompt, readText && !q.big ? h('span', null, ' ', speakBtn(readText, true)) : null), q.sub ? h('div', { class: 'sub' }, q.sub) : null];
     if (q.big) head.push(h('div', { class: 'bigshow', style: q.bigIsWord ? { fontSize: '64px', fontWeight: 'bold' } : null }, q.big, readText && q.say ? h('span', null, ' ', speakBtn(readText, true)) : null));
     if (q.word) head.push(h('div', { class: 'bigword' }, q.word));
