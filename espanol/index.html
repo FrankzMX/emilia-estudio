@@ -122,6 +122,7 @@ mark{background:#ffe066; border-radius:6px; padding:0 3px;}
 .passage-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;}
 .passage .ptitle{font-size:24px; font-weight:bold; color:#d9480f;}
 .passage .pkind{display:inline-block; margin-left:10px; background:#ffe0b2; border-radius:12px; padding:2px 10px; font-size:17px; color:#8a4b12; vertical-align:middle;}
+.passage .pnote{margin-top:10px; font-size:20px; font-weight:bold; color:#2e7d32;}
 .passage .ptext{white-space:pre-line; font-size:22px; line-height:1.5;}
 .big-btn.small-btn{min-height:52px; font-size:19px; padding:0 16px; border-radius:18px;}
 .group-label{font-size:22px; font-weight:bold; color:#8a4b12; background:#fff3c4; border-radius:16px; padding:8px 16px; margin:6px 0 12px; display:inline-block;}
@@ -908,6 +909,36 @@ Moraleja: Cuando no logramos algo, a veces decimos que no lo queríamos. Es mejo
       ['D', '¿Qué otra cosa pudo hacer la zorra para alcanzar las uvas? Explica.', 'Pudo subirse a una piedra o a un tronco para quedar más alta, o pedirle ayuda a un amigo. Así, en vez de rendirse, buscaría otra forma.'],
     ] },
 ];
+/* ---- De tu libro: Las habichuelas mágicas (Taller de lectores, p. 1-3; adaptación con otras palabras) ---- */
+const HABICHUELAS = { id: 'habichuelas', kind: 'Cuento · de tu libro', emoji: '🌱', color: '#2e7d32', badge: '📘 De tu libro', title: 'Las habichuelas mágicas',
+  text: `Hace mucho tiempo, Juan vivía con su mamá en una cabaña muy humilde. Un día, como ya no tenían dinero, su mamá lo mandó al mercado a vender su única vaca. En el camino, un anciano le ofreció unas habichuelas mágicas a cambio de la vaca, y Juan aceptó. Cuando su mamá lo supo, se enojó muchísimo porque se habían quedado sin vaca y sin dinero. Entonces aventó las habichuelas por la ventana.
+
+A la mañana siguiente, ¡una planta gigante había crecido hasta el cielo! Juan trepó por ella y llegó a un castillo. Ahí vivía un ogro muy rico, pero muy malo, que tenía una gallina que ponía huevos de oro. Como en su pueblo no había cosechas y la gente tenía hambre, Juan se llevó la gallina. Gracias a ella, Juan, su mamá y sus vecinos tuvieron provisiones hasta que la gallina murió.
+
+Juan subió otra vez. Vio al ogro contando monedas de oro y descubrió que tenía gente encerrada en un calabozo, porque odiaba el ruido y la alegría. Juan ya estaba harto de las fechorías del ogro. Cuando el ogro se quedó dormido, tomó la bolsa de monedas y bajó rápidamente.
+
+Cuando se acabaron las monedas, Juan trepó por tercera vez. Esta vez tomó una caja mágica que soltaba una moneda cada vez que se abría, y un arpa mágica que tocaba sola. Pero el arpa gritó: «¡Señor amo, despierte, me roban!». El ogro despertó furioso y persiguió a Juan por la planta.
+
+Juan, que era muy sagaz, bajó corriendo y le gritó a su mamá: «¡Tráeme el hacha!». Cortó la planta, y el ogro cayó y se estrelló contra el suelo. Desde entonces, Juan y su mamá vivieron tranquilos y, gracias a la caja mágica, compartieron sus cosechas con todo el pueblo.`,
+  note: '💪 Valor: la valentía',
+  tip: '📘 Este cuento viene en tu libro (Taller de lectores, p. 1 a 3). Aquí está contado con otras palabras. Fíjate en los párrafos: cada uno empieza con mayúscula y termina con punto y aparte; el último termina con punto final.',
+  qs: [
+    ['L', '¿Quiénes son los personajes principales?', 'Juan, su mamá y el ogro', ['Juan, la zorra y el grillo', 'Una liebre y una tortuga'], 'El cuento trata de Juan, su mamá y el ogro (también aparecen un anciano y el arpa).'],
+    ['F', '¿Por qué se enojó la mamá de Juan?', 'Porque Juan cambió la vaca por unas habichuelas', ['Porque Juan llegó tarde a casa', 'Porque Juan rompió la ventana'], 'Se quedaron sin vaca y sin dinero.'],
+    ['O', 'Ordena lo que pasó en el cuento 🧩', ['Juan cambia la vaca por habichuelas', 'Crece una planta gigante', 'Juan se lleva la gallina de oro', 'Juan corta la planta y el ogro cae']],
+    ['L', '¿Qué hizo el arpa cuando Juan se la llevó?', 'Gritó y despertó al ogro', ['Le dio monedas a Juan', 'Se quedó callada'], '"El arpa gritó: ¡Señor amo, despierte, me roban!"'],
+    ['L', '¿Cómo venció Juan al ogro?', 'Cortó la planta con un hacha', ['Lo encerró en el calabozo', 'Le regresó la gallina'], '"Cortó la planta, y el ogro cayó y se estrelló contra el suelo."'],
+    ['V', '"Juan, que era muy sagaz, bajó corriendo…" ¿Qué significa "sagaz"?', 'Listo y astuto', ['Muy lento', 'Muy grande y fuerte'], 'Juan pensó rápido: pidió el hacha para cortar la planta.'],
+    ['V', '"Juan ya estaba harto de las fechorías del ogro." ¿Qué son "fechorías"?', 'Cosas malas que alguien hace', ['Fiestas en el castillo', 'Monedas de oro'], 'El ogro encerraba a la gente en un calabozo: esas son fechorías.'],
+    ['I', '¿Qué valor muestra Juan en el cuento?', 'La valentía', ['La pereza', 'El miedo'], 'Juan subió tres veces al castillo del ogro: fue muy valiente.'],
+    ['I', '¿Cuál es el mejor resumen del cuento?', 'Juan cambia su vaca por habichuelas mágicas, sube por una planta gigante al castillo de un ogro, toma sus tesoros y lo vence cortando la planta.', ['Juan vende su vaca en el mercado y compra comida para su mamá.', 'Un ogro bueno le regala a Juan una gallina y un arpa.'], 'Un buen resumen cuenta el inicio, lo más importante del desarrollo y el final.'],
+    ['L', '¿Cuántos párrafos tiene el texto?', '5', ['3', '8'], 'Cuenta los bloques de renglones separados por un espacio: son 5.'],
+    ['T', '¿Qué punto se usa al terminar un párrafo, cuando empieza otro?', 'Punto y aparte', ['Punto final', 'Punto y seguido'], 'Punto y aparte: termina el párrafo y el texto sigue en otro renglón.'],
+    ['T', '¿Qué punto va al terminar TODO el texto?', 'Punto final', ['Punto y aparte', 'Punto y seguido'], 'El último punto del texto es el punto final.'],
+    ['D', '¿Qué harías tú con las monedas de oro?', 'Compraría comida y las cosas que necesita mi familia. También compartiría con mis vecinos que no tienen cosechas, como hizo Juan.'],
+    ['D', '¿Recomendarías este texto? ¿A quién y por qué?', 'Sí, se lo recomendaría a mi primo, porque le gustan las aventuras con gigantes y porque el cuento enseña que hay que ser valiente. (Recuerda las 3 partes: sí o no · ¿a quién? · ¿por qué?)'],
+    ['D', '¿Qué es para ti ser valiente y sagaz?', 'Para mí, ser valiente es hacer algo aunque me dé miedo, como Juan cuando subió al castillo. Ser sagaz es pensar rápido para resolver un problema, como cuando Juan pidió el hacha.'],
+  ] };
 /* 💭 preguntas abiertas extra en algunos textos */
 const EXTRA_THINK = {
   ardilla: ['D', '¿Qué harías tú si un compañero te pidiera un poco de tu comida porque tiene hambre?', 'Compartiría con él, porque si yo tuviera hambre me gustaría que me ayudaran. Así, como en la fábula, todos nos ayudamos.'],
@@ -1012,7 +1043,7 @@ Moraleja: Valora lo que eres y lo que sabes hacer.`,
       ['I', '¿Qué nos enseña la moraleja?', 'A valorar lo que somos', ['Que los peces pueden volar', 'Que hay que saltar muy alto'], '"Valora lo que eres y lo que sabes hacer."'],
     ] },
 ];
-const compQ = (tx, [ty, prompt, correct, wrongs, explain], i) => ty === 'D' ? { type: 'think', prompt, model: correct, passage: tx, key: 'comp-' + tx.id + '-' + i } : mc(prompt, correct, wrongs, { layout: 'one', sub: QTYPE[ty], explain, passage: tx, key: 'comp-' + tx.id + '-' + i });
+const compQ = (tx, [ty, prompt, correct, wrongs, explain], i) => ty === 'O' ? { type: 'order', prompt, sub: '🔢 ¿En qué orden pasó? Toca en orden', items: correct, answer: correct, sep: ' ➜ ', long: true, passage: tx, key: 'comp-' + tx.id + '-' + i } : ty === 'D' ? { type: 'think', prompt, model: correct, passage: tx, key: 'comp-' + tx.id + '-' + i } : mc(prompt, correct, wrongs, { layout: 'one', sub: QTYPE[ty], explain, passage: tx, key: 'comp-' + tx.id + '-' + i });
 const textQs = tx => tx.qs.map((q, i) => compQ(tx, q, i));
 function passageEl(tx) {
   const read = tx.title + '. ' + tx.text.replace(/Viñeta \d+ —/g, '');
@@ -1022,7 +1053,8 @@ function passageEl(tx) {
       h('div', { class: 'row' },
         h('button', { class: 'big-btn yellow small-btn', onclick: () => speak(read) }, '🔊 Escuchar texto'),
         h('button', { class: 'big-btn yellow small-btn', onclick: () => speak(read, 0.65) }, '🐢 Lento'))),
-    h('div', { class: 'ptext' }, tx.text));
+    h('div', { class: 'ptext' }, tx.text),
+    tx.note ? h('div', { class: 'pnote' }, tx.note) : null);
 }
 function textTopic(tx, group, id) {
   return { id, section: 'comprension', group, title: tx.title, es: tx.kind, emoji: tx.emoji, color: tx.color, badge: tx.badge, noBook: true,
@@ -1031,9 +1063,12 @@ function textTopic(tx, group, id) {
     practice: () => textQs(tx),
     exam: () => textQs(tx) };
 }
-const GROUP_LABEL = { fab: '🦊 Fábulas (¡vienen en el examen!)', otros: '📚 Cómo contestar y otros tipos de texto' };
+const GROUP_LABEL = { libro: '📘 De tu libro (¡estúdialos!)', fab: '🦊 Fábulas (¡vienen en el examen!)', otros: '📚 Cómo contestar y otros tipos de texto' };
 function compExam() { return sample(EXAM_TEXTS, 2).flatMap(textQs); }
 const HOWTO_Q = [
+  () => mc('"¿Recomendarías el texto?" ¿Cuál respuesta está COMPLETA?', 'Sí, se lo recomendaría a mi hermana porque le gustan los cuentos de gigantes.', ['Sí.', 'Me gustó mucho.'], { layout: 'one', explain: 'Una respuesta completa dice: sí o no + a quién + por qué.' }),
+  () => mc('El punto que termina un PÁRRAFO (y el texto sigue abajo) se llama…', 'Punto y aparte', ['Punto final', 'Punto y seguido'], { layout: 'three', explain: 'Punto y aparte: se termina el párrafo y se empieza otro renglón.' }),
+  () => mc('El punto que separa dos oraciones en el MISMO párrafo se llama…', 'Punto y seguido', ['Punto y aparte', 'Punto final'], { layout: 'three', explain: 'Punto y seguido: sigues escribiendo en el mismo párrafo.' }),
   () => mc('¿Qué conviene hacer PRIMERO?', 'Leer las preguntas', ['Contestar rápido sin leer', 'Adivinar'], { layout: 'one', explain: 'Si lees primero las preguntas, sabes qué buscar en el texto.' }),
   () => mc('Si no sabes una respuesta, ¿qué haces?', 'Vuelvo a leer el texto y la busco', ['Escojo cualquiera', 'Dejo la pregunta en blanco'], { layout: 'one', explain: '¡La respuesta casi siempre está en el texto!' }),
   () => ({ type: 'order', prompt: 'Ordena los pasos para contestar 🧩', items: ['Leo la pregunta', 'Leo el texto con atención', 'Busco la respuesta en el texto', 'Reviso mi respuesta'], answer: ['Leo la pregunta', 'Leo el texto con atención', 'Busco la respuesta en el texto', 'Reviso mi respuesta'], sep: ' ➜ ', long: true }),
@@ -1070,7 +1105,9 @@ const dictExplain = (words, tips) => h('div', { class: 'explain' },
 
 const TOPICS = [
   /* ===================== COMPRENSIÓN LECTORA ===================== */
-  ...FABLES.map(tx => textTopic(tx, 'fab', 'comp-' + tx.id)),
+  textTopic(HABICHUELAS, 'libro', 'comp-habichuelas'),
+  textTopic(FABLES[0], 'libro', 'comp-zorrarabo'),
+  ...FABLES.slice(1).map(tx => textTopic(tx, 'fab', 'comp-' + tx.id)),
   textTopic(TEXTS[1], 'fab', 'comp-1'),
   {
     id: 'comp-como', section: 'comprension', title: '¿Cómo contestar?', es: 'Pasos y tipos de preguntas', emoji: '🧭', color: '#ff7a45', pages: 'estrategias', noBook: true, group: 'otros',
@@ -1092,6 +1129,8 @@ const TOPICS = [
         h('tr', null, h('td', null, '📢 Cartel / anuncio'), h('td', null, 'título llamativo, textos breves')),
         h('tr', null, h('td', null, '🥣 Receta / instructivo'), h('td', null, 'materiales y pasos en orden')),
         h('tr', null, h('td', null, '🎵 Poema'), h('td', null, 'versos, estrofas y rima'))),
+      KEY('👍 "¿Recomendarías el texto?" Contesta las ', B('3 partes'), ': ', B('sí o no'), ' + ', B('¿a quién?'), ' + ', B('¿por qué?'), '. Ejemplo: "Sí, se lo recomendaría a mi primo porque le gustan las aventuras."'),
+      KEY('⚫ ', B('Punto y seguido'), ': separa oraciones en el mismo párrafo · ', B('Punto y aparte'), ': termina un párrafo · ', B('Punto final'), ': termina todo el texto.'),
       KEY('💡 Truco: en las respuestas de opción múltiple, lee ', B('las 3 opciones'), ' antes de escoger.')),
     practice: () => HOWTO_Q.map(f => f()),
     exam: () => sample(HOWTO_Q, 3).map(f => f()),
