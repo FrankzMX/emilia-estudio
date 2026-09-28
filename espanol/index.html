@@ -146,6 +146,14 @@ table.colop tr.ans td{height:40px;}
 .tstep{display:flex; flex-direction:column; align-items:center; background:#ede9fe; border-radius:14px; padding:8px 12px; font-size:19px; position:relative;}
 .tstep b{font-size:22px; color:var(--purple);}
 .tstep:not(:last-child)::after{content:'➜'; position:absolute; right:-14px; top:30%; color:#999;}
+.coll{display:flex; flex-direction:column; gap:4px; font-size:30px; line-height:1.1; background:#fff; border-radius:16px; padding:10px 14px;}
+.collpair{display:flex; gap:18px; flex-wrap:wrap; justify-content:center;}
+.collpair>div{text-align:center; font-size:26px;}
+.collpair .coll{font-size:24px;}
+.blocks{display:flex; align-items:flex-end; gap:6px; flex-wrap:wrap; justify-content:center; background:#fff; border-radius:16px; padding:12px;}
+.blocks .bc{width:80px; height:80px; background-color:#2196f3; background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px); background-size:8px 8px; border:2px solid #1565c0;}
+.blocks .bd{width:10px; height:80px; background-color:#22c55e; background-image:linear-gradient(#fff 1px,transparent 1px); background-size:8px 8px; border:1px solid #15803d;}
+.blocks .bu{width:10px; height:10px; background:#ff7a45; border:1px solid #c2410c;}
 .opts.one .opt{min-height:70px; font-size:23px; justify-content:flex-start; text-align:left;}
 
 .shake{animation:shake .4s;}
@@ -1305,6 +1313,64 @@ const MATE_CUIDADO = [
   () => mc('Te preguntan "¿Qué fecha será…?". ¿Cuál respuesta está COMPLETA?', 'Sábado 26 de septiembre', ['Sábado', '26'], { layout: 'three', explain: 'Una fecha lleva: día de la semana + número + mes.', key: 'cu-fecha' }),
   () => colQ(86, '+', 39),
 ];
+/* ---- Más de mate (cuaderno): hoja de septiembre, colecciones, medidas de tiempo, unidades/decenas/centenas ---- */
+const lastDow = (m, wd) => { for (let d = daysIn(m); d > 0; d--) if (dow(m, d) === wd) return d; };
+const firstDow = (m, wd) => { for (let d = 1; d <= 7; d++) if (dow(m, d) === wd) return d; };
+const countDow = (m, wd) => { let c = 0; for (let d = 1; d <= daysIn(m); d++) if (dow(m, d) === wd) c++; return c; };
+const SEP = 8;
+const PLURAL_DIA = { domingo: 'domingos', lunes: 'lunes', martes: 'martes', 'miércoles': 'miércoles', jueves: 'jueves', viernes: 'viernes', 'sábado': 'sábados' };
+const sepSheet = () => pick([
+  () => { const d = ri(1, 30), ans = DIAS[dow(SEP, d)]; return mc(`¿Qué día de la semana es el ${d} de septiembre?`, ans, sample(DIAS.filter(x => x !== ans), 2), { visual: calHTML(SEP), layout: 'three', explain: `Busca el ${d} en el calendario y sube a ver la columna: es ${ans}.`, key: 'ss-wd-' + d }); },
+  () => { const wd = pick([1, 2, 3, 4, 5]), d = lastDow(SEP, wd); return numQ(`¿Qué fecha es el ÚLTIMO ${DIAS[wd]} de septiembre?`, d, { visual: calHTML(SEP), explain: `Busca la columna del ${DIAS[wd]} y baja hasta el último número: ${fullDate(SEP, d)}.`, key: 'ss-last-' + wd }); },
+  () => { const wd = pick([0, 1, 6]), d = firstDow(SEP, wd); return numQ(`¿Qué fecha es el PRIMER ${DIAS[wd]} de septiembre?`, d, { visual: calHTML(SEP), explain: `El primer ${DIAS[wd]} es el ${d}: ${fullDate(SEP, d)}.`, key: 'ss-first-' + wd }); },
+  () => numQ('¿Cuántos días tiene septiembre?', daysIn(SEP), { visual: calHTML(SEP), explain: 'El último número del mes es 30: septiembre tiene 30 días.', key: 'ss-n' }),
+  () => { const ans = DIAS[dow(SEP, 30)]; return mc('¿Qué día de la semana es el ÚLTIMO día de septiembre?', ans, sample(DIAS.filter(x => x !== ans), 2), { visual: calHTML(SEP), layout: 'three', explain: `El último día es el 30: ${fullDate(SEP, 30)}.`, key: 'ss-lastday' }); },
+  () => { const d = pick([30, 12, 21, 25]), ans = DIAS[dow(SEP, d)]; return mc(`Tu amiga cumple años el ${d} de septiembre. ¿Qué día de la semana es?`, ans, sample(DIAS.filter(x => x !== ans), 2), { visual: calHTML(SEP), layout: 'three', explain: `El ${d} de septiembre de 2026 es ${ans}.`, key: 'ss-bday-' + d }); },
+  () => { const d = ri(5, 27); return numQ(`Hoy es ${d} de septiembre. ¿Cuántos días faltan para que termine septiembre?`, 30 - d, { visual: calHTML(SEP, [d]), explain: `Septiembre tiene 30 días: 30 − ${d} = ${30 - d}.`, key: 'ss-left-' + d }); },
+  () => { const wd = pick([0, 2, 3, 6]); return numQ(`¿Cuántos ${PLURAL_DIA[DIAS[wd]]} tiene septiembre de 2026?`, countDow(SEP, wd), { visual: calHTML(SEP), explain: `Cuenta los números de la columna del ${DIAS[wd]}: ${countDow(SEP, wd)}.`, key: 'ss-count-' + wd }); },
+])();
+
+/* Colecciones */
+const COL_EMO = ['🍎', '⭐', '🐟', '🌸', '⚽', '🍪', '🐞', '🎈'];
+const collHTML = (n, e) => { let rows = ''; for (let i = 0; i < n; i += 10) rows += `<div>${e.repeat(Math.min(10, n - i))}</div>`; return `<div class="coll">${rows}</div>`; };
+const countColl = n => { n = n || pick([ri(6, 19), 10, 20, 30, ri(21, 35)]); const e = pick(COL_EMO); return numQ('¿Cuántos elementos tiene esta colección? 🔢', n, { visual: collHTML(n, e), explain: `Cuenta de 10 en 10 (cada renglón completo tiene 10): ${n}.`, say: '¿Cuántos elementos tiene esta colección?', key: `cc-${n}-${e}` }); };
+const cmpColl = () => { const a = ri(5, 25); let b; do { b = ri(5, 25); } while (Math.abs(a - b) < 2); const more = Math.random() < 0.5, ea = pick(COL_EMO), eb = pick(COL_EMO.filter(x => x !== ea));
+  const ans = (more ? a > b : a < b) ? 'A' : 'B';
+  return { type: 'mc', prompt: `¿Qué colección tiene ${more ? 'MÁS' : 'MENOS'} elementos?`, visual: `<div class="collpair"><div><b>A</b>${collHTML(a, ea)}</div><div><b>B</b>${collHTML(b, eb)}</div></div>`,
+    options: [{ label: 'Colección A', value: 'A' }, { label: 'Colección B', value: 'B' }], answer: ans, layout: 'two', explain: `A tiene ${a} y B tiene ${b}.`, key: `cmc-${a}-${b}-${more}` }; };
+const collDef = () => mc('Una colección se forma de…', 'Varios elementos', ['Un solo número', 'Puras letras'], { layout: 'three', explain: '"Una colección se forma de varios elementos."', key: 'cdef' });
+
+/* Medidas de tiempo */
+const TFACTS = [['1 año', 365, 'días'], ['1 año', 12, 'meses'], ['1 semana', 7, 'días'], ['2 semanas', 14, 'días'], ['1 día', 24, 'horas'], ['1 hora', 60, 'minutos'], ['1 minuto', 60, 'segundos']];
+const factQ = f => { f = f || pick(TFACTS); return numQ(`${f[0]} = ___ ${f[2]}`, f[1], { big: `${f[0]} = ? ${f[2]}`, say: `¿${f[0]} son cuántos ${f[2]}?`, explain: `${f[0]} = ${f[1]} ${f[2]}.`, key: 'tf-' + f[0] + f[2] }); };
+const UNIT_SEC = { segundo: 1, segundos: 1, minuto: 60, minutos: 60, hora: 3600, horas: 3600, 'día': 86400, 'días': 86400, semana: 604800, semanas: 604800, mes: 2592000, meses: 2592000, 'año': 31536000 };
+const toSec = s => { const [n, u] = s.split(' '); return +n * UNIT_SEC[u]; };
+const LONGER = [['1 hora', '50 minutos'], ['1 semana', '5 días'], ['2 semanas', '10 días'], ['1 minuto', '30 segundos'], ['1 año', '10 meses'], ['1 día', '20 horas'], ['1 mes', '3 semanas'], ['70 minutos', '1 hora'], ['8 días', '1 semana'], ['1 hora', '1 minuto']];
+const longerQ = it => { it = it || pick(LONGER); const ans = toSec(it[0]) > toSec(it[1]) ? it[0] : it[1], other = ans === it[0] ? it[1] : it[0];
+  return mc('¿Qué dura MÁS? ⏳', ans, [other], { layout: 'two', explain: `${ans} dura más que ${other}. Recuerda: 1 semana = 7 días, 1 hora = 60 minutos, 1 día = 24 horas, 1 mes ≈ 30 días.`, key: 'lg-' + it.join() }); };
+const monthDaysQ = () => pick([
+  () => numQ('¿Cuántos días tiene febrero de 2026?', daysIn(1), { explain: 'Febrero es el mes más corto: tiene 28 días (29 en año bisiesto).', key: 'md-feb' }),
+  () => numQ('¿Cuántos días tiene octubre?', daysIn(9), { explain: 'Octubre tiene 31 días.', key: 'md-oct' }),
+  () => mc('¿Todos los meses tienen 30 días?', 'No: unos tienen 30, otros 31 y febrero 28', ['Sí, todos tienen 30', 'No, todos tienen 31'], { layout: 'one', explain: '1 mes ≈ 30 días, pero hay meses de 31 y febrero tiene 28.', key: 'md-all' }),
+])();
+
+/* Unidades, decenas y centenas */
+const blocksHTML = (c, d, u) => `<div class="blocks">${'<span class="bc"></span>'.repeat(c)}${'<span class="bd"></span>'.repeat(d)}${'<span class="bu"></span>'.repeat(u)}</div>`;
+const pvPart = () => { const n = ri(101, 999), c = Math.floor(n / 100), d = Math.floor(n / 10) % 10, u = n % 10, which = pick([0, 1, 2]);
+  const vals = [c, d, u], names = ['centenas', 'decenas', 'unidades'];
+  const show = vals.map((v, i) => `${i === which ? '?' : v} ${names[i]}`).join(', ');
+  return numQ(`${n} = ${show}. ¿Qué número va en el "?"`, vals[which], { big: String(n), explain: `${n} = ${c} centenas, ${d} decenas y ${u} unidades (${c * 100} + ${d * 10} + ${u}).`, key: 'pv-' + n + which }); };
+const pvCompose = () => { const c = ri(1, 9), d = ri(0, 9), u = ri(0, 9), n = c * 100 + d * 10 + u;
+  return numQ(`${c} centenas, ${d} decenas y ${u} unidades forman el número…`, n, { visual: blocksHTML(c, d, u), explain: `${c * 100} + ${d * 10} + ${u} = ${n}. (Cuadro grande = centena, barra = decena, cuadrito = unidad.)`, key: `pvc-${n}` }); };
+const pvFacts = () => pick([
+  () => numQ('10 unidades = ___ decena', 1, { key: 'pf-1' }),
+  () => numQ('1 decena = ___ unidades', 10, { key: 'pf-2' }),
+  () => numQ('1 centena = ___ unidades', 100, { key: 'pf-3' }),
+  () => numQ('1 centena = ___ decenas', 10, { key: 'pf-4' }),
+  () => { const k = ri(2, 9); return numQ(`¿Cuántas decenas hay en ${k * 10}?`, k, { explain: `${k * 10} = ${k} decenas (${k} × 10).`, key: 'pf-d' + k }); },
+  () => { const k = ri(2, 9); return numQ(`¿Cuántas centenas hay en ${k * 100}?`, k, { explain: `${k * 100} = ${k} centenas.`, key: 'pf-c' + k }); },
+  () => mc('Cada elemento de una colección es una…', 'unidad', ['decena', 'centena'], { layout: 'three', key: 'pf-u' }),
+])();
 /* ============================================================
    SECCIONES Y TEMAS
    ============================================================ */
@@ -1377,6 +1443,15 @@ const TOPICS = [
     exam: () => [M.hands(), M.instrument(), M.clock(), M.clock(), M.ampm(), M.hours(), M.dura(), M.dayAfter(), M.weekend()],
   },
   {
+    id: 'm-medidas', section: 'mate', title: 'Medidas de tiempo', es: 'Año, mes, semana, día, hora…', emoji: '⏱️', color: '#5e35b1', pages: 'cuaderno', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      KEY('📅 El ', B('calendario'), ' y 🕐 el ', B('reloj'), ' son instrumentos para medir el tiempo.'),
+      h('table', null, ...[['1 año', '365 días = 12 meses'], ['1 mes', '30 días (aprox.)'], ['1 semana', '7 días'], ['2 semanas', '14 días'], ['1 día', '24 horas'], ['1 hora', '60 minutos'], ['1 minuto', '60 segundos']].map(([a, b]) => h('tr', null, h('td', null, B(a)), h('td', null, b)))),
+      P('⚠️ Algunos meses tienen ', B('31'), ' días y ', B('febrero'), ' tiene ', B('28'), '.')),
+    practice: () => [...shuffle(TFACTS).map(factQ), longerQ(), longerQ(), longerQ(), monthDaysQ(), monthDaysQ(), M.instrument()],
+    exam: () => [factQ(), factQ(), longerQ(), longerQ(), monthDaysQ()],
+  },
+  {
     id: 'm-linea', section: 'mate', title: 'Línea de tiempo', es: 'Ordenar sucesos por año', emoji: '📏', color: '#ff4f9a', pages: 'p. 36', book: 'Pensamiento matemático',
     explain: () => h('div', { class: 'explain' },
       P('Una ', B('línea de tiempo'), ' ordena los sucesos del ', B('más antiguo'), ' al ', B('más reciente'), '. Empieza en el año en que naciste.'),
@@ -1397,8 +1472,29 @@ const TOPICS = [
       P('🗓️ Los meses en orden (en español se escriben con ', B('minúscula'), '):'),
       h('div', { class: 'chips' }, MESES.map((m, i) => h('span', { class: 'chip' }, B(String(i + 1)), ' ' + m))),
       P('📌 Primer mes: ', B('enero'), ' · último: ', B('diciembre'), ' · 🇲🇽 Día de la Bandera: ', B('24 de febrero'), ' · 💐 Día de las Madres: ', B('10 de mayo'), '.')),
-    practice: () => [M.weekday(8), M.weekday(9), M.plus15(), M.plus15(), M.between(), M.sameWeekday(), M.monthNext(), M.monthNum(), M.monthNum(), M.monthOrder(12), M.monthType(), M.monthCase(), M.worksheet(), M.worksheet(), M.worksheet(), M.calFact(), M.calFact()],
-    exam: () => [M.weekday(), M.plus15(), M.between(), M.monthNext(), M.monthNum(), M.worksheet(), M.calFact(), M.sameWeekday(), M.monthOrder()],
+    practice: () => [sepSheet(), sepSheet(), sepSheet(), sepSheet(), M.weekday(9), M.plus15(), M.plus15(), M.between(), M.sameWeekday(), M.monthNext(), M.monthNum(), M.monthNum(), M.monthOrder(12), M.monthType(), M.monthCase(), M.worksheet(), M.worksheet(), M.worksheet(), M.calFact(), M.calFact()],
+    exam: () => [sepSheet(), M.weekday(), M.plus15(), M.between(), M.monthNext(), M.monthNum(), M.worksheet(), M.calFact(), M.sameWeekday(), M.monthOrder()],
+  },
+  {
+    id: 'm-colecciones', section: 'mate', title: 'Formando colecciones', es: 'Contar y comparar', emoji: '🍎', color: '#43a047', pages: 'cuaderno', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      KEY('🧺 Una ', B('colección'), ' se forma de ', B('varios elementos'), '.'),
+      h('div', { class: 'visual', html: collHTML(23, '⭐') }),
+      P('💡 Para contar rápido, agrupa de ', B('10 en 10'), ': 10, 20… y luego suma los que sobran: 20 + 3 = ', B('23'), '.'),
+      P('⚖️ La colección que tiene ', B('más'), ' elementos es la del número más grande.')),
+    practice: () => [collDef(), countColl(10), countColl(), countColl(30), countColl(), cmpColl(), cmpColl(), cmpColl()],
+    exam: () => [countColl(), cmpColl(), countColl()],
+  },
+  {
+    id: 'm-udc', section: 'mate', title: 'Unidades, decenas y centenas', es: 'Valor posicional', emoji: '🧱', color: '#fb8c00', pages: 'cuaderno', book: 'Pensamiento matemático',
+    explain: () => h('div', { class: 'explain' },
+      KEY('🟧 Cada elemento de una colección es una ', B('unidad'), '. ', B('10 unidades = 1 decena'), '. ', B('100 unidades = 1 centena'), '.'),
+      h('div', { class: 'visual', html: blocksHTML(3, 4, 2) }),
+      P(B('342'), ' = ', B('3 centenas'), ' (300) + ', B('4 decenas'), ' (40) + ', B('2 unidades'), ' (2).'),
+      h('table', null, h('tr', null, h('th', null, 'C'), h('th', null, 'D'), h('th', null, 'U')), h('tr', null, h('td', null, '3'), h('td', null, '4'), h('td', null, '2'))),
+      P('💡 En ', B('50'), ' hay ', B('5 decenas'), '. En ', B('300'), ' hay ', B('3 centenas'), '.')),
+    practice: () => [pvFacts(), pvFacts(), pvPart(), pvPart(), pvPart(), pvCompose(), pvCompose(), pvFacts()],
+    exam: () => [pvPart(), pvCompose(), pvFacts()],
   },
   {
     id: 'm-centenas', section: 'mate', title: 'Operaciones con centenas', es: 'Cálculo mental', emoji: '💯', color: '#2196f3', pages: 'p. 52', book: 'Pensamiento matemático',
