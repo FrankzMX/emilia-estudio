@@ -124,6 +124,11 @@ mark{background:#ffe066; border-radius:6px; padding:0 3px;}
 .passage .pkind{display:inline-block; margin-left:10px; background:#ffe0b2; border-radius:12px; padding:2px 10px; font-size:17px; color:#8a4b12; vertical-align:middle;}
 .passage .ptext{white-space:pre-line; font-size:22px; line-height:1.5;}
 .big-btn.small-btn{min-height:52px; font-size:19px; padding:0 16px; border-radius:18px;}
+.group-label{font-size:22px; font-weight:bold; color:#8a4b12; background:#fff3c4; border-radius:16px; padding:8px 16px; margin:6px 0 12px; display:inline-block;}
+.think{background:#eef6ff; border:3px dashed #74a9ff; border-radius:22px; padding:16px 18px; margin-top:12px; text-align:center;}
+.think .tlabel{font-size:22px; font-weight:bold; color:#1c64d6; margin-bottom:6px;}
+.think .tsteps{font-size:20px; color:#555; margin-bottom:12px;}
+.think .model{margin-top:14px; background:#fff; border-radius:16px; padding:12px 16px; font-size:23px; line-height:1.45; text-align:left; box-shadow:0 3px 0 rgba(0,0,0,.06);}
 .opts.one .opt{min-height:70px; font-size:23px; justify-content:flex-start; text-align:left;}
 
 .shake{animation:shake .4s;}
@@ -594,7 +599,7 @@ const Q = {
    Cada pregunta: [tipo, pregunta, correcta, [incorrectas], explicación]
    Tipos: L literal · S secuencia · V vocabulario · I idea principal · F inferencia · T tipo de texto/propósito
    ============================================================ */
-const QTYPE = { L: '🔎 Busca la respuesta en el texto', S: '🔢 ¿En qué orden pasó?', V: '📖 ¿Qué significa la palabra?', I: '💡 ¿De qué trata?', F: '🤔 Piensa: la respuesta no está escrita tal cual', T: '🗂️ ¿Qué tipo de texto es? ¿Para qué sirve?' };
+const QTYPE = { L: '🔎 Busca la respuesta en el texto', S: '🔢 ¿En qué orden pasó?', V: '📖 ¿Qué significa la palabra?', I: '💡 ¿De qué trata?', F: '🤔 Piensa: la respuesta no está escrita tal cual', T: '🗂️ ¿Qué tipo de texto es? ¿Para qué sirve?', D: '💭 Piensa y dilo en voz alta' };
 const TEXTS = [
   { id: 'cometa', kind: 'Cuento', emoji: '🪁', color: '#7c4dff', title: 'La cometa de Tomás',
     text: `Había una vez un niño llamado Tomás que vivía cerca del mar. Un sábado, su abuelo le regaló una cometa roja con una cola muy larga. Tomás corrió a la playa para volarla, pero el viento era tan fuerte que la cometa se atoró en una palmera. Tomás se puso muy triste.
@@ -806,8 +811,143 @@ Viñeta 5 — ANA Y LEO: ¡Qué bueno que Nube ya va a estar en su casa!`,
       ['T', '¿Cómo se llaman los cuadros de una historieta?', 'Viñetas', ['Párrafos', 'Versos'], 'Cada cuadro de una historieta es una viñeta.'],
     ] },
 ];
+/* ---- Fábulas (estilo del examen: ¿por qué?, enseñanza/moraleja, ¿qué harías tú?) ----
+   'D' = 💭 Piensa y dilo en voz alta: [ 'D', pregunta, respuesta de ejemplo ] (no quita estrellas) */
+const FABLES = [
+  { id: 'zorrarabo', kind: 'Fábula · de tu libro', emoji: '🦊', color: '#e8590c', badge: '📘 De tu libro', title: 'La zorra del rabo cortado',
+    text: `Un día, una zorra quedó atrapada en una trampa. Logró escapar, pero perdió su hermosa cola. Se sentía muy avergonzada y pensaba: «Todos los animales del bosque se van a burlar de mí».
+
+Entonces tuvo una idea. Reunió a sus hermanas y les dijo:
+—Las colas no sirven para nada: son feas y solo estorban. Además, ahora se usan cortitas. ¡Córtense la cola!
+Así, nadie notaría lo que le había pasado a ella.
+
+Una de sus hermanas le contestó:
+—Si tú tuvieras cola, no dirías eso. ¡Nuestras colas son preciosas! —Y las demás estuvieron de acuerdo.
+
+Un grillo que dormitaba cerca despertó y le dijo:
+—Zorrita, eres maravillosa con cola o sin ella. Pero no les des malos consejos a tus hermanas solo para tu beneficio.
+
+Moraleja: No es bueno dar consejos solo por nuestro beneficio, sin buscar de verdad el bien de los demás.`,
+    tip: '📘 Esta fábula viene en tu libro (Taller de lectores, p. 16 y 17; Esopo, adaptación). Aquí está contada con otras palabras. En el examen te pueden preguntar: ¿por qué…?, ¿cuál es la enseñanza? y ¿qué harías tú?',
+    qs: [
+      ['L', '¿Quiénes son los personajes de la fábula?', 'La zorra, sus hermanas y un grillo', ['La zorra, un león y un ratón', 'Un cazador y sus perros'], 'En la fábula aparecen la zorra, sus hermanas zorras y el grillo.'],
+      ['F', '¿Cómo se sentía la zorra después de perder su cola?', 'Avergonzada', ['Orgullosa', 'Aburrida'], '"Se sentía muy avergonzada" y creía que se iban a burlar de ella.'],
+      ['F', '¿Por qué la zorra les aconsejó a sus hermanas que se cortaran la cola?', 'Para que nadie notara que a ella le faltaba la cola', ['Porque de verdad las colas estorban', 'Para que corrieran más rápido'], 'Quería que todas quedaran igual que ella para que nadie se diera cuenta de su defecto.'],
+      ['I', '¿Cuál fue la enseñanza del grillo?', 'Aceptarse tal como es y no dar malos consejos', ['Esconderse para que nadie la vea', 'Buscar una cola nueva'], 'El grillo le dijo que es maravillosa con o sin cola, y que no aconseje mal a sus hermanas.'],
+      ['I', '¿Qué quiere decir la moraleja?', 'No hay que aconsejar a otros solo para ganar algo nosotros', ['Hay que cortarse la cola', 'Las zorras siempre dicen la verdad'], 'Un buen consejo busca el bien de los demás, no solo el nuestro.'],
+      ['D', '¿Qué harías tú en la situación de la zorra?', 'Yo aceptaría que perdí mi cola y les diría la verdad a mis hermanas. No les pediría que se cortaran la cola, porque eso no sería justo para ellas. Con cola o sin cola, sigo siendo yo.'],
+    ] },
+  { id: 'liebre', kind: 'Fábula · Esopo', emoji: '🐢', color: '#43a047', title: 'La liebre y la tortuga',
+    text: `Una liebre se burlaba de una tortuga porque caminaba muy despacio.
+—Te reto a una carrera —le dijo la tortuga.
+La liebre se rio, pero aceptó. Al empezar, salió corriendo y pronto dejó muy atrás a la tortuga. Como estaba segura de que iba a ganar, se acostó debajo de un árbol a descansar… ¡y se quedó dormida!
+
+Mientras tanto, la tortuga siguió caminando sin detenerse, pasito a pasito. Cuando la liebre despertó, corrió con todas sus fuerzas, pero ya era tarde: la tortuga había cruzado la meta.
+
+Moraleja: Con esfuerzo y sin rendirse se llega más lejos que presumiendo.`,
+    tip: '🦊 Fábula = animales que hablan + una moraleja (enseñanza). Pregúntate: ¿qué hizo bien cada personaje y qué hizo mal?',
+    qs: [
+      ['L', '¿Quiénes son los personajes?', 'Una liebre y una tortuga', ['Un león y un ratón', 'Una zorra y un grillo'], 'La fábula habla de una liebre y una tortuga.'],
+      ['F', '¿Cómo se sentía la liebre al empezar la carrera?', 'Muy segura de que iba a ganar', ['Con miedo de perder', 'Triste'], '"Estaba segura de que iba a ganar", por eso se echó a descansar.'],
+      ['F', '¿Por qué perdió la liebre?', 'Porque se quedó dormida', ['Porque se lastimó una pata', 'Porque la tortuga hizo trampa'], 'Se acostó a descansar y se quedó dormida; la tortuga nunca se detuvo.'],
+      ['I', '¿Qué nos enseña esta fábula?', 'Que con esfuerzo y constancia se logran las metas', ['Que hay que dormir mucho', 'Que el más rápido siempre gana'], 'La tortuga ganó porque no se rindió.'],
+      ['D', '¿Qué harías tú si alguien se burlara de ti porque haces algo despacio?', 'Le diría que cada quien tiene su ritmo. Yo seguiría intentando sin rendirme, como la tortuga, y no me burlaría de nadie.'],
+    ] },
+  { id: 'leon', kind: 'Fábula · Esopo', emoji: '🦁', color: '#f59f00', title: 'El león y el ratón',
+    text: `Un león dormía en la selva cuando un ratoncito pasó corriendo sobre su nariz. El león despertó enojado y lo atrapó con su enorme pata.
+—¡Por favor, déjame ir! —le suplicó el ratón—. Algún día yo te podré ayudar.
+El león se rio: ¿cómo un ratón tan pequeño podría ayudarlo a él? Pero lo dejó ir.
+
+Días después, el león cayó en una red de cazadores. Rugía y rugía, pero no podía salir. El ratoncito lo escuchó, llegó corriendo y mordió las cuerdas hasta romperlas. ¡El león quedó libre!
+—Gracias, amigo —dijo el león—. Aprendí que nadie es demasiado pequeño para ayudar.
+
+Moraleja: Todos podemos ayudar, sin importar nuestro tamaño.`,
+    tip: '🦊 En las fábulas, los personajes aprenden algo. Fíjate en lo que dice el personaje al final: muchas veces es la enseñanza.',
+    qs: [
+      ['L', '¿Quiénes son los personajes?', 'Un león y un ratón', ['Una liebre y una tortuga', 'Una cigarra y una hormiga'], 'La fábula habla de un león y un ratoncito.'],
+      ['F', '¿Por qué se rio el león cuando el ratón le prometió ayudarlo?', 'Porque pensó que alguien tan pequeño no podría ayudarlo', ['Porque el ratón le contó un chiste', 'Porque el ratón estaba bailando'], '"¿Cómo un ratón tan pequeño podría ayudarlo a él?"'],
+      ['F', '¿Cómo se sentía el león cuando quedó atrapado en la red?', 'Asustado y desesperado', ['Feliz y tranquilo', 'Aburrido'], '"Rugía y rugía, pero no podía salir."'],
+      ['I', '¿Cuál es la enseñanza de la fábula?', 'Que nadie es demasiado pequeño para ayudar', ['Que los leones son los más fuertes', 'Que hay que dormir en la selva'], 'El ratoncito, aunque pequeño, salvó al león.'],
+      ['D', '¿Qué harías tú si alguien más pequeño que tú te pidiera ayuda?', 'Lo ayudaría con gusto, porque todos merecemos ayuda. Además, algún día esa persona también me podría ayudar a mí, como el ratón al león.'],
+    ] },
+  { id: 'cigarra', kind: 'Fábula · Esopo', emoji: '🐜', color: '#6d4c41', title: 'La cigarra y la hormiga',
+    text: `Durante todo el verano, una cigarra se la pasó cantando y descansando bajo el sol. Mientras tanto, una hormiga trabajaba sin parar: cargaba semillas y granos para guardarlos en su hormiguero.
+—¿Por qué trabajas tanto? Ven a cantar conmigo —le decía la cigarra.
+—Estoy guardando comida para el invierno —contestaba la hormiga.
+
+Llegó el invierno, hizo mucho frío y la nieve cubrió el campo. La cigarra no tenía nada que comer y, temblando, tocó a la puerta de la hormiga.
+—Tengo hambre y frío —le dijo muy apenada.
+La hormiga la dejó pasar y compartió su comida con ella. La cigarra prometió que el siguiente verano también trabajaría.
+
+Moraleja: Hay que trabajar y prepararse hoy para no pasar necesidades mañana.`,
+    tip: '🦊 Compara a los dos personajes: ¿qué hizo cada uno en el verano? ¿Qué le pasó a cada uno en el invierno?',
+    qs: [
+      ['L', '¿Quiénes son los personajes?', 'Una cigarra y una hormiga', ['Una zorra y un grillo', 'Un león y un ratón'], 'La fábula habla de una cigarra y una hormiga.'],
+      ['L', '¿Por qué la hormiga trabajaba tanto en el verano?', 'Para guardar comida para el invierno', ['Porque la cigarra se lo ordenó', 'Porque quería una casa nueva'], '"Estoy guardando comida para el invierno."'],
+      ['F', '¿Cómo se sentía la cigarra cuando llegó el invierno?', 'Con hambre, con frío y apenada', ['Contenta y llena', 'Enojada con el sol'], '"Tengo hambre y frío —le dijo muy apenada."'],
+      ['I', '¿Cuál es la moraleja?', 'Hay que prepararse hoy para no pasar necesidades mañana', ['Hay que cantar todo el día', 'El invierno es la mejor estación'], 'La hormiga se preparó y no pasó hambre.'],
+      ['D', '¿Qué harías tú si fueras la hormiga y la cigarra tocara tu puerta?', 'La dejaría pasar y compartiría mi comida con ella. Después le diría que el próximo verano podemos guardar comida juntas, y también cantar un rato.'],
+    ] },
+  { id: 'uvas', kind: 'Fábula · Esopo', emoji: '🍇', color: '#7b1fa2', title: 'La zorra y las uvas',
+    text: `Una tarde, una zorra con mucha hambre vio unas uvas moradas colgando de una parra muy alta.
+—¡Qué deliciosas se ven! —pensó.
+
+Saltó una vez, pero no las alcanzó. Saltó otra vez, más alto, y tampoco. Lo intentó muchas veces, hasta que quedó muy cansada.
+Al final se alejó diciendo:
+—Bah, ni las quiero. Seguro están verdes y agrias.
+
+Pero la verdad es que las uvas estaban maduras y dulces. La zorra solo decía eso porque no pudo alcanzarlas.
+
+Moraleja: Cuando no logramos algo, a veces decimos que no lo queríamos. Es mejor aceptar que no pudimos y buscar otra forma.`,
+    tip: '🦊 A veces un personaje dice algo que no es verdad. Lee con atención para descubrir por qué lo dice.',
+    qs: [
+      ['L', '¿Quién es el personaje principal?', 'Una zorra', ['Un grillo', 'Una tortuga'], 'La fábula trata de una zorra con hambre.'],
+      ['F', '¿Por qué la zorra dijo que las uvas estaban verdes?', 'Porque no pudo alcanzarlas', ['Porque de verdad estaban verdes', 'Porque no le gustan las uvas'], 'El texto dice que las uvas estaban maduras: lo dijo porque no las alcanzó.'],
+      ['F', '¿Cómo se sentía la zorra después de saltar muchas veces?', 'Cansada y frustrada', ['Feliz y llena', 'Con frío'], '"Quedó muy cansada" y no logró comer las uvas.'],
+      ['I', '¿Cuál es la moraleja?', 'Es mejor aceptar cuando no logramos algo y buscar otra forma', ['Las uvas verdes son las mejores', 'Las zorras saltan muy alto'], 'La zorra fingió que no quería las uvas en lugar de aceptar que no pudo.'],
+      ['D', '¿Qué otra cosa pudo hacer la zorra para alcanzar las uvas? Explica.', 'Pudo subirse a una piedra o a un tronco para quedar más alta, o pedirle ayuda a un amigo. Así, en vez de rendirse, buscaría otra forma.'],
+    ] },
+];
+/* 💭 preguntas abiertas extra en algunos textos */
+const EXTRA_THINK = {
+  ardilla: ['D', '¿Qué harías tú si un compañero te pidiera un poco de tu comida porque tiene hambre?', 'Compartiría con él, porque si yo tuviera hambre me gustaría que me ayudaran. Así, como en la fábula, todos nos ayudamos.'],
+  cometa: ['D', 'Si tú fueras Rosa, ¿cómo ayudarías a Tomás? Explica.', 'Buscaría algo largo, como una escoba o un palo, y con cuidado bajaría la cometa junto con Tomás. También le diría que no se preocupe.'],
+  perrito: ['D', '¿Qué harías tú si encontraras un perrito perdido en la calle?', 'Le avisaría a un adulto y juntos buscaríamos a su dueño, por ejemplo con el número de teléfono del collar. Mientras, le daríamos agua.'],
+};
+for (const t of TEXTS) if (EXTRA_THINK[t.id]) t.qs.push(EXTRA_THINK[t.id]);
 /* Textos SOLO para el mini examen (se eligen 2 al azar cada vez) */
 const EXAM_TEXTS = [
+  { id: 'pastor', kind: 'Fábula · Esopo', emoji: '🐑', title: 'El pastorcito mentiroso',
+    text: `Un pastorcito cuidaba sus ovejas cerca de un pueblo. Como estaba aburrido, un día gritó:
+—¡Auxilio, viene el lobo!
+Los vecinos llegaron corriendo con palos, pero no había ningún lobo. El pastorcito se rio mucho. Días después hizo la misma broma, y otra vez la gente corrió a ayudarlo para nada.
+
+Una tarde, el lobo llegó de verdad. El pastorcito gritó con todas sus fuerzas:
+—¡Auxilio, el lobo, el lobo!
+Pero esta vez nadie fue, porque pensaron que era otra mentira. El lobo espantó a las ovejas y el pastorcito se quedó muy triste.
+
+Moraleja: Al mentiroso nadie le cree, aunque diga la verdad.`,
+    qs: [
+      ['F', '¿Por qué gritó el pastorcito la primera vez?', 'Porque estaba aburrido y quería hacer una broma', ['Porque vio al lobo', 'Porque se le perdió una oveja'], '"Como estaba aburrido, un día gritó…" y no había ningún lobo.'],
+      ['S', '¿Qué pasó la última vez que gritó?', 'Nadie fue a ayudarlo', ['Todos llegaron corriendo', 'El lobo se fue solito'], '"Pero esta vez nadie fue."'],
+      ['F', '¿Por qué nadie fue a ayudarlo al final?', 'Porque pensaron que era otra mentira', ['Porque estaban de vacaciones', 'Porque le tenían miedo al pastorcito'], '"Nadie fue, porque pensaron que era otra mentira."'],
+      ['F', '¿Cómo se sintió el pastorcito al final?', 'Muy triste', ['Muy contento', 'Orgulloso'], '"El pastorcito se quedó muy triste."'],
+      ['I', '¿Qué nos enseña la fábula?', 'Que hay que decir siempre la verdad', ['Que hay que gritar muy fuerte', 'Que los lobos son buenos'], '"Al mentiroso nadie le cree, aunque diga la verdad."'],
+    ] },
+  { id: 'gallina', kind: 'Fábula · Esopo', emoji: '🐔', title: 'La gallina de los huevos de oro',
+    text: `Un granjero tenía una gallina muy especial: cada mañana ponía un huevo de oro. Con esos huevos el granjero vivía muy bien, pero cada día quería más.
+—Si la gallina pone huevos de oro, seguro por dentro tiene muchísimo oro —pensó.
+
+Sin pensarlo dos veces, decidió abrirla para sacar todo el oro de una vez. Pero por dentro la gallina era como cualquier otra: no tenía nada de oro. Y ahora ya no tenía gallina ni huevos de oro. El granjero se quedó muy arrepentido.
+
+Moraleja: Por querer tener más y más, a veces perdemos lo que ya tenemos.`,
+    qs: [
+      ['L', '¿Qué tenía de especial la gallina?', 'Ponía un huevo de oro cada mañana', ['Hablaba con el granjero', 'Sabía cantar'], '"Cada mañana ponía un huevo de oro."'],
+      ['F', '¿Por qué el granjero abrió a la gallina?', 'Porque quería sacar mucho oro de una vez', ['Porque tenía hambre', 'Porque la gallina estaba enferma'], 'Pensó que por dentro tenía muchísimo oro.'],
+      ['L', '¿Qué encontró dentro de la gallina?', 'Nada de oro', ['Muchos huevos de oro', 'Un tesoro'], '"Por dentro la gallina era como cualquier otra: no tenía nada de oro."'],
+      ['V', '"El granjero se quedó muy arrepentido." ¿Qué significa "arrepentido"?', 'Triste por algo que hizo y que quisiera no haber hecho', ['Muy feliz', 'Con mucha prisa'], 'Se sintió mal porque perdió su gallina.'],
+      ['I', '¿Cuál es la moraleja?', 'Por querer más, podemos perder lo que ya tenemos', ['Hay que tener muchas gallinas', 'El oro crece en las granjas'], 'El granjero quiso más oro y se quedó sin nada.'],
+    ] },
   { id: 'dragon', kind: 'Cuento', emoji: '🐉', title: 'El dragón con hipo',
     text: `En una montaña vivía Chispa, un dragón pequeño y verde. Un día le dio hipo, y cada vez que hacía ¡hip!, le salía una llamarada por la boca. Sin querer, quemó las flores del jardín de su vecina, la señora Oveja. Chispa se sintió muy apenado.
 
@@ -872,7 +1012,7 @@ Moraleja: Valora lo que eres y lo que sabes hacer.`,
       ['I', '¿Qué nos enseña la moraleja?', 'A valorar lo que somos', ['Que los peces pueden volar', 'Que hay que saltar muy alto'], '"Valora lo que eres y lo que sabes hacer."'],
     ] },
 ];
-const compQ = (tx, [ty, prompt, correct, wrongs, explain], i) => mc(prompt, correct, wrongs, { layout: 'one', sub: QTYPE[ty], explain, passage: tx, key: 'comp-' + tx.id + '-' + i });
+const compQ = (tx, [ty, prompt, correct, wrongs, explain], i) => ty === 'D' ? { type: 'think', prompt, model: correct, passage: tx, key: 'comp-' + tx.id + '-' + i } : mc(prompt, correct, wrongs, { layout: 'one', sub: QTYPE[ty], explain, passage: tx, key: 'comp-' + tx.id + '-' + i });
 const textQs = tx => tx.qs.map((q, i) => compQ(tx, q, i));
 function passageEl(tx) {
   const read = tx.title + '. ' + tx.text.replace(/Viñeta \d+ —/g, '');
@@ -884,6 +1024,14 @@ function passageEl(tx) {
         h('button', { class: 'big-btn yellow small-btn', onclick: () => speak(read, 0.65) }, '🐢 Lento'))),
     h('div', { class: 'ptext' }, tx.text));
 }
+function textTopic(tx, group, id) {
+  return { id, section: 'comprension', group, title: tx.title, es: tx.kind, emoji: tx.emoji, color: tx.color, badge: tx.badge, noBook: true,
+    pages: tx.qs.length + ' preguntas',
+    explain: () => h('div', { class: 'explain' }, KEY(tx.tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(tx)),
+    practice: () => textQs(tx),
+    exam: () => textQs(tx) };
+}
+const GROUP_LABEL = { fab: '🦊 Fábulas (¡vienen en el examen!)', otros: '📚 Cómo contestar y otros tipos de texto' };
 function compExam() { return sample(EXAM_TEXTS, 2).flatMap(textQs); }
 const HOWTO_Q = [
   () => mc('¿Qué conviene hacer PRIMERO?', 'Leer las preguntas', ['Contestar rápido sin leer', 'Adivinar'], { layout: 'one', explain: 'Si lees primero las preguntas, sabes qué buscar en el texto.' }),
@@ -922,8 +1070,10 @@ const dictExplain = (words, tips) => h('div', { class: 'explain' },
 
 const TOPICS = [
   /* ===================== COMPRENSIÓN LECTORA ===================== */
+  ...FABLES.map(tx => textTopic(tx, 'fab', 'comp-' + tx.id)),
+  textTopic(TEXTS[1], 'fab', 'comp-1'),
   {
-    id: 'comp-como', section: 'comprension', title: '¿Cómo contestar?', es: 'Pasos y tipos de preguntas', emoji: '🧭', color: '#ff7a45', pages: 'estrategias', noBook: true,
+    id: 'comp-como', section: 'comprension', title: '¿Cómo contestar?', es: 'Pasos y tipos de preguntas', emoji: '🧭', color: '#ff7a45', pages: 'estrategias', noBook: true, group: 'otros',
     explain: () => h('div', { class: 'explain' },
       P('En el examen vas a leer ', B('textos nuevos'), ' y contestar preguntas. ¡No hay que memorizar nada! Solo leer con atención.'),
       KEY('🧭 1. Lee la ', B('pregunta'), ' · 2. Lee el ', B('texto'), ' con calma · 3. ', B('Busca'), ' la respuesta en el texto · 4. ', B('Vuelve a leer'), ' para revisar'),
@@ -946,78 +1096,7 @@ const TOPICS = [
     practice: () => HOWTO_Q.map(f => f()),
     exam: () => sample(HOWTO_Q, 3).map(f => f()),
   },
-  {
-    id: 'comp-0', section: 'comprension', title: TEXTS[0].title, es: TEXTS[0].kind, emoji: TEXTS[0].emoji, color: TEXTS[0].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[0].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[0])),
-    practice: () => textQs(TEXTS[0]),
-    exam: () => textQs(TEXTS[0]),
-  },
-  {
-    id: 'comp-1', section: 'comprension', title: TEXTS[1].title, es: TEXTS[1].kind, emoji: TEXTS[1].emoji, color: TEXTS[1].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[1].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[1])),
-    practice: () => textQs(TEXTS[1]),
-    exam: () => textQs(TEXTS[1]),
-  },
-  {
-    id: 'comp-2', section: 'comprension', title: TEXTS[2].title, es: TEXTS[2].kind, emoji: TEXTS[2].emoji, color: TEXTS[2].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[2].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[2])),
-    practice: () => textQs(TEXTS[2]),
-    exam: () => textQs(TEXTS[2]),
-  },
-  {
-    id: 'comp-3', section: 'comprension', title: TEXTS[3].title, es: TEXTS[3].kind, emoji: TEXTS[3].emoji, color: TEXTS[3].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[3].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[3])),
-    practice: () => textQs(TEXTS[3]),
-    exam: () => textQs(TEXTS[3]),
-  },
-  {
-    id: 'comp-4', section: 'comprension', title: TEXTS[4].title, es: TEXTS[4].kind, emoji: TEXTS[4].emoji, color: TEXTS[4].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[4].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[4])),
-    practice: () => textQs(TEXTS[4]),
-    exam: () => textQs(TEXTS[4]),
-  },
-  {
-    id: 'comp-5', section: 'comprension', title: TEXTS[5].title, es: TEXTS[5].kind, emoji: TEXTS[5].emoji, color: TEXTS[5].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[5].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[5])),
-    practice: () => textQs(TEXTS[5]),
-    exam: () => textQs(TEXTS[5]),
-  },
-  {
-    id: 'comp-6', section: 'comprension', title: TEXTS[6].title, es: TEXTS[6].kind, emoji: TEXTS[6].emoji, color: TEXTS[6].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[6].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[6])),
-    practice: () => textQs(TEXTS[6]),
-    exam: () => textQs(TEXTS[6]),
-  },
-  {
-    id: 'comp-7', section: 'comprension', title: TEXTS[7].title, es: TEXTS[7].kind, emoji: TEXTS[7].emoji, color: TEXTS[7].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[7].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[7])),
-    practice: () => textQs(TEXTS[7]),
-    exam: () => textQs(TEXTS[7]),
-  },
-  {
-    id: 'comp-8', section: 'comprension', title: TEXTS[8].title, es: TEXTS[8].kind, emoji: TEXTS[8].emoji, color: TEXTS[8].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[8].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[8])),
-    practice: () => textQs(TEXTS[8]),
-    exam: () => textQs(TEXTS[8]),
-  },
-  {
-    id: 'comp-9', section: 'comprension', title: TEXTS[9].title, es: TEXTS[9].kind, emoji: TEXTS[9].emoji, color: TEXTS[9].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[9].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[9])),
-    practice: () => textQs(TEXTS[9]),
-    exam: () => textQs(TEXTS[9]),
-  },
-  {
-    id: 'comp-10', section: 'comprension', title: TEXTS[10].title, es: TEXTS[10].kind, emoji: TEXTS[10].emoji, color: TEXTS[10].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[10].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[10])),
-    practice: () => textQs(TEXTS[10]),
-    exam: () => textQs(TEXTS[10]),
-  },
-  {
-    id: 'comp-11', section: 'comprension', title: TEXTS[11].title, es: TEXTS[11].kind, emoji: TEXTS[11].emoji, color: TEXTS[11].color, pages: '5 preguntas', noBook: true,
-    explain: () => h('div', { class: 'explain' }, KEY(TEXTS[11].tip), P('Lee el texto (o escúchalo). En las preguntas lo vas a seguir viendo arriba. 👀'), passageEl(TEXTS[11])),
-    practice: () => textQs(TEXTS[11]),
-    exam: () => textQs(TEXTS[11]),
-  },
+  ...TEXTS.map((tx, i) => i === 1 ? null : textTopic(tx, 'otros', 'comp-' + i)).filter(Boolean),
   /* ===================== LENGUAJES ===================== */
   {
     id: 'cuento', section: 'lenguajes', title: 'El cuento', es: 'Inicio, desarrollo y cierre', emoji: '📖', color: '#7c4dff', pages: 'p. 4 y cuaderno',
@@ -1181,10 +1260,15 @@ function showHome() {
     content.push(h('div', { class: 'section-head', id: 'sec-' + sec.id },
       h('h2', null, sec.emoji + ' ' + sec.name),
       h('button', { class: 'sec-exam', onclick: () => { homeScroll = window.scrollY; startExam(sec.id); } }, (sec.examLabel || '📝 Examen de ' + sec.name) + ' ' + starStr(progress['exam-' + sec.id] || 0))));
-    content.push(h('div', { class: 'topics' }, topics.map(t => h('button', { class: 'topic-card', style: { background: t.color }, onclick: () => { homeScroll = window.scrollY; showExplain(t.id); } },
+    const runs = [];
+    for (const t of topics) { const last = runs[runs.length - 1]; if (last && last.g === t.group) last.ts.push(t); else runs.push({ g: t.group, ts: [t] }); }
+    for (const run of runs) {
+    if (run.g && GROUP_LABEL[run.g]) content.push(h('div', null, h('div', { class: 'group-label' }, GROUP_LABEL[run.g])));
+    content.push(h('div', { class: 'topics' }, run.ts.map(t => h('button', { class: 'topic-card', style: { background: t.color }, onclick: () => { homeScroll = window.scrollY; showExplain(t.id); } },
       t.badge ? h('span', { class: 'badge' }, t.badge) : null,
       h('div', { class: 'emo' }, t.emoji), h('div', { class: 't' }, t.title), h('div', { class: 's' }, t.es + ' · ' + t.pages),
       h('div', { class: 'stars' }, starStr(progress[t.id] || 0))))));
+    }
   }
   screen('Español · 2° 📚', null, ...content);
 }
@@ -1192,7 +1276,7 @@ function showHome() {
 function showExplain(id) {
   const t = TOPICS.find(x => x.id === id);
   screen(t.emoji + ' ' + t.title, goHome,
-    h('div', { class: 'card' }, h('div', { class: 'sub' }, t.noBook ? t.es + ' · Comprensión Lectora' : t.es + ' · Libro AMCO 2T1C1 ' + t.pages), t.badge ? h('p', { class: 'center', style: { fontSize: '22px', color: '#d9480f', fontWeight: 'bold', margin: '0 0 6px' } }, '⭐ Tu libro dice "Examen" en este tema: ¡estúdialo muy bien!') : null, t.explain()),
+    h('div', { class: 'card' }, h('div', { class: 'sub' }, t.noBook ? t.es + ' · Comprensión Lectora' : t.es + ' · Libro AMCO 2T1C1 ' + t.pages), t.badge && !t.noBook ? h('p', { class: 'center', style: { fontSize: '22px', color: '#d9480f', fontWeight: 'bold', margin: '0 0 6px' } }, '⭐ Tu libro dice "Examen" en este tema: ¡estúdialo muy bien!') : null, t.explain()),
     h('div', { class: 'actions' }, h('button', { class: 'big-btn green', onclick: () => startPractice(id) }, '¡A practicar! ▶')));
 }
 
@@ -1316,6 +1400,20 @@ function runQuiz({ title, questions, mode, onDone }) {
     if (q.show) head.push(h('div', { class: 'showsentence' + (q.showLeft ? ' left' : '') }, q.show));
     if (q.speakButtons) head.push(h('div', { class: 'row', style: { margin: '10px 0' } }, q.speakButtons.map(b => h('button', { class: 'big-btn yellow', onclick: () => speak(b.text, b.rate) }, b.label))));
     body.append(...head.filter(Boolean));
+
+    if (q.type === 'think') {
+      const model = h('div', { class: 'model', style: { display: 'none' } }, '💬 ', h('b', null, 'Ejemplo: '), q.model, ' ', speakBtn(q.model, true));
+      const show = h('button', { class: 'big-btn blue', onclick: () => {
+        if (done) return;
+        model.style.display = 'block'; show.style.display = 'none';
+        fb.className = 'feedback show ok'; fb.innerHTML = ''; fb.append(h('div', null, '¡Muy bien pensado! 💭 Tu respuesta puede ser diferente: lo importante es explicar por qué.'));
+        finish(true, q.model);
+      } }, '👀 Ver ejemplo de respuesta');
+      body.append(h('div', { class: 'think' },
+        h('div', { class: 'tlabel' }, '💭 Piensa y dilo en voz alta'),
+        h('div', { class: 'tsteps' }, 'Piensa tu respuesta y dila con tus palabras (empieza con "Yo…" y explica por qué). Luego mira el ejemplo.'),
+        show, model));
+    }
 
     if (q.type === 'mc') {
       const opts = h('div', { class: 'opts' + (q.layout ? ' ' + q.layout : '') });
