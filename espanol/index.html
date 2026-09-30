@@ -1940,7 +1940,7 @@ function runQuiz({ title, questions, mode, onDone }) {
 
     if (q.type === 'column') {
       // Cuenta como correcta al primer intento solo si no hubo errores en ningún paso
-      body.append(Columna.create({ a: q.a, b: q.b, op: q.op, speak, onDone: ({ mistakes, errs }) => {
+      body.append(Columna.create({ a: q.a, b: q.b, op: q.op, speak, exam, onDone: ({ mistakes, errs }) => {
         if (mistakes && window.Errores) Errores.log({ materia: 'Español', tema: title, pregunta: q.prompt, respuesta: errs.join(' · '), correcta: q.answer[0], modo: exam ? 'examen' : 'práctica', tipo: 'column', col: { a: q.a, b: q.b, op: q.op } });
         tries = mistakes ? 1 : 0; result(true, q.answer[0]);
       } }));
@@ -2056,7 +2056,7 @@ function runQuiz({ title, questions, mode, onDone }) {
         if (ended) { input.disabled = true; check.disabled = true; }
         else { try { input.focus({ preventScroll: true }); } catch (e) {} }
       }
-      body.append(window.Escritura ? Escritura.pad({ q, input, lang: 'es', submit: doCheck, typebox: h('div', { class: 'typebox' }, input) }) : h('div', { class: 'typebox' }, input));
+      body.append(window.Escritura ? Escritura.pad({ q, input, lang: 'es', exam, submit: doCheck, typebox: h('div', { class: 'typebox' }, input) }) : h('div', { class: 'typebox' }, input));
       actions.append(check);
       setTimeout(() => { try { input.focus({ preventScroll: true }); } catch (e) {} }, 50);
     }

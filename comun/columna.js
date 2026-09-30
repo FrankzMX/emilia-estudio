@@ -208,7 +208,7 @@ function create({ a, b, op, speak, onDone, onStep, exam, demo }) {
       el('div', 'col-wrow',
         wbtn('🧽 Borrar', 'del', () => { if (finished || busy) return; clearInk(); msg.textContent = ''; }),
         wbtn('✔', 'chk', () => { if (finished || busy) return; clearTimeout(inkTimer); if (ink.strokes.length) readInk(); check(); })),
-      el('div', 'tip', 'Si está bien, se revisa solito ✨'));
+      el('div', 'tip', exam ? 'Escribe y toca ✔' : 'Si está bien, se revisa solito ✨'));
   }
   const modes = el('div', 'col-modes');
   const side = el('div', 'col-side');
@@ -234,8 +234,9 @@ function create({ a, b, op, speak, onDone, onStep, exam, demo }) {
     if (finished || busy || mode !== 'write') return;
     readInk();
     const st = cur();
-    if (st && value !== '' && +value === st.expect) { check(); return; }
-    if (value !== '') { msg.className = 'col-msg'; msg.textContent = `Leí un ${value} 🤔 Si ya terminaste toca ✔; si no, bórralo con 🧽`; }
+    // En EXAMEN no se revisa sola (sería una pista): siempre toca ✔
+    if (!exam && st && value !== '' && +value === st.expect) { check(); return; }
+    if (value !== '') { msg.className = 'col-msg'; msg.textContent = exam ? `Leí un ${value} ✍️ Toca ✔ cuando termines; si no, bórralo con 🧽` : `Leí un ${value} 🤔 Si ya terminaste toca ✔; si no, bórralo con 🧽`; }
   }
 
   const cur = () => steps[k];

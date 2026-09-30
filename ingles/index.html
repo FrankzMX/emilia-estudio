@@ -1840,7 +1840,7 @@ function runQuiz({ title, questions, mode, onDone }) {
         input.classList.add(ok ? 'pop' : 'shake'); setTimeout(() => input.classList.remove('shake', 'pop'), 450);
         if (ended) { input.disabled = true; check.disabled = true; }
       }
-      body.append(window.Escritura ? Escritura.pad({ q, input, lang: 'en', submit: doCheck, typebox: h('div', { class: 'typebox' }, input) }) : h('div', { class: 'typebox' }, input));
+      body.append(window.Escritura ? Escritura.pad({ q, input, lang: 'en', exam, submit: doCheck, typebox: h('div', { class: 'typebox' }, input) }) : h('div', { class: 'typebox' }, input));
       actions.append(check);
       setTimeout(() => { try { input.focus({ preventScroll: true }); } catch (e) {} }, 50);
     }

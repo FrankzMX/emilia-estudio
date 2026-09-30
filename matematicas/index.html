@@ -393,7 +393,7 @@ function runSet({ id, title, total, next, again, exam, after }) {
       }
     }
     const answerPad = window.Escritura
-      ? Escritura.pad({ q: { answer: [String(ans)], numeric: true }, input, lang: 'es', submit: doCheck, typebox: h('div', { class: 'typebox' }, input) })
+      ? Escritura.pad({ q: { answer: [String(ans)], numeric: true }, input, lang: 'es', exam, submit: doCheck, typebox: h('div', { class: 'typebox' }, input) })
       : h('div', { class: 'typebox' }, input);
     actions.append(check);
     frame(h('div', { class: 'card' }, h('div', { style: { textAlign: 'center' } }, h('button', { class: 'big-btn sky', style: { minHeight: '52px', fontSize: '20px' }, onclick: () => speak(`¿Cuánto es ${q[0]} ${word(q[1])} ${q[2]}?`) }, '🔊 Escuchar')), line, answerPad, fb, actions));
@@ -460,7 +460,7 @@ function startReloj() {
     h('div', { class: 'card', style: { textAlign: 'center' } },
       h('div', { style: { fontSize: '72px' } }, '⏱️'),
       h('p', { style: { fontSize: '26px', margin: '6px 0' } }, `¿Cuántas cuentas puedes contestar en ${RELOJ_SEG} segundos?`),
-      h('p', { style: { fontSize: '20px', color: '#64748b' } }, 'Escribe la respuesta con los números. Si te equivocas, no pasa nada: sigue con la próxima.'),
+      h('p', { style: { fontSize: '20px', color: '#64748b' } }, 'Escribe la respuesta con los números y toca ✔. Si te equivocas, no pasa nada: sigue con la próxima.'),
       h('p', { class: 'result-score', style: { fontSize: '30px' } }, '🏅 Tu récord: ' + rec.best),
       h('div', { class: 'actions' }, h('button', { class: 'big-btn green', style: { minWidth: '260px', minHeight: '90px', fontSize: '32px' }, onclick: runReloj }, '¡Empezar! ▶'))));
 }
@@ -483,9 +483,7 @@ function runReloj() {
     if (locked) return;
     if (d === 'del') { val = val.slice(0, -1); draw(); return; }
     if (val.length >= 3) return;
-    val += d; draw();
-    // Se revisa sola cuando tiene las cifras de la respuesta
-    if (val.length >= String(ans).length) check();
+    val += d; draw(); // se revisa al tocar ✔ (no se adivina por el número de cifras)
   }
   function check() {
     if (!val || locked) return;

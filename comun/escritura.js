@@ -441,7 +441,7 @@ function makeBox(w, onChange, o) {
 // layout: palabra para dibujar las cajitas (con huecos en los espacios) o null = boxesN cajitas libres.
 // expected: letras esperadas (sin espacios) para la tolerancia, o null.
 // isRight(valor): ¿la respuesta ya es correcta? · submit(): revisar (como tocar Comprobar)
-function writeMode({ layout, expected, allowed, setValue, boxesN, isRight, submit }) {
+function writeMode({ layout, expected, allowed, setValue, boxesN, isRight, submit, exam }) {
   let autoTimer = null;
   const cancelAuto = () => { clearTimeout(autoTimer); autoTimer = null; };
   const target = layout;
@@ -472,8 +472,9 @@ function writeMode({ layout, expected, allowed, setValue, boxesN, isRight, submi
     } else out = boxes.map(b => b.ch).join('');
     setValue(out);
     // Si ya está correcta, se revisa sola (sin tocar Comprobar). Si no, esperamos: puede corregir.
+    // En EXAMEN no: revisarse sola le diría que ya está bien; tiene que tocar Comprobar.
     cancelAuto();
-    if (out && isRight && submit && isRight(out)) autoTimer = setTimeout(() => { autoTimer = null; submit(); }, 650);
+    if (!exam && out && isRight && submit && isRight(out)) autoTimer = setTimeout(() => { autoTimer = null; submit(); }, 650);
   }
   chars.forEach(c => {
     if (c === ' ') { wrap.append(el('div', { class: 'ew-gap' })); return; }
@@ -545,7 +546,7 @@ function numbersMode({ setValue, initial }) {
 /* ---------- Pad principal ---------- */
 const MODE_LABEL = { write: '✍️ Escribir', letters: '🔤 Letras', numbers: '🔢 Números', keyboard: '⌨️ Teclado' };
 
-function pad({ q, input, lang, typebox, submit }) {
+function pad({ q, input, lang, typebox, submit, exam }) {
   injectCSS();
   const answers = (q.answer || []).map(String);
   const numeric = !!(q.numeric || q.inputmode === 'numeric');
@@ -581,7 +582,7 @@ function pad({ q, input, lang, typebox, submit }) {
         layout: !numeric && target && sameLen ? target : null,
         expected: target && (numeric || sameLen) ? target : null,
         boxesN: numeric ? Math.max((target || '').length, 3) : Math.max(...answers.map(a => a.length), 4),
-        allowed, setValue, submit: submit && (() => { if (!input.disabled) submit(); }),
+        allowed, setValue, exam: !!exam, submit: submit && (() => { if (!input.disabled) submit(); }),
         // Solo coincidencia exacta (mayúsculas y acentos incluidos) se revisa sola
         isRight: v => (numeric ? [target] : answers).some(a => a != null && a.trim() === v.trim()),
       }));
