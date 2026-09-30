@@ -131,6 +131,9 @@ const CSS = `
 .col-ink{display:block;background:#fff linear-gradient(transparent calc(50% - 1px),#e2e8f0 calc(50% - 1px),#e2e8f0 calc(50% + 1px),transparent calc(50% + 1px));border:4px solid #3b82f6;border-radius:24px;box-shadow:0 6px 16px rgba(59,130,246,.18);touch-action:none;align-self:center}
 .col-inklbl{font-size:20px;font-weight:bold;color:#2563eb;text-align:center}
 .col-wrow{display:flex;gap:12px}.col-wrow button{flex:1}
+.col-ask{background:#fff7ed;border:3px solid #fdba74;border-radius:20px;padding:10px;display:flex;flex-direction:column;gap:10px;max-width:260px}
+.col-ask .t{font-size:24px;font-weight:bold;color:#9a3412;text-align:center}
+.col-wtools .col-ask .yes{background:#22c55e;color:#fff}.col-wtools .col-ask .no{background:#fde68a;color:#1e293b;font-size:21px}
 .cell.inked{color:#2563eb}
 @media (max-width:560px){.col-say{font-size:19px;min-height:52px}.col-grid > div{width:60px;height:64px;font-size:42px}.cell{width:52px;height:58px;font-size:38px}.col-grid .op{width:36px}.col-pad{grid-template-columns:repeat(3,72px)}.col-pad button{height:66px}}
 `;
@@ -198,16 +201,22 @@ function create({ a, b, op, speak, onDone, onStep, exam, demo }) {
   // ✍️ Recuadro grande para escribir: el número que escribe aparece en la casilla que toca
   const wtools = el('div', 'col-wtools');
   const PAD = typeof window !== 'undefined' ? Math.max(190, Math.min(250, window.innerWidth - 80)) : 240;
-  let ink = null, inkTimer = null;
+  let ink = null, inkTimer = null, inkOk = false, lastRanked = null, ask = null;
   const DIGITS = '0123456789'.split('');
   if (canWrite) {
-    ink = E.inkBox(PAD, () => { clearTimeout(inkTimer); inkTimer = setTimeout(autoRead, 600); }, { h: PAD, lines: false, onStart: () => clearTimeout(inkTimer) });
+    ink = E.inkBox(PAD, () => { clearTimeout(inkTimer); inkTimer = setTimeout(autoRead, 600); }, { h: PAD, lines: false, onStart: () => { clearTimeout(inkTimer); inkOk = false; hideAsk(); } });
     ink.cv.classList.add('col-ink');
     const wbtn = (label, cls, fn) => { const b2 = el('button', cls, label); b2.type = 'button'; b2.addEventListener('click', fn); return b2; };
     wtools.append(el('div', 'col-inklbl', 'Escribe aquí ✍️'), ink.cv,
       el('div', 'col-wrow',
         wbtn('🧽 Borrar', 'del', () => { if (finished || busy) return; clearInk(); msg.textContent = ''; }),
-        wbtn('✔', 'chk', () => { if (finished || busy) return; clearTimeout(inkTimer); if (ink.strokes.length) readInk(); check(); })),
+        wbtn('✔', 'chk', () => {
+          if (finished || busy) return; clearTimeout(inkTimer); if (ink.strokes.length) readInk();
+          // ¿Leí bien? Si la lectura es dudosa (y en práctica, además, no es la correcta) preguntamos antes de revisar
+          const st = cur();
+          if (ink.strokes.length && value !== '' && !inkOk && E.lowConfidence && E.lowConfidence(lastRanked, true) && (exam || !st || +value !== st.expect)) { askInk(); return; }
+          check();
+        })),
       el('div', 'tip', exam ? 'Escribe y toca ✔' : 'Si está bien, se revisa solito ✨'));
   }
   const modes = el('div', 'col-modes');
@@ -221,12 +230,22 @@ function create({ a, b, op, speak, onDone, onStep, exam, demo }) {
     side.innerHTML = ''; side.append(modes, m === 'write' ? wtools : pad);
     const st = cur(); if (st && !finished) { cellOf(st).textContent = ''; draw(); }
   }
-  function clearInk() { clearTimeout(inkTimer); if (ink) ink.clear(); value = ''; const st = cur(); if (st && !finished && mode === 'write') cellOf(st).textContent = ''; }
+  function hideAsk() { if (ask) { ask.remove(); ask = null; } }
+  function askInk() {
+    hideAsk();
+    const mk = (label, cls, fn) => { const b2 = el('button', cls, label); b2.type = 'button'; b2.addEventListener('click', fn); return b2; };
+    ask = el('div', 'col-ask');
+    ask.append(el('div', 't', `🤔 ¿Leí un ${value}?`),
+      mk('✔ Sí', 'yes', () => { inkOk = true; hideAsk(); if (!finished && !busy) check(); }),
+      mk('✏️ Volver a escribir', 'no', () => { hideAsk(); clearInk(); msg.textContent = ''; }));
+    wtools.append(ask);
+  }
+  function clearInk() { hideAsk(); inkOk = false; clearTimeout(inkTimer); if (ink) ink.clear(); value = ''; const st = cur(); if (st && !finished && mode === 'write') cellOf(st).textContent = ''; }
   // Lee lo escrito: si es correcto se queda fijo; si no, esperamos (puede corregir o tocar ✔)
   function readInk() {
     const st = cur();
     if (!ink || !ink.strokes.length || !st) { value = ''; return; }
-    const ranked = E.recognize(ink.frameStrokes(), DIGITS);
+    const ranked = E.recognize(ink.frameStrokes(), DIGITS); lastRanked = ranked;
     value = E.decide(ranked, String(st.expect), { top: 1, ratio: 1.12, add: 0.2 }) || '';
     cellOf(st).textContent = value; // se ve en la casilla
   }

@@ -2031,7 +2031,7 @@ function runQuiz({ title, questions, mode, onDone }) {
       if (q.hint) body.append(h('div', { class: 'hint' }, q.hint));
       const input = h('input', { type: 'text', inputmode: q.numeric ? 'numeric' : null, autocapitalize: 'off', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'done', placeholder: q.placeholder || '', 'aria-label': 'Respuesta' });
       input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
-      const check = h('button', { class: 'big-btn', onclick: doCheck }, 'Comprobar ✔');
+      const check = h('button', { class: 'big-btn', onclick: () => input.__guard ? input.__guard(doCheck) : doCheck() }, 'Comprobar ✔');
       const norm = s => s.normalize('NFC').trim().replace(/\s+/g, ' ').replace(/[.!]+$/, '').trim();
       function doCheck() {
         if (done) return;

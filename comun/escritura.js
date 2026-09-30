@@ -306,6 +306,14 @@ function decide(ranked, expected, o) {
   return e.score <= best.score * (o.ratio || 1.25) + (o.add != null ? o.add : 0.4) ? expected : best.ch;
 }
 
+/* ¿La lectura es dudosa? (distancia alta o casi empate con la 2ª opción).
+   Umbrales medidos con trazos de prueba: marca ~12–16 % de las buenas y ~80 % de las mal leídas. */
+function lowConfidence(ranked, digits) {
+  if (!ranked || !ranked.length) return true;
+  const a = ranked[0].score, b = ranked[1] ? ranked[1].score : Infinity;
+  return a > (digits ? 3.0 : 2.5) || b / Math.max(a, 1e-6) < 1.10;
+}
+
 /* ============================================================
    INTERFAZ (solo en el navegador)
    ============================================================ */
@@ -353,6 +361,14 @@ const CSS = `
 .ew-sheet .bar b{flex:1;font-size:22px}
 .ew-sheet .bar button{border:none;border-radius:14px;min-width:56px;height:56px;font-size:26px;background:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12)}
 .ew-sheet .bar button.on{outline:4px solid #3b82f6}
+.ew-confirm{margin:12px auto 0;max-width:620px;background:#fff7ed;border:3px solid #fdba74;border-radius:22px;padding:12px 16px;text-align:center;animation:ewpop .25s}
+.ew-confirm .t{font-size:24px;font-weight:bold;color:#9a3412}
+.ew-confirm .big{font-size:64px;font-weight:bold;letter-spacing:6px;margin:4px 0 8px;color:#1e293b;font-family:"Chalkboard SE","Comic Sans MS",sans-serif}
+.ew-confirm .big .low{background:#fde68a;border-radius:10px;padding:0 4px}
+.ew-confirm .b{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.ew-confirm button{min-height:64px;padding:0 24px;border:none;border-radius:20px;font-size:24px;font-weight:bold;box-shadow:0 4px 0 rgba(0,0,0,.12)}
+.ew-confirm .yes{background:#22c55e;color:#fff}.ew-confirm .no{background:#fde68a;color:#1e293b}
+@keyframes ewpop{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
 .ew-sheet canvas{flex:1;touch-action:none;display:block;width:100%;background-color:#fffef6;background-image:linear-gradient(#dbe7ff 1px,transparent 1px),linear-gradient(90deg,#dbe7ff 1px,transparent 1px);background-size:40px 40px}
 `;
 
@@ -482,12 +498,12 @@ function writeMode({ layout, expected, allowed, setValue, boxesN, isRight, submi
     const box = makeBox(bw, b => {
       last = b;
       boxes.forEach(x => x.cell.classList.toggle('active', x === b));
-      b.ranked = recognize(b.frameStrokes(), allowed);
+      b.ranked = recognize(b.frameStrokes(), allowed); b.confirmed = false;
       refresh();
-    }, { onStart: cancelAuto });
+    }, { onStart: () => { cancelAuto(); hideConfirm(); } });
     box.cell = cell;
     box.readEl = el('div', { class: 'ew-read' }, el('span', null, ' '),
-      el('button', { 'aria-label': 'Borrar esta letra', onclick: () => { box.clear(); refresh(); } }, '✖'));
+      el('button', { 'aria-label': 'Borrar esta letra', onclick: () => { box.clear(); hideConfirm(); refresh(); } }, '✖'));
     cell.append(box.cv, box.readEl);
     boxes.push(box);
     wrap.append(cell);
@@ -495,9 +511,32 @@ function writeMode({ layout, expected, allowed, setValue, boxesN, isRight, submi
   const tools = el('div', { class: 'ew-tools' },
     el('button', { onclick: () => { const b = last && last.strokes.length ? last : [...boxes].reverse().find(x => x.strokes.length); if (b) { b.undo(); b.ranked = recognize(b.frameStrokes(), allowed); refresh(); } } }, '↶ Deshacer'),
     el('button', { onclick: () => { boxes.forEach(b => b.clear()); refresh(); } }, '🧽 Borrar todo'));
-  const note = el('div', { class: 'ew-note' }, expected && /^\d+$/.test(expected) ? 'Un número en cada cajita ✍️ · Si está bien, se revisa solito ✨' : 'Una letra en cada cajita ✍️ · Las minúsculas llegan a la línea punteada; las MAYÚSCULAS, hasta arriba. Si está bien, se revisa solito ✨');
+  const solo = exam ? ' Cuando termines, toca Comprobar ✔' : ' Si está bien, se revisa solito ✨';
+  const note = el('div', { class: 'ew-note' }, expected && /^\d+$/.test(expected) ? 'Un número en cada cajita ✍️ ·' + solo : 'Una letra en cada cajita ✍️ · Las minúsculas llegan a la línea punteada; las MAYÚSCULAS, hasta arriba.' + solo);
+  // ---- ¿Leí bien? Si alguna cajita se leyó con poca seguridad, se pregunta antes de revisar ----
+  const digits = [...allowed].every(c => /\d/.test(c));
+  let panel = null;
+  function hideConfirm() { if (panel) { panel.remove(); panel = null; } }
+  const lowBoxes = () => boxes.filter(b => b.strokes.length && !b.confirmed && lowConfidence(b.ranked, digits));
+  const current = () => boxes.map(b => b.ch).join('');
+  const root = el('div', null, wrap, tools, note);
+  // En práctica solo pregunta si la respuesta leída no es la correcta; en examen, siempre que dude (si no, sería pista)
+  root.__ranked = () => boxes.map(b => (b.ranked || []).slice(0, 3)); // para pruebas
+  root.needsConfirm = () => lowBoxes().length > 0 && (exam || !(isRight && isRight(current())));
+  root.confirm = then => {
+    hideConfirm();
+    const low = new Set(lowBoxes());
+    const big = el('div', { class: 'big' });
+    boxes.forEach(b => { if (b.strokes.length) big.append(low.has(b) ? el('span', { class: 'low' }, b.ch || '?') : (b.ch || '?')); });
+    panel = el('div', { class: 'ew-confirm' }, el('div', { class: 't' }, '🤔 ¿Leí bien?'), big,
+      el('div', { class: 'b' },
+        el('button', { class: 'yes', onclick: () => { boxes.forEach(b => { b.confirmed = true; }); hideConfirm(); then(); } }, '✔ Sí'),
+        el('button', { class: 'no', onclick: () => { low.forEach(b => b.clear()); hideConfirm(); refresh(); } }, '✏️ Volver a escribir')));
+    root.append(panel);
+    setTimeout(() => { try { panel && panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }, 60);
+  };
   refresh();
-  return el('div', null, wrap, tools, note);
+  return root;
 }
 
 /* ---------- Teclado ABC ---------- */
@@ -565,6 +604,7 @@ function pad({ q, input, lang, typebox, submit, exam }) {
   if (target) for (const c of target) if (c !== ' ') allowed.add(c);
 
   const root = el('div', { class: 'ew' });
+  let writer = null;
   const bar = el('div', { class: 'ew-modes' });
   const body = el('div', { class: 'ew-body' });
   const setValue = v => { input.value = v; };
@@ -578,7 +618,8 @@ function pad({ q, input, lang, typebox, submit, exam }) {
       setTimeout(() => { try { input.focus({ preventScroll: true }); } catch (e) {} }, 50);
     } else {
       try { input.blur(); } catch (e) {}
-      if (mode === 'write') body.append(writeMode({
+      writer = null;
+      if (mode === 'write') body.append(writer = writeMode({
         layout: !numeric && target && sameLen ? target : null,
         expected: target && (numeric || sameLen) ? target : null,
         boxesN: numeric ? Math.max((target || '').length, 3) : Math.max(...answers.map(a => a.length), 4),
@@ -590,6 +631,8 @@ function pad({ q, input, lang, typebox, submit, exam }) {
       if (mode === 'numbers') body.append(numbersMode({ setValue }));
     }
   }
+  // La página llama input.__guard(doCheck) al tocar Comprobar: si la lectura es dudosa, primero "¿Leí bien?"
+  input.__guard = fn => { if (mode === 'write' && writer && writer.needsConfirm()) writer.confirm(fn); else fn(); };
   root.append(bar, body);
   render();
   // Si tocan "Comprobar" sin escribir nada, la página intenta enfocar el input: en vez de eso avisamos
@@ -679,7 +722,7 @@ if (hasDOM && 'ontouchstart' in window) {
   }, { passive: false, capture: true });
 }
 
-const api = { pad, borrador, recognize, decide, parseDSL, TEMPLATES, inkBox: makeBox, css: injectCSS };
+const api = { pad, borrador, recognize, decide, lowConfidence, parseDSL, TEMPLATES, inkBox: makeBox, css: injectCSS };
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
 root.Escritura = api;
 })(typeof window !== 'undefined' ? window : globalThis);

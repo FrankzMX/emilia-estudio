@@ -181,7 +181,7 @@ function showQ() {
     const input = el('input'); input.type = 'text'; input.setAttribute('autocomplete', 'off'); input.setAttribute('autocapitalize', 'off'); input.setAttribute('autocorrect', 'off'); input.spellcheck = false;
     if (e.numeric) input.inputMode = 'numeric';
     const norm = s => { s = String(s).normalize('NFC').trim().replace(/\s+/g, ' ').replace(/[’]/g, "'").replace(/[.!]+$/, '').trim(); if (e.numeric) s = s.replace(/[\s,]/g, ''); if (!e.cs) s = s.toLowerCase(); if (!e.accent) s = noAcc(s); return s; };
-    const check = btn('Comprobar ✔', 'qz-btn', doCheck);
+    const check = btn('Comprobar ✔', 'qz-btn', () => input.__guard ? input.__guard(doCheck) : doCheck());
     function doCheck() {
       if (done) return;
       if (!input.value.trim()) { try { input.focus(); } catch (x) {} return; }

@@ -1823,7 +1823,7 @@ function runQuiz({ title, questions, mode, onDone }) {
       if (q.hint) body.append(h('div', { class: 'hint' }, q.hint));
       const input = h('input', { type: 'text', autocapitalize: 'off', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', inputmode: q.inputmode || null, placeholder: q.placeholder || '', maxlength: q.maxlength || null, 'aria-label': 'Respuesta' });
       input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
-      const check = h('button', { class: 'big-btn', onclick: doCheck }, 'Comprobar ✔');
+      const check = h('button', { class: 'big-btn', onclick: () => input.__guard ? input.__guard(doCheck) : doCheck() }, 'Comprobar ✔');
       const norm = s => { s = s.trim().replace(/\s+/g, ' ').replace(/[’]/g, "'"); if (q.sentence) s = s.replace(/[.!]+$/, '').trim(); return s; };
       function doCheck() {
         if (done) return;

@@ -366,7 +366,7 @@ function runSet({ id, title, total, next, again, exam, after }) {
     // Respuesta con las mismas cajitas de Español/Inglés: ✍️ escribir (primero), 🔢 números o ⌨️ teclado
     const input = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', 'aria-label': 'Respuesta' });
     input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
-    const check = h('button', { class: 'big-btn', onclick: () => doCheck() }, 'Comprobar ✔');
+    const check = h('button', { class: 'big-btn', onclick: () => input.__guard ? input.__guard(doCheck) : doCheck() }, 'Comprobar ✔');
     const finish = ok => {
       done = true; input.disabled = true; check.remove(); box.textContent = String(ans);
       if (ok && !tries) clean++; else review.push(`${q[0]} ${sign(q[1])} ${q[2]} = ${ans}`);
