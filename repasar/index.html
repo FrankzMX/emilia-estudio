@@ -37,11 +37,39 @@ h1{font-size:26px;margin:0;flex:1}
 .err.visto .acts button{background:#f1f5f9;color:var(--muted)}
 .empty{text-align:center;font-size:20px;background:#fff;border-radius:18px;padding:30px;color:var(--muted)}
 .danger{background:#fee2e2 !important;color:#b91c1c}
+.practice-btn{display:block;width:100%;border:none;border-radius:22px;padding:18px;font-size:26px;font-weight:800;color:#fff;background:linear-gradient(135deg,#22c55e,#0ea5e9);box-shadow:0 6px 0 rgba(0,0,0,.15);margin:0 0 14px}
+.practice-btn:active{transform:translateY(3px)}
+.practice-btn[disabled]{opacity:.45}
+.times{background:#fef3c7;color:#92400e;border-radius:10px;padding:2px 8px;font-weight:700}
+/* ---- 🎯 Practicar mis errores (pantalla para la niña/el niño) ---- */
+#quiz{display:none}
+body.quizzing #quiz{display:block} body.quizzing #listview{display:none}
+.qz-card{background:#fff;border-radius:26px;padding:20px 22px;box-shadow:0 8px 24px rgba(30,60,110,.12);font-family:"Chalkboard SE","Comic Sans MS","Trebuchet MS",sans-serif}
+.qz-meta{display:flex;justify-content:space-between;align-items:center;font-size:18px;color:var(--muted);margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.qz-bar{height:14px;background:#fff;border-radius:10px;overflow:hidden;margin-bottom:12px;box-shadow:inset 0 2px 4px rgba(0,0,0,.08)}
+.qz-bar div{height:100%;background:linear-gradient(90deg,#22c55e,#86efac)}
+.qz-q{font-size:28px;font-weight:bold;text-align:center;margin:6px 0 14px;line-height:1.3}
+.qz-say{display:block;margin:0 auto 12px;border:none;border-radius:20px;background:#fde68a;font-size:24px;padding:12px 22px;box-shadow:0 4px 0 rgba(0,0,0,.12)}
+.qz-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.qz-opt{min-height:80px;border:4px solid transparent;border-radius:22px;background:#f1f5f9;font-size:24px;box-shadow:0 5px 0 rgba(0,0,0,.1);padding:10px 14px;font-family:inherit;color:var(--ink)}
+.qz-opt.ok{background:#dcfce7;border-color:#22c55e}.qz-opt.no{background:#fee2e2;border-color:#f87171}
+.qz-in{display:flex;justify-content:center;margin:10px 0}
+.qz-in input{font-size:34px;padding:12px 16px;border-radius:18px;border:4px solid #bfdbfe;width:100%;max-width:560px;text-align:center;font-family:inherit}
+.qz-fb{font-size:26px;text-align:center;margin-top:14px;min-height:34px;font-weight:bold}
+.qz-fb.ok{color:#15803d}.qz-fb.no{color:#b91c1c}
+.qz-fb .ans{display:inline-block;background:#dcfce7;color:#166534;border-radius:14px;padding:6px 14px;margin-top:6px}
+.qz-acts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.qz-btn{min-height:70px;padding:0 28px;border:none;border-radius:22px;font-size:25px;font-weight:bold;color:#fff;background:#3b82f6;box-shadow:0 5px 0 rgba(0,0,0,.15);font-family:inherit}
+.qz-btn.green{background:#22c55e}.qz-btn.orange{background:#f97316}.qz-btn.gray{background:#94a3b8}
+.qz-btn:active,.qz-opt:active{transform:translateY(3px)}
 </style>
 </head>
 <body>
 <main>
 <header><a href="../" aria-label="Inicio">🏠</a><h1>📋 Errores para repasar</h1></header>
+<div id="quiz"></div>
+<div id="listview">
+<button class="practice-btn" id="practicar">🎯 Practicar mis errores</button>
 <div class="intro">Aquí se guardan las preguntas en las que se equivocó (en práctica y en exámenes), con <b>lo que contestó</b> y <b>la respuesta correcta</b>. Revísenlas juntos y pregúntale: <i>“¿Qué pensaste aquí? ¿Qué fue lo que no entendiste?”</i> Cuando ya lo repasen, toca <b>✔ Ya lo repasamos</b>.<br><small style="color:#64748b">Se guarda solo en este dispositivo.</small></div>
 <div class="bar" id="filters"></div>
 <div id="list"></div>
@@ -49,7 +77,11 @@ h1{font-size:26px;margin:0;flex:1}
   <button id="clearSeen">🧹 Borrar los ya repasados</button>
   <button id="clearAll" class="danger">🗑️ Borrar todo</button>
 </div>
+</div>
 </main>
+<script src="../comun/voz.js"></script>
+<script src="../comun/escritura.js"></script>
+<script src="../comun/columna.js"></script>
 <script src="../comun/errores.js"></script>
 <script>
 "use strict";
@@ -65,6 +97,10 @@ const ASK = {
 };
 function render() {
   const all = Errores.list().slice().reverse();
+  const nPend = all.filter(e => !e.visto && (materia === 'Todas' || e.materia === materia)).length;
+  const pb = document.getElementById('practicar');
+  pb.textContent = nPend ? `🎯 Practicar mis errores${materia === 'Todas' ? '' : ' de ' + materia} (${Math.min(nPend, QZ_MAX)}${nPend > QZ_MAX ? ' de ' + nPend : ''})` : '🎯 Practicar mis errores (no hay pendientes 🎉)';
+  pb.disabled = !nPend;
   const mats = ['Todas', ...new Set(all.map(e => e.materia))];
   $f.innerHTML = '';
   mats.forEach(m => { const b = document.createElement('button'); b.textContent = m + (m === 'Todas' ? '' : ' (' + all.filter(e => e.materia === m && !e.visto).length + ')'); if (m === materia) b.className = 'on'; b.onclick = () => { materia = m; render(); }; $f.append(b); });
@@ -76,7 +112,7 @@ function render() {
     const d = dayName(e.t);
     if (d !== lastDay) { html += `<div class="day">📅 ${esc(d)}</div>`; lastDay = d; }
     html += `<div class="err${e.visto ? ' visto' : ''}">
-      <div class="meta"><span class="tag ${esc(e.materia)}">${esc(e.materia)}</span><span class="tag ${esc(e.modo)}">${esc(e.modo)}</span><span>${esc(e.tema)}</span><span>· ${hour(e.t)}</span></div>
+      <div class="meta"><span class="tag ${esc(e.materia)}">${esc(e.materia)}</span><span class="tag ${esc(e.modo)}">${esc(e.modo)}</span><span>${esc(e.tema)}</span><span>· ${hour(e.t)}</span>${e.veces > 1 ? `<span class="times">×${e.veces}</span>` : ''}</div>
       <div class="q">${esc(e.pregunta)}</div>
       <div class="ans"><span>❌ Contestó:</span><span class="no">${esc(e.respuesta || '(sin respuesta)')}</span><span>✅ Correcto:</span><span class="ok">${esc(e.correcta)}</span></div>
       <div class="ask">💬 Pregúntale: ${esc(ASK[e.materia] || '¿Qué pensaste aquí?')}</div>
@@ -87,6 +123,117 @@ function render() {
 }
 document.getElementById('clearSeen').onclick = () => { if (confirm('¿Borrar los errores que ya repasaron?')) { Errores.remove(e => e.visto); render(); } };
 document.getElementById('clearAll').onclick = () => { if (confirm('¿Borrar TODOS los errores guardados?')) { Errores.remove(() => true); render(); } };
+
+/* ============================================================
+   🎯 PRACTICAR MIS ERRORES: vuelve a preguntar los pendientes.
+   Bien ➜ se marca como repasado. Mal ➜ se muestra la correcta y sigue pendiente.
+   ============================================================ */
+const QZ_MAX = 12;
+const $quiz = document.getElementById('quiz');
+const langOf = e => e.materia === 'Inglés' ? 'en' : 'es';
+const say = (t, e) => { if (window.Voz && t) Voz.speak(String(t).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, ''), { lang: langOf(e) }); };
+const noAcc = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC');
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function el(tag, cls, ...kids) { const x = document.createElement(tag); if (cls) x.className = cls; kids.flat().forEach(k => k != null && x.append(k)); return x; }
+function btn(label, cls, fn) { const b = el('button', cls, label); b.type = 'button'; b.onclick = fn; return b; }
+let qz = null;
+function startQuiz() {
+  const items = Errores.list().filter(e => !e.visto && (materia === 'Todas' || e.materia === materia)).reverse().slice(0, QZ_MAX);
+  if (!items.length) return;
+  qz = { items, i: 0, ok: 0, no: 0 };
+  document.body.classList.add('quizzing'); window.scrollTo(0, 0);
+  showQ();
+}
+function endQuiz() { qz = null; document.body.classList.remove('quizzing'); if (window.speechSynthesis) speechSynthesis.cancel(); render(); window.scrollTo(0, 0); }
+function showQ() {
+  const e = qz.items[qz.i];
+  let done = false;
+  const fb = el('div', 'qz-fb'), acts = el('div', 'qz-acts');
+  const card = el('div', 'qz-card');
+  function finish(ok, shownAnswer) {
+    if (done) return; done = true;
+    if (ok) { qz.ok++; Errores.mark(e.id, true); fb.className = 'qz-fb ok'; fb.textContent = '¡Muy bien! Ya la repasaste ✅'; }
+    else { qz.no++; fb.className = 'qz-fb no'; fb.innerHTML = ''; fb.append('La respuesta correcta es:', el('br'), el('span', 'ans', shownAnswer || e.correcta)); fb.append(el('div', null, el('small', null, 'La volveremos a practicar 💪'))); }
+    acts.innerHTML = '';
+    const last = qz.i + 1 >= qz.items.length;
+    const nb = btn(last ? 'Ver cómo me fue 🏁' : 'Siguiente ➜', 'qz-btn green', () => { if (last) summary(); else { qz.i++; showQ(); } });
+    acts.append(nb);
+    setTimeout(() => { try { nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (x) {} }, 120);
+  }
+  card.append(el('div', 'qz-meta', el('span', null, `${e.materia} · ${e.tema}`), el('span', null, `Pregunta ${qz.i + 1} de ${qz.items.length}`)));
+  card.append(el('div', 'qz-q', e.pregunta));
+  const dict = /Escucha|🎧/.test(e.pregunta);
+  if (e.say) card.append(btn('🔊 Escuchar', 'qz-say', () => say(e.say, e)));
+  if (e.opciones && e.opciones.length > 1) {
+    const oi = e.oi >= 0 ? e.oi : e.opciones.indexOf(e.correcta);
+    const box = el('div', 'qz-opts');
+    e.opciones.forEach((o, k) => box.append(btn(o, 'qz-opt', ev => {
+      if (done) return;
+      const ok = k === oi;
+      ev.currentTarget.classList.add(ok ? 'ok' : 'no');
+      box.querySelectorAll('.qz-opt')[oi] && box.querySelectorAll('.qz-opt')[oi].classList.add('ok');
+      finish(ok, e.opciones[oi] || e.correcta);
+    })));
+    card.append(box);
+  } else if (e.col && window.Columna) {
+    card.append(Columna.create({ a: e.col.a, b: e.col.b, op: e.col.op, speak: t => say(t, e), onDone: ({ mistakes }) => finish(!mistakes, e.correcta) }));
+  } else if (e.answers && e.answers.length) {
+    const input = el('input'); input.type = 'text'; input.setAttribute('autocomplete', 'off'); input.setAttribute('autocapitalize', 'off'); input.setAttribute('autocorrect', 'off'); input.spellcheck = false;
+    if (e.numeric) input.inputMode = 'numeric';
+    const norm = s => { s = String(s).normalize('NFC').trim().replace(/\s+/g, ' ').replace(/[’]/g, "'").replace(/[.!]+$/, '').trim(); if (e.numeric) s = s.replace(/[\s,]/g, ''); if (!e.cs) s = s.toLowerCase(); if (!e.accent) s = noAcc(s); return s; };
+    const check = btn('Comprobar ✔', 'qz-btn', doCheck);
+    function doCheck() {
+      if (done) return;
+      if (!input.value.trim()) { try { input.focus(); } catch (x) {} return; }
+      const ok = e.answers.some(a => norm(a) === norm(input.value));
+      input.disabled = true; check.remove();
+      finish(ok, e.answers[0]);
+    }
+    input.addEventListener('keydown', ev => { if (ev.key === 'Enter') doCheck(); });
+    const typebox = el('div', 'qz-in', input);
+    card.append(window.Escritura ? Escritura.pad({ q: { answer: e.answers, numeric: !!e.numeric }, input, lang: langOf(e), submit: doCheck, typebox }) : typebox);
+    acts.append(check);
+  } else if (e.respuesta && e.respuesta !== e.correcta && e.respuesta !== '(nada)' && e.respuesta.length < 160 && e.correcta.length < 160) {
+    card.append(el('div', 'qz-meta', el('span', null, '¿Cuál es la respuesta correcta?')));
+    const box = el('div', 'qz-opts');
+    shuffle([e.correcta, e.respuesta]).forEach(o => box.append(btn(o, 'qz-opt', ev => {
+      if (done) return;
+      const ok = o === e.correcta; ev.currentTarget.classList.add(ok ? 'ok' : 'no');
+      [...box.children].find(x => x.textContent === e.correcta).classList.add('ok');
+      finish(ok, e.correcta);
+    })));
+    card.append(box);
+  } else {
+    // Sin opciones guardadas: piensa la respuesta, mírala y di si la sabías
+    card.append(el('div', 'qz-meta', el('span', null, '💭 Piensa la respuesta y dila en voz alta. Luego mírala.')));
+    acts.append(btn('👀 Ver respuesta', 'qz-btn', () => {
+      acts.innerHTML = '';
+      fb.className = 'qz-fb'; fb.innerHTML = ''; fb.append(el('span', 'ans', e.correcta));
+      acts.append(btn('✅ Me la sabía', 'qz-btn green', () => finish(true)), btn('🔁 Todavía no', 'qz-btn orange', () => finish(false)));
+    }));
+  }
+  card.append(fb, acts);
+  $quiz.innerHTML = '';
+  $quiz.append(el('div', 'qz-bar', Object.assign(el('div'), { style: `width:${qz.i / qz.items.length * 100}%` })), card,
+    el('div', 'qz-acts', btn('✖ Salir', 'qz-btn gray', () => { if (confirm('¿Salir de la práctica?')) endQuiz(); })));
+  window.scrollTo(0, 0);
+  if (dict && e.say) say(e.say, e); // el toque en "Siguiente"/"Practicar" permite hablar en el iPad
+}
+function summary() {
+  const left = Errores.list().filter(e => !e.visto && (materia === 'Todas' || e.materia === materia)).length;
+  $quiz.innerHTML = '';
+  const card = el('div', 'qz-card');
+  card.style.textAlign = 'center';
+  card.append(el('div', null, Object.assign(el('div'), { textContent: qz.no ? '💪' : '🏆', style: 'font-size:72px' })),
+    el('div', 'qz-q', `✅ ${qz.ok} bien · 🔁 ${qz.no} para otra vez`),
+    el('p', null, qz.no ? '¡Muy bien por practicar! Las que fallaste siguen en la lista para otro día.' : '¡Increíble! Repasaste todas 🎉'));
+  const acts = el('div', 'qz-acts');
+  if (left) acts.append(btn(`🎯 Seguir (${Math.min(left, QZ_MAX)})`, 'qz-btn orange', startQuiz));
+  acts.append(btn('📋 Ver la lista', 'qz-btn', endQuiz));
+  card.append(acts);
+  $quiz.append(card);
+}
+document.getElementById('practicar').onclick = startQuiz;
 render();
 </script>
 </body>

@@ -36,6 +36,22 @@ a.item .tag{background:#2e9d52;color:#fff;border-radius:10px;padding:3px 10px;fo
 a.item:active{transform:translateY(2px)}
 .item.soon{background:#f1f1f4;color:#666}
 .item.soon .tag{background:#d9d9e0;color:#555;border-radius:10px;padding:3px 10px;font-size:.85em;white-space:nowrap}
+.repaso-btn{display:flex;flex-direction:column;align-items:center;gap:4px;width:min(640px,100%);padding:20px 22px;border-radius:26px;background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;text-decoration:none;font-size:1.9em;font-weight:800;text-align:center;box-shadow:0 7px 0 rgba(0,0,0,.18)}
+.repaso-btn:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.repaso-btn small{font-size:.5em;font-weight:600;opacity:.95}
+.stars-card{width:100%;max-width:900px;background:#fff;border-radius:26px;padding:14px 20px;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.stars-card summary{font-size:1.25em;font-weight:700;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.stars-card summary::-webkit-details-marker{display:none}
+.stars-card summary .cnt{font-size:.8em;font-weight:600;color:#475569;background:#f1f5f9;border-radius:12px;padding:3px 10px}
+.stars-card .hint{color:#64748b;margin:8px 0 10px;font-size:.98em}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.st{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#f8fafc;text-decoration:none;color:#1e293b;font-size:1.02em;border-left:6px solid #cbd5e1}
+.st:active{transform:translateY(2px)}
+.st .nm{flex:1;line-height:1.2}.st .nm small{display:block;color:#64748b;font-size:.8em}
+.st .sv{white-space:nowrap;font-size:.95em}
+.st-grid.short .st.more{display:none}
+.st-all{display:block;margin:10px auto 2px;border:none;border-radius:14px;background:#f1f5f9;padding:10px 18px;font:600 1em -apple-system,system-ui,sans-serif;color:#334155}
+.st.s0{border-left-color:#ef4444;background:#fef2f2}.st.s1{border-left-color:#f97316;background:#fff7ed}.st.s2{border-left-color:#eab308;background:#fefce8}.st.s3{border-left-color:#22c55e;background:#f0fdf4}
 @media (max-width:700px){.day{grid-template-columns:1fr}.date{flex-direction:row;gap:10px}.date .num{font-size:1.6em}}
 </style></head>
 <body>
@@ -43,7 +59,9 @@ a.item:active{transform:translateY(2px)}
 <p class="sub">¡Vamos a estudiar! Elige una materia 👇</p>
 <p class="sub" style="font-size:.95em;color:#3b82f6">✨ ¡Nuevo! Ahora puedes escribir con el dedo ✍️</p>
 <div class="btns"><a class="en" href="ingles/">🇺🇸 Inglés</a><a class="es" href="espanol/">🇲🇽 Español</a><a class="ma" href="matematicas/">🧮 Matemáticas</a></div>
+<a class="repaso-btn" id="repaso-btn" hidden></a>
 <div class="btns" style="gap:12px"><a class="voz" id="repasar" href="repasar/" style="text-decoration:none">📋 Errores para repasar</a><button class="voz" onclick="Voz.panel()">🔊 Ajustes de voz</button></div>
+<details class="stars-card" id="estrellas" hidden open><summary></summary><p class="hint">Para papá o mamá: las mejores estrellas de cada tema en este iPad. Arriba están los que más necesitan práctica; toca uno para abrirlo.</p><div class="st-grid"></div></details>
 
 <section class="cal">
 <h2>📅 Calendario de exámenes</h2>
@@ -120,9 +138,75 @@ function examHighlight(now, dates) {
     else if (r.past.indexOf(d) >= 0) { c.classList.add('past'); b.textContent = '✔ Ya pasó'; }
   });
   if (r.done) document.getElementById('done').style.display = 'block';
+  window.EXAMEN = r;
 })();
 </script>
 <script src="comun/voz.js"></script>
 <script src="comun/errores.js"></script>
+<script src="comun/temas.js"></script>
+<script>
+/* 📅 Repaso para mañana + ⭐ estrellas del próximo día de examen (usa el mismo HOY/MAÑANA; respeta ?ahora=) */
+(function () {
+  var r = window.EXAMEN; if (!r || r.done || !r.target) return;
+  var day = document.querySelector('.day[data-date="' + r.target + '"]'); if (!day) return;
+  var dia = day.querySelector('.dn').textContent.trim().toLowerCase();
+  var NAME = { matematicas: 'Matemáticas', ingles: 'Inglés', espanol: 'Español' };
+  var groups = [], by = {};
+  [].slice.call(day.querySelectorAll('a.item')).forEach(function (a) {
+    var m = /^([a-z]+)\/#([a-z]+)$/.exec(a.getAttribute('href')); if (!m) return;
+    if (!by[m[1]]) { by[m[1]] = { page: m[1], secs: [], names: [] }; groups.push(by[m[1]]); }
+    by[m[1]].secs.push(m[2]); by[m[1]].names.push(a.firstChild.textContent.trim());
+  });
+  if (!groups.length) return;
+  // ~10 minutos: 6 cuentas de mate (columna/razonados/mental) + 8 preguntas por materia; si es una sola, más largo
+  var N = groups.length > 1 ? { matematicas: 6, ingles: 8, espanol: 8 } : { matematicas: 10, ingles: 14, espanol: 14 };
+  var next = '../';
+  for (var i = groups.length - 1; i >= 0; i--) {
+    var g = groups[i];
+    var url = g.page + '/?repaso=' + g.secs.join(',') + '&n=' + N[g.page] + '&dia=' + encodeURIComponent(dia) + '&next=' + encodeURIComponent(next);
+    next = i ? '../' + url : url;
+  }
+  var when = r.label === '⭐ HOY' ? 'hoy' : r.label === '📌 MAÑANA' ? 'mañana' : 'el ' + dia;
+  var btn = document.getElementById('repaso-btn');
+  btn.href = next;
+  btn.innerHTML = '📅 Repaso para ' + when + '<small>' + (when === 'hoy' || when === 'mañana' ? dia.charAt(0).toUpperCase() + dia.slice(1) + ' · ' : '') + '~10 min · ' + groups.map(function (g) { return NAME[g.page]; }).join(' + ') + '</small>';
+  btn.hidden = false;
+
+  // ⭐ Estrellas por tema (lo más débil primero)
+  if (!window.TEMAS) return;
+  var rows = [];
+  groups.forEach(function (g) {
+    var prog = {}; try { prog = JSON.parse(localStorage.getItem(TEMAS_KEYS[g.page])) || {}; } catch (e) {}
+    g.secs.forEach(function (sec, si) {
+      (TEMAS[g.page] || []).forEach(function (t) {
+        if (t.sec !== sec || t.k === 'reloj') return;
+        rows.push({ page: g.page, t: t, s: prog[t.id] || 0, sec: g.names[si], n: rows.length });
+      });
+    });
+  });
+  if (!rows.length) return;
+  rows.sort(function (a, b) { return a.s - b.s || a.n - b.n; });
+  var full = rows.filter(function (x) { return x.s === 3; }).length;
+  var box = document.getElementById('estrellas');
+  box.querySelector('summary').innerHTML = '⭐ Estrellas para ' + when + ' <span class="cnt">' + full + ' de ' + rows.length + ' temas con ⭐⭐⭐</span>';
+  var grid = box.querySelector('.st-grid');
+  var SHOW = 8;
+  if (rows.length > SHOW) grid.classList.add('short');
+  rows.forEach(function (x, i) {
+    var a = document.createElement('a');
+    a.className = 'st s' + x.s + (i >= SHOW ? ' more' : ''); a.href = x.page + '/#tema-' + encodeURIComponent(x.t.id);
+    var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = x.t.e + ' ' + x.t.t;
+    var sm = document.createElement('small'); sm.textContent = NAME[x.page] + ' · ' + x.sec.replace(/^\S+\s/, ''); nm.appendChild(sm);
+    var sv = document.createElement('span'); sv.className = 'sv'; sv.textContent = '⭐'.repeat(x.s) + '☆'.repeat(3 - x.s);
+    a.appendChild(nm); a.appendChild(sv); grid.appendChild(a);
+  });
+  if (rows.length > SHOW) {
+    var all = document.createElement('button'); all.className = 'st-all'; all.textContent = '👀 Ver los ' + rows.length + ' temas';
+    all.onclick = function () { var sh = grid.classList.toggle('short'); all.textContent = sh ? '👀 Ver los ' + rows.length + ' temas' : '🙈 Ver solo los que más necesitan práctica'; };
+    box.appendChild(all);
+  }
+  box.hidden = false;
+})();
+</script>
 <script>try { const n = Errores.pending(); if (n) document.getElementById('repasar').innerHTML = '📋 Errores para repasar <b style="background:#f97316;color:#fff;border-radius:10px;padding:2px 8px">' + n + '</b>'; } catch (e) {}</script>
 </body></html>

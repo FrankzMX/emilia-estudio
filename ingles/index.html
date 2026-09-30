@@ -1702,12 +1702,17 @@ function runQuiz({ title, questions, mode, onDone }) {
         return true;
       }
       beep(false);
-      if (window.Errores) Errores.log({ materia: 'Inglés', tema: title, pregunta: q.prompt + context, respuesta: given, correcta: answerText, modo: exam ? 'examen' : 'práctica' });
       if (!exam && tries === 0) {
         tries++;
         fb.append(h('div', null, extraMsg || pick(TRY_AGAIN)));
         return false;
       }
+      // "Errores para repasar": solo se guarda la respuesta final equivocada (no cada primer intento)
+      if (window.Errores) Errores.log({ materia: 'Inglés', tema: title, pregunta: q.prompt + context, respuesta: given, correcta: answerText, modo: exam ? 'examen' : 'práctica',
+        tipo: q.type, say: say || q.speak || null, numeric: !!(q.numeric || q.inputmode === 'numeric'), cs: !!q.caseSensitive, accent: !!q.accent,
+        opciones: q.type === 'mc' ? q.options.map(o => [o.emoji, o.label].filter(Boolean).join(' ') || String(o.value)) : null,
+        oi: q.type === 'mc' ? q.options.findIndex(o => o.value === q.answer) : -1,
+        answers: q.type === 'type' ? q.answer.map(String) : null, col: q.type === 'column' ? { a: q.a, b: q.b, op: q.op } : null });
       tries++;
       fb.append(...[h('div', null, exam ? (extraMsg || 'Uy, esa no era 😅') : (extraMsg ? extraMsg : '')),
         h('div', null, 'La respuesta correcta es:'),
@@ -1853,8 +1858,26 @@ function runQuiz({ title, questions, mode, onDone }) {
 
 showHome();
 if (window.Escritura) Escritura.borrador();
+/* ---------- 📅 Repaso para mañana (se abre desde el inicio) ----------
+   ?repaso=reading,speaking&n=8&dia=miércoles&next=../otra-materia/?repaso=... */
+const safeNext = u => (u && /^\.\.\/([a-z]+\/)?(\?[\w.,=&%-]*)?$/.test(u)) ? u : '../';
+function startRepaso(secs, n, next, dia) {
+  const topics = TOPICS.filter(t => secs.includes(t.section));
+  if (!topics.length) return false;
+  const title = '📅 Repaso' + (dia ? ' para el ' + dia : '');
+  const last = next === '../';
+  runQuiz({ title, questions: buildExam(topics, n), mode: 'practice',
+    onDone: (score, total, review) => showResults({ title, score, total, review, id: 'repaso', again: () => startRepaso(secs, n, next, dia),
+      next: () => { location.href = next; }, nextLabel: last ? '🏁 Terminé el repaso' : 'Seguir con el repaso ➜' }) });
+  return true;
+}
+const RP = new URLSearchParams(location.search);
+const tm = /^#tema-(.+)$/.exec(location.hash), tid = tm && decodeURIComponent(tm[1]);
+if (RP.get('repaso')) { startRepaso(RP.get('repaso').split(','), Math.min(30, +RP.get('n') || 10), safeNext(RP.get('next')), RP.get('dia')); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+// Enlace directo a un tema (p. ej. #tema-talent, desde las estrellas del inicio)
+else if (tid && TOPICS.some(t => t.id === tid)) showExplain(tid);
 // Enlace directo a una sección desde el calendario (p. ej. #grammar)
-if (location.hash) { const el = document.getElementById('sec-' + location.hash.slice(1)); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 50); }
+else if (location.hash) { const el = document.getElementById('sec-' + location.hash.slice(1)); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 50); }
 </script>
 <a href="../" style="position:fixed;right:12px;bottom:12px;background:rgba(255,255,255,.85);padding:8px 14px;border-radius:14px;font:600 16px -apple-system,system-ui,sans-serif;color:#555;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.15);z-index:5">📚 Materias</a></body>
 </html>

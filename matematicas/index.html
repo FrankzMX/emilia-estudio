@@ -65,6 +65,11 @@ main{max-width:980px; margin:0 auto; padding:8px 18px 90px;}
 .review{text-align:left;font-size:20px;background:#fff7ed;border-radius:18px;padding:12px 18px;margin-top:10px}.review li{margin:4px 0}
 .next-btn{min-width:240px}
 .tip{font-size:19px; color:var(--muted); text-align:center; margin-top:10px;}
+.reloj-top{display:flex; justify-content:center; gap:22px; align-items:center; margin:12px 0;}
+.reloj-clock{font-size:64px; font-weight:bold; background:#fff; border-radius:50%; width:120px; height:120px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 0 rgba(0,0,0,.1); color:#0f766e;}
+.reloj-clock.hurry{color:#dc2626; animation:shake .5s infinite;}
+.reloj-score{font-size:40px; font-weight:bold;}
+.reloj-pad{grid-template-columns:repeat(3,110px);} .reloj-pad button{height:90px; font-size:44px;}
 @media (max-width:600px){ .story{font-size:22px;} .mental{font-size:60px;} .opt{font-size:24px;} }
 </style>
 </head>
@@ -223,6 +228,7 @@ const TOPICS = [
   { id: 'm-veinte', sec: 'mental', t: 'Hasta 20', s: '8 + 6, 15 − 7…', e: '✋', c: '#16a34a', kind: 'mental', gen: () => mental('veinte') },
   { id: 'm-dobles', sec: 'mental', t: 'Dobles', s: '6 + 6, 8 + 8…', e: '👯', c: '#65a30d', kind: 'mental', gen: () => mental('dobles') },
   { id: 'm-decenas', sec: 'mental', t: 'Decenas', s: '30 + 40, 80 − 20…', e: '🧱', c: '#ca8a04', kind: 'mental', gen: () => mental('decenas') },
+  { id: 'm-reloj', sec: 'mental', t: 'Contra reloj', s: '¿Cuántas en 1 minuto?', e: '⏱️', c: '#dc2626', kind: 'reloj' },
   { id: 'm-mas10', sec: 'mental', t: 'Más 10 / menos 10', s: '47 + 10, 63 − 10…', e: '🪜', c: '#ea580c', kind: 'mental', gen: () => mental('mas10') },
   { id: 'ceros-demo', sec: 'ceros', t: 'Mira cómo se hace', s: 'Paso a paso, para explicarlo juntos', e: '👩‍🏫', c: '#7c3aed', kind: 'demo' },
   { id: 'res0', sec: 'ceros', t: 'Con un cero', s: 'Ej. 503 − 128', e: '0️⃣', c: '#9333ea', kind: 'col', gen: () => mec0('one') },
@@ -258,7 +264,7 @@ function showHome() {
       h('p', null, sec.es)));
     content.push(h('div', { class: 'topics' }, TOPICS.filter(t => t.sec === sec.id).map(t =>
       h('button', { class: 'topic', style: { background: t.c }, onclick: () => { homeScroll = window.scrollY; start(t); } },
-        h('div', { class: 'emo' }, t.e), h('div', { class: 't' }, t.t), h('div', { class: 's' }, t.s), h('div', { class: 'stars' }, t.kind === 'demo' ? '📖 Explicación' : starStr(progress[t.id] || 0))))));
+        h('div', { class: 'emo' }, t.e), h('div', { class: 't' }, t.t), h('div', { class: 's' }, t.s), h('div', { class: 'stars' }, t.kind === 'demo' ? '📖 Explicación' : t.kind === 'reloj' ? '🏅 Récord: ' + relojBest().best : starStr(progress[t.id] || 0))))));
   }
   screen('Matemáticas 🧮', null, ...content);
 }
@@ -266,21 +272,22 @@ function showHome() {
 const itemFor = t => ({ kind: t.kind, data: t.kind === 'razon' ? razonado() : t.gen() });
 function start(t) {
   if (t.kind === 'demo') return showDemo(0);
+  if (t.kind === 'reloj') return startReloj();
   runSet({ id: t.id, title: t.e + ' ' + t.t, total: t.n || (t.kind === 'mental' ? 10 : 6), next: () => itemFor(t), again: () => start(t) });
 }
 // Examen: por bloque (8 ejercicios) o de todo (12), repartiendo los temas por turnos
 function startExam(secId) {
   const sec = SECTIONS.find(x => x.id === secId);
   const total = sec ? 8 : 12;
-  const pools = (sec ? [sec] : SECTIONS).map(x => shuffle(TOPICS.filter(t => t.sec === x.id && t.kind !== 'demo')));
+  const pools = (sec ? [sec] : SECTIONS).map(x => shuffle(TOPICS.filter(t => t.sec === x.id && t.kind !== 'demo' && t.kind !== 'reloj')));
   const order = [];
   for (let k = 0; order.length < total; k++) { const pool = pools[k % pools.length]; order.push(pool[Math.floor(k / pools.length) % pool.length]); }
   let j = 0;
   runSet({ id: sec ? 'exam-' + sec.id : 'exam', title: sec ? '📝 Examen: ' + sec.name.replace(/^\S+\s/, '') : '🏆 Examen de Matemáticas', total, exam: true,
-    next: () => itemFor(order[j++]), again: () => startExam(secId) });
+    next: () => itemFor(order[j++ % order.length]), again: () => startExam(secId) });
 }
 
-function runSet({ id, title, total, next, again, exam }) {
+function runSet({ id, title, total, next, again, exam, after }) {
   let i = 0, clean = 0;
   const review = [];
   const seen = new Set();
@@ -293,7 +300,7 @@ function runSet({ id, title, total, next, again, exam }) {
   }
   // Botón "Siguiente": aparece donde está su mano y se desliza a la vista (sin hacer scroll)
   const nextBtn = () => {
-    const b = h('button', { class: 'big-btn green next-btn', onclick: () => { i++; i < total ? render() : results({ id, title, ok: clean, total, review, again, exam }); } }, i + 1 < total ? 'Siguiente ➜' : 'Ver resultado 🏁');
+    const b = h('button', { class: 'big-btn green next-btn', onclick: () => { i++; i < total ? render() : results({ id, title, ok: clean, total, review, again, exam, next: after && after.next, nextLabel: after && after.label }); } }, i + 1 < total ? 'Siguiente ➜' : 'Ver resultado 🏁');
     setTimeout(() => { try { b.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { b.scrollIntoView(false); } }, 120);
     return b;
   };
@@ -309,7 +316,7 @@ function runSet({ id, title, total, next, again, exam }) {
     const w = Columna.create({ a, b, op, speak, exam, onDone: ({ mistakes, side, errs }) => {
       const r = op === '+' ? a + b : a - b;
       const bad = mistakes || (extra && extra.fails);
-      if (bad && window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: `${extra && extra.label ? 'Problema: ' : 'Resuelve en columna: '}${a} ${sign(op)} ${b}`, respuesta: [extra && extra.fails ? 'Eligió la operación equivocada' : '', ...(errs || [])].filter(Boolean).join(' · '), correcta: String(r), modo: exam ? 'examen' : 'práctica' });
+      if (bad && window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: extra && extra.text ? `${extra.text} (${a} ${sign(op)} ${b})` : `Resuelve en columna: ${a} ${sign(op)} ${b}`, respuesta: [extra && extra.fails ? 'Eligió la operación equivocada' : '', ...(errs || [])].filter(Boolean).join(' · '), correcta: String(r), modo: exam ? 'examen' : 'práctica', tipo: 'column', col: { a, b, op } });
       if (!bad) clean++; else review.push(`${extra && extra.label ? extra.label + ' ➜ ' : ''}${a} ${sign(op)} ${b} = ${r}`);
       beep(true); confetti(bad ? 10 : 24);
       // El resultado y "Siguiente" ocupan el lugar del recuadro para escribir
@@ -326,7 +333,7 @@ function runSet({ id, title, total, next, again, exam }) {
     const fb = h('div', { class: 'fb' });
     let fails = 0, locked = false;
     const goColumn = () => renderColumn(p.a, p.op, p.b, {
-      fails, label: p.op === '+' ? 'Era suma' : 'Era resta',
+      fails, label: p.op === '+' ? 'Era suma' : 'Era resta', text: p.text,
       head: h('div', null, h('div', { class: 'story' }, p.text), h('div', { class: 'ask' }, `${p.op === '+' ? '➕ Es SUMA' : '➖ Es RESTA'}: ${p.a} ${sign(p.op)} ${p.b}`)),
       after: r => { const a = h('div', { class: 'answer' }, `Respuesta: ${r} ${p.unit} ✅`); speak(`Respuesta: ${r} ${p.unit}`); return a; },
     });
@@ -335,7 +342,6 @@ function runSet({ id, title, total, next, again, exam }) {
         if (locked) return;
         if (op === p.op) { locked = true; b.classList.add('ok'); beep(true); setTimeout(goColumn, 350); return; }
         fails++; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); beep(false);
-        if (window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: p.text + ' ¿Suma o resta?', respuesta: op === '+' ? 'Sumar' : 'Restar', correcta: p.op === '+' ? 'Sumar' : 'Restar', modo: exam ? 'examen' : 'práctica' });
         fb.className = 'fb bad'; fb.textContent = '🤔 ' + KEYWORDS[p.op];
         if (exam) { // en examen: un solo intento, se muestra la correcta y seguimos
           locked = true; btns.find(x => x !== b).classList.add('ok');
@@ -377,9 +383,12 @@ function runSet({ id, title, total, next, again, exam }) {
         finish(true);
       } else {
         tries++; beep(false); line.className = 'mental'; void line.offsetWidth; line.className = 'mental no';
-        if (window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: `${q[0]} ${sign(q[1])} ${q[2]} = ?`, respuesta: v, correcta: String(ans), modo: exam ? 'examen' : 'práctica' });
         fb.className = 'fb bad';
-        if (exam || tries >= 2) { fb.textContent = `La respuesta es ${ans}. ${tipFor(q)}`; finish(false); }
+        if (exam || tries >= 2) {
+          // "Errores para repasar": solo la respuesta final equivocada
+          if (window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: `${q[0]} ${sign(q[1])} ${q[2]} = ?`, respuesta: v, correcta: String(ans), modo: exam ? 'examen' : 'práctica', tipo: 'type', numeric: true, answers: [String(ans)], say: `¿Cuánto es ${q[0]} ${word(q[1])} ${q[2]}?` });
+          fb.textContent = `La respuesta es ${ans}. ${tipFor(q)}`; finish(false);
+        }
         else fb.textContent = '¡Casi! Revisa y corrige tu respuesta 💪';
       }
     }
@@ -418,7 +427,7 @@ function tipFor([a, op, b]) {
   if (a === b) return `Es un doble: ${a} + ${a}.`;
   return 'Puedes contar con los dedos o buscar el 10.';
 }
-function results({ id, title, ok, total, review, again, exam }) {
+function results({ id, title, ok, total, review, again, exam, next, nextLabel }) {
   const stars = starsFor(ok, total);
   saveBest(id, stars);
   const msg = stars === 3 ? '¡Increíble! 🌟' : stars === 2 ? '¡Muy bien! Ya casi lo dominas 💪' : stars === 1 ? '¡Buen intento! Vamos a practicar un poquito más 🙂' : '¡No te rindas! Inténtalo otra vez 💙';
@@ -431,13 +440,119 @@ function results({ id, title, ok, total, review, again, exam }) {
       review.length ? h('div', { class: 'review' }, h('b', null, 'Para repasar:'), h('ul', null, review.map(r => h('li', null, r)))) : null),
     h('div', { class: 'actions' },
       h('button', { class: 'big-btn orange', onclick: again }, '🔁 Otra vez'),
+      next ? h('button', { class: 'big-btn green', onclick: next }, nextLabel) : null,
       h('button', { class: 'big-btn', onclick: goHome }, '🏠 Inicio')));
   if (stars >= 2) { confetti(stars === 3 ? 40 : 20); beep(true); }
 }
 
+/* ============================================================
+   ⏱️ CONTRA RELOJ: cálculo mental durante 1 minuto (récord en este dispositivo)
+   ============================================================ */
+const RELOJ_KEY = 'mi-examen-mate-reloj-v1', RELOJ_SEG = 60;
+function relojBest() { try { return JSON.parse(localStorage.getItem(RELOJ_KEY)) || { best: 0 }; } catch (e) { return { best: 0 }; } }
+let relojTimer = null;
+function stopReloj() { if (relojTimer) { clearInterval(relojTimer); relojTimer = null; } }
+function relojQ() { return mental(pick(['diez', 'veinte', 'veinte', 'dobles', 'decenas', 'mas10', 'mas10', 'x'])); }
+function startReloj() {
+  stopReloj();
+  const rec = relojBest();
+  screen('⏱️ Contra reloj', () => { stopReloj(); goHome(); },
+    h('div', { class: 'card', style: { textAlign: 'center' } },
+      h('div', { style: { fontSize: '72px' } }, '⏱️'),
+      h('p', { style: { fontSize: '26px', margin: '6px 0' } }, `¿Cuántas cuentas puedes contestar en ${RELOJ_SEG} segundos?`),
+      h('p', { style: { fontSize: '20px', color: '#64748b' } }, 'Escribe la respuesta con los números. Si te equivocas, no pasa nada: sigue con la próxima.'),
+      h('p', { class: 'result-score', style: { fontSize: '30px' } }, '🏅 Tu récord: ' + rec.best),
+      h('div', { class: 'actions' }, h('button', { class: 'big-btn green', style: { minWidth: '260px', minHeight: '90px', fontSize: '32px' }, onclick: runReloj }, '¡Empezar! ▶'))));
+}
+function runReloj() {
+  stopReloj();
+  const end = Date.now() + RELOJ_SEG * 1000;
+  let ok = 0, bad = 0, q = null, ans = 0, val = '', locked = false, last = '';
+  const misses = [];
+  const clock = h('div', { class: 'reloj-clock' }, String(RELOJ_SEG));
+  const bar = h('div', { class: 'progress' }, h('div', { style: { width: '100%', background: 'linear-gradient(90deg,#f97316,#facc15)' } }));
+  const score = h('div', { class: 'reloj-score' }, '✅ 0');
+  const line = h('div', { class: 'mental' });
+  const fb = h('div', { class: 'fb' });
+  function nextQ() {
+    do { q = relojQ(); } while (q.join() === last); last = q.join();
+    ans = calc(q); val = ''; locked = false; draw();
+  }
+  function draw() { line.className = 'mental'; line.innerHTML = ''; line.append(`${q[0]} ${sign(q[1])} ${q[2]} = `, h('span', { class: 'box' }, val || '?')); }
+  function press(d) {
+    if (locked) return;
+    if (d === 'del') { val = val.slice(0, -1); draw(); return; }
+    if (val.length >= 3) return;
+    val += d; draw();
+    // Se revisa sola cuando tiene las cifras de la respuesta
+    if (val.length >= String(ans).length) check();
+  }
+  function check() {
+    if (!val || locked) return;
+    locked = true;
+    if (+val === ans) { ok++; beep(true); line.className = 'mental ok'; fb.className = 'fb good'; fb.textContent = pick(['¡Bien! ⚡', '¡Rápido! 🚀', '¡Eso! ✅']); setTimeout(nextQ, 250); }
+    else { bad++; beep(false); line.className = 'mental no'; fb.className = 'fb bad'; fb.textContent = `Era ${ans}`; misses.push(`${q[0]} ${sign(q[1])} ${q[2]} = ${ans}`); setTimeout(nextQ, 900); }
+    score.textContent = '✅ ' + ok;
+  }
+  const pad = h('div', { class: 'pad reloj-pad' },
+    ...'123456789'.split('').map(d => h('button', { onclick: () => press(d) }, d)),
+    h('button', { class: 'del', onclick: () => press('del') }, '⌫'),
+    h('button', { onclick: () => press('0') }, '0'),
+    h('button', { class: 'chk', onclick: check }, '✔'));
+  screen('⏱️ Contra reloj', () => { if (confirm('¿Salir? Se perderá esta ronda.')) { stopReloj(); goHome(); } },
+    bar, h('div', { class: 'reloj-top' }, clock, score),
+    h('div', { class: 'card', style: { textAlign: 'center' } }, line, fb, pad));
+  nextQ();
+  const tick = () => {
+    const left = Math.max(0, end - Date.now());
+    clock.textContent = String(Math.ceil(left / 1000));
+    bar.firstChild.style.width = (left / (RELOJ_SEG * 10)) + '%';
+    clock.classList.toggle('hurry', left <= 10000);
+    if (left <= 0) { stopReloj(); relojDone(ok, bad, misses); }
+  };
+  relojTimer = setInterval(tick, 200); tick();
+}
+function relojDone(ok, bad, misses) {
+  const rec = relojBest(), nuevo = ok > rec.best;
+  if (nuevo) { try { localStorage.setItem(RELOJ_KEY, JSON.stringify({ best: ok, fecha: Date.now() })); } catch (e) {} }
+  saveBest('m-reloj', ok >= 15 ? 3 : ok >= 10 ? 2 : ok >= 5 ? 1 : 0);
+  screen('⏱️ Contra reloj', goHome,
+    h('div', { class: 'card', style: { textAlign: 'center' } },
+      h('div', { style: { fontSize: '70px' } }, nuevo ? '🏆' : '⏱️'),
+      h('div', { class: 'result-score' }, `✅ ${ok} en ${RELOJ_SEG} segundos`),
+      h('p', { style: { fontSize: '26px' } }, nuevo ? (rec.best ? `¡NUEVO RÉCORD! Antes: ${rec.best} 🎉` : '¡Tu primer récord! 🎉') : `Tu récord es ${rec.best}. ¡Tú puedes superarlo! 💪`),
+      bad ? h('p', { style: { fontSize: '20px', color: '#64748b' } }, `Te equivocaste en ${bad}.`) : null,
+      misses.length ? h('div', { class: 'review' }, h('b', null, 'Para repasar:'), h('ul', null, misses.slice(0, 8).map(r => h('li', null, r)))) : null),
+    h('div', { class: 'actions' },
+      h('button', { class: 'big-btn orange', onclick: runReloj }, '🔁 Otra vez'),
+      h('button', { class: 'big-btn', onclick: goHome }, '🏠 Inicio')));
+  if (nuevo || ok >= 10) { confetti(nuevo ? 40 : 20); beep(true); }
+}
+
+/* ---------- 📅 Repaso para mañana (se abre desde el inicio) ----------
+   ?repaso=mecanizados,razonados,mental&n=6&dia=miércoles&next=../ingles/?repaso=... */
+const safeNext = u => (u && /^\.\.\/([a-z]+\/)?(\?[\w.,=&%-]*)?$/.test(u)) ? u : '../';
+function startRepaso(secs, n, next, dia) {
+  const pools = SECTIONS.filter(x => secs.includes(x.id)).map(x => shuffle(TOPICS.filter(t => t.sec === x.id && t.kind !== 'demo' && t.kind !== 'reloj')));
+  if (!pools.length) return false;
+  const order = [];
+  for (let k = 0; order.length < n; k++) { const pool = pools[k % pools.length]; order.push(pool[Math.floor(k / pools.length) % pool.length]); }
+  let j = 0;
+  const last = next === '../';
+  runSet({ id: 'repaso', title: '📅 Repaso' + (dia ? ' para el ' + dia : ''), total: n, exam: false,
+    next: () => itemFor(order[j++ % order.length]), again: () => startRepaso(secs, n, next, dia),
+    after: { next: () => { location.href = next; }, label: last ? '🏁 Terminé el repaso' : 'Seguir con el repaso ➜' } });
+  return true;
+}
+
 showHome();
 if (window.Escritura) Escritura.borrador();
-if (location.hash) { const el = document.getElementById('sec-' + location.hash.slice(1)); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 50); }
+const RP = new URLSearchParams(location.search);
+const tm = /^#tema-(.+)$/.exec(location.hash), tid = tm && decodeURIComponent(tm[1]);
+if (RP.get('repaso')) { startRepaso(RP.get('repaso').split(','), Math.min(20, +RP.get('n') || 6), safeNext(RP.get('next')), RP.get('dia')); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+// Enlace directo a un tema (p. ej. #tema-res, desde las estrellas del inicio)
+else if (tid && TOPICS.some(t => t.id === tid)) start(TOPICS.find(t => t.id === tid));
+else if (location.hash) { const el = document.getElementById('sec-' + location.hash.slice(1)); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 50); }
 </script>
 <a href="../" style="position:fixed;right:12px;bottom:12px;background:rgba(255,255,255,.9);padding:8px 14px;border-radius:14px;font:600 16px -apple-system,system-ui,sans-serif;color:#475569;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.15);z-index:5">📚 Materias</a>
 </body>
