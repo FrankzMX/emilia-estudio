@@ -220,6 +220,7 @@ function showQ() {
   if (dict && e.say) say(e.say, e); // el toque en "Siguiente"/"Practicar" permite hablar en el iPad
 }
 function summary() {
+  if (window.Progreso) Progreso.hecho({ materia: 'Repaso', tema: '🎯 Practicar mis errores', id: 'repasar', pag: 'repasar', score: qz.ok, total: qz.ok + qz.no });
   const left = Errores.list().filter(e => !e.visto && (materia === 'Todas' || e.materia === materia)).length;
   $quiz.innerHTML = '';
   const card = el('div', 'qz-card');
@@ -236,6 +237,7 @@ function summary() {
 document.getElementById('practicar').onclick = startQuiz;
 render();
 </script>
+<script src="../comun/progreso.js"></script>
 <script src="../comun/actualiza.js"></script>
 </body>
 </html>

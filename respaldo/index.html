@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>💾 Cargar respaldo · Mi Examen</title>
+<link rel="apple-touch-icon" href="../apple-touch-icon.png"><link rel="icon" href="../icon.svg">
+<style>
+body{margin:0;font:18px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif;background:linear-gradient(160deg,#e0f2fe,#fef9c3);color:#1e293b;min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:24px 16px}
+h1{text-align:center;font-size:30px;margin:10px 0 16px}
+.card{background:#fff;border-radius:22px;padding:18px 20px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+ul{padding-left:0;list-style:none}li{background:#f8fafc;border-radius:12px;padding:8px 12px;margin-bottom:6px}
+button,a.b{display:inline-block;border:none;border-radius:18px;min-height:60px;padding:0 22px;font-size:20px;font-weight:bold;background:#22c55e;color:#fff;text-decoration:none;line-height:60px;margin:6px 4px 0 0}
+a.b{background:#0ea5e9}textarea{width:100%;box-sizing:border-box;min-height:100px;border:2px solid #cbd5e1;border-radius:12px;padding:8px;font:13px ui-monospace,Menlo,monospace}
+.msg{color:#b91c1c;min-height:24px}
+</style></head>
+<body>
+<main>
+<h1>💾 Cargar un respaldo</h1>
+<div class="card" id="box"></div>
+</main>
+<script src="../comun/respaldo.js"></script>
+<script>
+(function () {
+  var box = document.getElementById('box');
+  function el(t, txt) { var e = document.createElement(t); if (txt != null) e.textContent = txt; return e; }
+  function show(code) {
+    box.innerHTML = '';
+    var msg = el('div'); msg.className = 'msg';
+    Respaldo.leer(code).then(function (obj) {
+      box.append(el('p', 'Este respaldo trae:'));
+      var ul = el('ul'); Respaldo.resumen(obj).forEach(function (t) { ul.append(el('li', t)); }); box.append(ul);
+      box.append(el('p', '⚠️ Si lo cargas, reemplaza el progreso que hay en este dispositivo.'));
+      var b = el('button', '✅ Cargar en este dispositivo');
+      b.onclick = function () {
+        var n = Respaldo.aplicar(obj);
+        history.replaceState(null, '', location.pathname);
+        box.innerHTML = ''; box.append(el('p', '✅ ¡Listo! Se cargaron ' + n + ' datos.'));
+        var a = el('a', '🏠 Ir al inicio'); a.className = 'b'; a.href = '../'; box.append(a);
+      };
+      var no = el('a', 'No, ir al inicio'); no.className = 'b'; no.href = '../';
+      box.append(b, no);
+    }).catch(function (e) { box.append(msg); msg.textContent = e.message; paste(); });
+  }
+  function paste() {
+    var ta = el('textarea'); ta.placeholder = 'Pega aquí el código de respaldo (empieza con R1)';
+    var b = el('button', 'Revisar respaldo'); b.onclick = function () { show(ta.value); };
+    box.append(el('p', 'Pega el código que creaste en el otro iPad (Modo papá → 💾 Respaldo → 📤 Crear código).'), ta, b);
+  }
+  var h = location.hash.slice(1);
+  if (h) show(h); else paste();
+})();
+</script>
+<script src="../comun/actualiza.js"></script>
+</body></html>

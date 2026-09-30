@@ -187,6 +187,9 @@ main{flex:1; width:100%; max-width:960px; margin:0 auto; padding:8px 18px 28px; 
 <script src="../comun/voz.js"></script>
 <script src="../comun/escritura.js"></script>
 <script src="../comun/errores.js"></script>
+<script src="../comun/examen.js"></script>
+<script src="../comun/hoja.js"></script>
+<script src="../comun/progreso.js"></script>
 <script>
 "use strict";
 /* ============================================================
@@ -1609,7 +1612,15 @@ function showExplain(id) {
   const t = TOPICS.find(x => x.id === id);
   screen(t.emoji + ' ' + t.title, goHome,
     h('div', { class: 'card' }, h('div', { class: 'sub' }, t.es + ' · Libro AMCO 2B1 ' + t.pages), t.explain()),
-    h('div', { class: 'actions' }, h('button', { class: 'big-btn green', onclick: () => startPractice(id) }, '¡A practicar! ▶')));
+    h('div', { class: 'actions' }, h('button', { class: 'big-btn green', onclick: () => startPractice(id) }, '¡A practicar! ▶'),
+      window.Hoja ? Hoja.boton(() => printTopic(id)) : null));
+}
+// 🖨️ Hoja para imprimir del tema (ejercicios + hoja de respuestas en otra página)
+function printTopic(id) {
+  const t = TOPICS.find(x => x.id === id);
+  const qs = [...t.practice(), ...(t.exam ? t.exam() : []), ...t.practice()];
+  const { items, passage } = Hoja.desdePreguntas(qs, 12);
+  Hoja.mostrar({ titulo: t.emoji + ' ' + t.title, materia: 'Inglés', items, passage, rehacer: () => printTopic(id) });
 }
 
 function startPractice(id) {
@@ -1635,13 +1646,16 @@ function startExam(sectionId) {
   const topics = sec ? TOPICS.filter(t => t.section === sec.id) : TOPICS;
   const qs = buildExam(topics, sec ? 10 : 20);
   const title = sec ? `📝 Examen: ${sec.name}` : '🏆 Mini examen';
-  runQuiz({ title, questions: qs, mode: 'exam',
-    onDone: (score, total, review) => showResults({ title, score, total, review, id: sec ? 'exam-' + sec.id : 'exam', again: () => startExam(sectionId), exam: true }) });
+  const go = ({ real, mins }) => runQuiz({ title, questions: qs, mode: real ? 'real' : 'exam', mins,
+    onDone: (score, total, review, info) => showResults({ title, score, total, review, id: sec ? 'exam-' + sec.id : 'exam', again: () => startExam(sectionId), exam: true, real, info }) });
+  if (!window.Examen) return go({ real: false, mins: 0 });
+  screen(title, goHome, h('div', { class: 'card' }, h('div', { class: 'prompt' }, '¿Cómo quieres el examen?'), Examen.elegir({ onStart: go })));
 }
 
-function showResults({ title, score, total, review, id, again, next, nextLabel, exam }) {
+function showResults({ title, score, total, review, id, again, next, nextLabel, exam, real, info }) {
   const stars = starsFor(score, total);
   saveBest(id, stars);
+  if (window.Progreso) Progreso.hecho({ materia: 'Inglés', tema: title, id, pag: 'ingles', score, total, exam: /^exam/.test(id) });
   const msg = stars === 3 ? '¡Increíble! Eres una estrella 🌟' : stars === 2 ? '¡Muy bien! Ya casi lo dominas 💪' : stars === 1 ? '¡Buen intento! Vamos a practicar un poquito más 🌈' : '¡No te rindas! Repasa la explicación y vuelve a intentar 💙';
   const mistakes = review.filter(r => !r.ok);
   screen(title, goHome,
@@ -1649,6 +1663,9 @@ function showResults({ title, score, total, review, id, again, next, nextLabel, 
       h('div', { class: 'result-stars' }, starStr(stars)),
       h('div', { class: 'result-score' }, `${score} / ${total}`),
       h('p', { style: { fontSize: '26px' } }, msg),
+      real ? h('div', { class: 'xm-grade' }, `🎓 Calificación: ${Examen.calif(score, total)}`) : null,
+      real && info && info.timeUp ? h('p', { style: { fontSize: '22px' } }, '⏰ Se acabó el tiempo. Las que faltaron cuentan como no contestadas.') : null,
+      real ? h('div', { class: 'review', style: { textAlign: 'left' } }, h('b', null, 'Tus respuestas:'), Examen.resumen(review)) :
       mistakes.length ? h('div', { class: 'review', style: { textAlign: 'left' } }, h('b', null, 'Para repasar:'),
         h('ul', null, mistakes.map(m => h('li', null, m.prompt + ' ➜ ', h('b', null, m.answer))))) : null),
     h('div', { class: 'actions' },
@@ -1663,11 +1680,17 @@ function showResults({ title, score, total, review, id, again, next, nextLabel, 
    practice: puede reintentar (al 2º error se muestra la respuesta)
    exam: un solo intento, se muestra la respuesta correcta
    ============================================================ */
-function runQuiz({ title, questions, mode, onDone }) {
-  let idx = 0, score = 0;
+function runQuiz({ title, questions, mode, onDone, mins }) {
+  let idx = 0, score = 0, over = false;
   const review = [];
-  const exam = mode === 'exam';
-  const next = () => { idx++; idx < questions.length ? render() : onDone(score, questions.length, review); };
+  // real = "Examen de verdad": sin pistas ni 🔊 (salvo lo que es de escuchar), sin decir si está bien, calificación al final
+  const real = mode === 'real', exam = mode === 'exam' || real;
+  const end = info => { if (over) return; over = true; clock.stop(); onDone(score, questions.length, review, info); };
+  const next = () => { if (over) return; idx++; idx < questions.length ? render() : end(); };
+  const clock = real && window.Examen ? Examen.reloj(mins, () => {
+    for (let k = review.length; k < questions.length; k++) review.push({ ok: false, prompt: questions[k].prompt, answer: '—', given: '(no alcanzó el tiempo)' });
+    end({ timeUp: true });
+  }) : { el: null, stop() {} };
 
   function render() {
     const q = questions[idx];
@@ -1690,7 +1713,22 @@ function runQuiz({ title, questions, mode, onDone }) {
       setTimeout(() => { try { nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }, 150);
     }
     // Devuelve true si la pregunta terminó.
+    function logError(answerText) {
+      if (window.Errores) Errores.log({ materia: 'Inglés', tema: title, pregunta: q.prompt + context, respuesta: given, correcta: answerText, modo: exam ? 'examen' : 'práctica',
+        tipo: q.type, say: say || q.speak || null, numeric: !!(q.numeric || q.inputmode === 'numeric'), cs: !!q.caseSensitive, accent: !!q.accent,
+        opciones: q.type === 'mc' ? q.options.map(o => [o.emoji, o.label].filter(Boolean).join(' ') || String(o.value)) : null,
+        oi: q.type === 'mc' ? q.options.findIndex(o => o.value === q.answer) : -1,
+        answers: q.type === 'type' ? q.answer.map(String) : null, col: q.type === 'column' ? { a: q.a, b: q.b, op: q.op } : null });
+    }
     function result(ok, answerText, extraMsg) {
+      if (real) { // se guarda en silencio y pasamos a la siguiente
+        if (done) return true;
+        done = true; if (ok) score++;
+        review.push({ ok, prompt: q.prompt + context, answer: answerText, given: given || (ok ? answerText : '') });
+        if (!ok) logError(answerText);
+        next();
+        return true;
+      }
       fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
       fb.innerHTML = '';
       if (ok) {
@@ -1708,11 +1746,7 @@ function runQuiz({ title, questions, mode, onDone }) {
         return false;
       }
       // "Errores para repasar": solo se guarda la respuesta final equivocada (no cada primer intento)
-      if (window.Errores) Errores.log({ materia: 'Inglés', tema: title, pregunta: q.prompt + context, respuesta: given, correcta: answerText, modo: exam ? 'examen' : 'práctica',
-        tipo: q.type, say: say || q.speak || null, numeric: !!(q.numeric || q.inputmode === 'numeric'), cs: !!q.caseSensitive, accent: !!q.accent,
-        opciones: q.type === 'mc' ? q.options.map(o => [o.emoji, o.label].filter(Boolean).join(' ') || String(o.value)) : null,
-        oi: q.type === 'mc' ? q.options.findIndex(o => o.value === q.answer) : -1,
-        answers: q.type === 'type' ? q.answer.map(String) : null, col: q.type === 'column' ? { a: q.a, b: q.b, op: q.op } : null });
+      logError(answerText);
       tries++;
       fb.append(...[h('div', null, exam ? (extraMsg || 'Uy, esa no era 😅') : (extraMsg ? extraMsg : '')),
         h('div', null, 'La respuesta correcta es:'),
@@ -1722,9 +1756,11 @@ function runQuiz({ title, questions, mode, onDone }) {
       return true;
     }
 
-    const body = h('div', { class: 'card' });
+    // Pregunta "de escuchar" = sin el audio no se puede contestar (en el examen de verdad es lo único que suena)
+    const listening = !!(q.type === 'say' || q.speakButtons || (q.autoSpeak && !q.word));
+    const body = h('div', { class: 'card' + (real && !listening ? ' xm-nospeak' : '') });
     // say = lo que lee la bocina ANTES de contestar (sin revelar la respuesta)
-    const say = q.say !== undefined ? q.say : (q.noHint ? null : q.speak);
+    const say = real && !listening ? null : q.say !== undefined ? q.say : (q.noHint ? null : q.speak);
     const head = [h('div', { class: 'prompt' }, q.prompt), q.sub ? h('div', { class: 'sub' }, q.sub) : null];
     if (q.big) head.push(h('div', { class: 'bigshow', style: q.bigIsWord ? { fontSize: '64px' } : q.visual ? { fontSize: '56px' } : null }, q.big));
     if (q.visual) head.push(h('div', { class: 'visual', html: q.visual }));
@@ -1820,7 +1856,7 @@ function runQuiz({ title, questions, mode, onDone }) {
 
     if (q.type === 'type') {
       if (q.wrongSentence) body.append(h('div', { class: 'wrongsentence' }, '❌ ', q.wrongSentence));
-      if (q.hint) body.append(h('div', { class: 'hint' }, q.hint));
+      if (q.hint && !real) body.append(h('div', { class: 'hint' }, q.hint));
       const input = h('input', { type: 'text', autocapitalize: 'off', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', inputmode: q.inputmode || null, placeholder: q.placeholder || '', maxlength: q.maxlength || null, 'aria-label': 'Respuesta' });
       input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
       const check = h('button', { class: 'big-btn', onclick: () => input.__guard ? input.__guard(doCheck) : doCheck() }, 'Comprobar ✔');
@@ -1848,10 +1884,10 @@ function runQuiz({ title, questions, mode, onDone }) {
     body.append(fb, actions);
     screen(title, () => { if (confirm('¿Salir? Se perderá el avance de esta práctica.')) goHome(); },
       h('div', { class: 'progress' }, h('div', { style: { width: (idx / questions.length * 100) + '%' } })),
-      h('div', { class: 'qmeta' }, h('span', null, `Pregunta ${idx + 1} de ${questions.length}`), exam ? h('span', null, '🏆 Examen') : h('span', null, '🧠 Práctica'), scoreEl),
+      h('div', { class: 'qmeta' }, h('span', null, `Pregunta ${idx + 1} de ${questions.length}`), real ? h('span', null, '🎓 Examen de verdad') : exam ? h('span', null, '🏆 Examen') : h('span', null, '🧠 Práctica'), real ? (clock.el || h('span')) : scoreEl),
       body);
     // Se llama dentro del toque del botón (iPad necesita un toque para hablar)
-    if (q.autoSpeak && q.speak) speak(q.speakButtons ? q.speakButtons[0].text : q.speak, q.speakButtons ? q.speakButtons[0].rate : null);
+    if (q.autoSpeak && q.speak && (!real || listening)) speak(q.speakButtons ? q.speakButtons[0].text : q.speak, q.speakButtons ? q.speakButtons[0].rate : null);
   }
   render();
 }

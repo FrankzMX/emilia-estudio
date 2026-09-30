@@ -511,7 +511,7 @@ function writeMode({ layout, expected, allowed, setValue, boxesN, isRight, submi
   const tools = el('div', { class: 'ew-tools' },
     el('button', { onclick: () => { const b = last && last.strokes.length ? last : [...boxes].reverse().find(x => x.strokes.length); if (b) { b.undo(); b.ranked = recognize(b.frameStrokes(), allowed); refresh(); } } }, '↶ Deshacer'),
     el('button', { onclick: () => { boxes.forEach(b => b.clear()); refresh(); } }, '🧽 Borrar todo'));
-  const solo = exam ? ' Cuando termines, toca Comprobar ✔' : ' Si está bien, se revisa solito ✨';
+  const solo = exam ? ' Cuando termines, toca el botón de abajo 👇' : ' Si está bien, se revisa solito ✨';
   const note = el('div', { class: 'ew-note' }, expected && /^\d+$/.test(expected) ? 'Un número en cada cajita ✍️ ·' + solo : 'Una letra en cada cajita ✍️ · Las minúsculas llegan a la línea punteada; las MAYÚSCULAS, hasta arriba.' + solo);
   // ---- ¿Leí bien? Si alguna cajita se leyó con poca seguridad, se pregunta antes de revisar ----
   const digits = [...allowed].every(c => /\d/.test(c));

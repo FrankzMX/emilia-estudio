@@ -1,30 +1,9 @@
 /* Service worker: la página abre aunque no haya internet (o esté lento).
    Generado por tools/build_sw.py — VERSION cambia solo cuando cambia algún archivo. */
-const VERSION = '8b9e777f97b6';
+const VERSION = '__VERSION__';
 const CACHE = 'estudio-' + VERSION;
 const FILES = [
-  "./",
-  "./apple-touch-icon.png",
-  "./icon.svg",
-  "./comun/actualiza.js",
-  "./comun/biblioteca.js",
-  "./comun/columna.js",
-  "./comun/errores.js",
-  "./comun/escritura.js",
-  "./comun/examen.js",
-  "./comun/hoja.js",
-  "./comun/papa.js",
-  "./comun/progreso.js",
-  "./comun/qrcode.js",
-  "./comun/respaldo.js",
-  "./comun/temas.js",
-  "./comun/voz.js",
-  "./espanol/",
-  "./ingles/icono-180.png",
-  "./ingles/",
-  "./matematicas/",
-  "./repasar/",
-  "./respaldo/"
+  __FILES__
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE)

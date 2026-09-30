@@ -40,6 +40,10 @@ a.item:active{transform:translateY(2px)}
 .repaso-btn:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.18)}
 .repaso-btn small{font-size:.5em;font-weight:600;opacity:.95}
 .stars-card{width:100%;max-width:900px;background:#fff;border-radius:26px;padding:14px 20px;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+[hidden]{display:none!important}
+.cal-old{width:min(900px,100%);background:#fff;border-radius:20px;padding:10px 16px;margin:10px 0;box-shadow:0 4px 12px rgba(0,0,0,.06);box-sizing:border-box}
+.cal-old>summary{font-size:1.2em;font-weight:700;cursor:pointer;min-height:40px;line-height:40px}
+.cal-old .cal{box-shadow:none;padding:0}
 .stars-card summary{font-size:1.25em;font-weight:700;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .stars-card summary::-webkit-details-marker{display:none}
 .stars-card summary .cnt{font-size:.8em;font-weight:600;color:#475569;background:#f1f5f9;border-radius:12px;padding:3px 10px}
@@ -54,13 +58,14 @@ a.item:active{transform:translateY(2px)}
 .st.s0{border-left-color:#ef4444;background:#fef2f2}.st.s1{border-left-color:#f97316;background:#fff7ed}.st.s2{border-left-color:#eab308;background:#fefce8}.st.s3{border-left-color:#22c55e;background:#f0fdf4}
 @media (max-width:700px){.day{grid-template-columns:1fr}.date{flex-direction:row;gap:10px}.date .num{font-size:1.6em}}
 </style></head>
-<body>
+<body class="landing">
 <h1>📚 Mi Examen · 2° CEDEH</h1>
 <p class="sub">¡Vamos a estudiar! Elige una materia 👇</p>
 <p class="sub" style="font-size:.95em;color:#3b82f6">✨ ¡Nuevo! Ahora puedes escribir con el dedo ✍️</p>
 <div class="btns"><a class="en" href="ingles/">🇺🇸 Inglés</a><a class="es" href="espanol/">🇲🇽 Español</a><a class="ma" href="matematicas/">🧮 Matemáticas</a></div>
 <a class="repaso-btn" id="repaso-btn" hidden></a>
-<div class="btns" style="gap:12px"><a class="voz" id="repasar" href="repasar/" style="text-decoration:none">📋 Errores para repasar</a><button class="voz" onclick="Voz.panel()">🔊 Ajustes de voz</button></div>
+<div class="btns" style="gap:12px"><a class="voz" id="repasar" href="repasar/" style="text-decoration:none">📋 Errores para repasar</a><button class="voz" onclick="Voz.panel()">🔊 Ajustes de voz</button><button class="voz" id="papa-btn" onclick="Papa.abrir()">👨‍👩‍👧 Modo papá</button></div>
+<div id="racha" style="display:flex;justify-content:center;width:100%"></div>
 <details class="stars-card" id="estrellas" hidden open><summary></summary><p class="hint">Para papá o mamá: las mejores estrellas de cada tema en este iPad. Arriba están los que más necesitan práctica; toca uno para abrirlo.</p><div class="st-grid"></div></details>
 
 <section class="cal">
@@ -209,5 +214,31 @@ function examHighlight(now, dates) {
 })();
 </script>
 <script>try { const n = Errores.pending(); if (n) document.getElementById('repasar').innerHTML = '📋 Errores para repasar <b style="background:#f97316;color:#fff;border-radius:10px;padding:2px 8px">' + n + '</b>'; } catch (e) {}</script>
+<script src="comun/progreso.js"></script>
+<script src="comun/papa.js"></script>
+<script src="comun/respaldo.js"></script>
+<script src="comun/biblioteca.js"></script>
+<script>
+/* Todo el año: cuando ya pasaron los exámenes (o con ?modo=biblioteca) el inicio muestra la Biblioteca de temas
+   y el calendario queda guardado abajo. En época de exámenes, la biblioteca está en un botón debajo del calendario. */
+(function () {
+  if (!window.Biblioteca) return;
+  var r = window.EXAMEN || {}, cal = document.querySelector('section.cal');
+  var lib = /[?&]modo=biblioteca/.test(location.search) || r.done;
+  var bib = Biblioteca.render(); bib.id = 'biblioteca';
+  if (lib) {
+    document.body.classList.add('modo-biblioteca');
+    cal.parentNode.insertBefore(bib, cal);
+    var d = document.createElement('details'); d.className = 'cal-old';
+    var s = document.createElement('summary'); s.textContent = '📅 Calendario de exámenes (ya pasaron)'; d.appendChild(s);
+    cal.parentNode.insertBefore(d, cal); d.appendChild(cal);
+  } else {
+    var d2 = document.createElement('details'); d2.className = 'cal-old'; d2.id = 'biblioteca-toggle';
+    var s2 = document.createElement('summary'); s2.textContent = '📚 Todos los temas (biblioteca)'; d2.appendChild(s2); d2.appendChild(bib);
+    cal.parentNode.insertBefore(d2, cal.nextSibling);
+  }
+})();
+</script>
+<script>if (window.Progreso) document.getElementById('racha').append(Progreso.calendario());</script>
 <script src="comun/actualiza.js"></script>
 </body></html>
