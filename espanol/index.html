@@ -10,17 +10,17 @@
 <meta name="theme-color" content="#ff7a45">
 <meta name="format-detection" content="telephone=no">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23ff7a45'/%3E%3Ctext x='50' y='72' font-size='64' text-anchor='middle'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Mi%20Examen%20-%20Espa%C3%B1ol%22%2C%22short_name%22%3A%22Mi%20Examen%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23fff1e0%22%2C%22theme_color%22%3A%22%23ff7a45%22%7D">
 <title>Mi Examen · Español 📚</title>
 <style>
 :root{
-  --purple:#7c4dff; --pink:#ff4f9a; --orange:#ff7a45; --green:#22c55e; --red:#ef4444;
-  --blue:#2196f3; --yellow:#ffd54f; --ink:#2d2a4a; --card:#ffffff;
+  --purple:#3b82f6; --pink:#14b8a6; --orange:#ff7a45; --green:#22c55e; --red:#ef4444;
+  --blue:#2196f3; --yellow:#ffd54f; --ink:#1e293b; --card:#ffffff;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0;min-height:100%;}
-html{min-height:100%; background:#fff1e0 linear-gradient(160deg,#fff1e0 0%,#ffe3f1 50%,#e0f2fe 100%) no-repeat; background-size:100% 100%;}
+html{min-height:100%; background:#fff1e0 linear-gradient(160deg,#fff1e0 0%,#e0f2fe 50%,#e0f2fe 100%) no-repeat; background-size:100% 100%;}
 body{
   min-height:100vh; background:transparent;
   font-family:"Chalkboard SE","Comic Sans MS","Trebuchet MS","Segoe UI",sans-serif;
@@ -46,7 +46,7 @@ main{flex:1; width:100%; max-width:960px; margin:0 auto; padding:8px 18px 28px; 
 .hello{font-size:24px; text-align:center; margin:0 0 14px;}
 .section-head{display:flex; align-items:center; gap:12px; margin:26px 4px 10px; flex-wrap:wrap;}
 .section-head h2{margin:0; font-size:28px; flex:1;}
-.section-head h2 small{font-size:18px; color:#6b6790; font-weight:normal;}
+.section-head h2 small{font-size:18px; color:#64748b; font-weight:normal;}
 .sec-exam{border:none; border-radius:18px; padding:10px 16px; min-height:54px; font-size:19px; font-weight:bold; background:#fff; box-shadow:0 4px 0 rgba(0,0,0,.1);}
 .sec-exam:active{transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.1);}
 .topics{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
@@ -57,7 +57,7 @@ main{flex:1; width:100%; max-width:960px; margin:0 auto; padding:8px 18px 28px; 
 .topic-card .s{font-size:15px; opacity:.95; color:#fff;}
 .topic-card .stars{font-size:20px; margin-top:auto;}
 .topic-card .badge{position:absolute; top:10px; right:10px; background:#fff; color:#d9480f; font-size:14px; font-weight:bold; border-radius:12px; padding:4px 8px; transform:rotate(4deg);}
-.exam-card{background:linear-gradient(135deg,#ff9800,#ff4f9a); width:100%; min-height:110px; flex-direction:row; align-items:center; gap:18px;}
+.exam-card{background:linear-gradient(135deg,#ff9800,#14b8a6); width:100%; min-height:110px; flex-direction:row; align-items:center; gap:18px;}
 .exam-card .emo{font-size:60px;} .exam-card .t{font-size:30px;} .exam-card .s{font-size:19px;}
 .exam-card .stars{margin:0 0 0 auto; font-size:28px;}
 
@@ -66,11 +66,11 @@ main{flex:1; width:100%; max-width:960px; margin:0 auto; padding:8px 18px 28px; 
 .explain .key{background:#fff3c4; border-radius:14px; padding:12px 16px; font-size:23px;}
 .explain table{border-collapse:separate; border-spacing:8px; margin:0 auto; font-size:24px;}
 .explain th{font-size:28px; color:var(--pink);}
-.explain td{background:#f1f0ff; border-radius:14px; padding:10px 16px; text-align:center;}
+.explain td{background:#f1f5f9; border-radius:14px; padding:10px 16px; text-align:center;}
 .chips{display:flex; flex-wrap:wrap; gap:12px; margin:14px 0; justify-content:center;}
 .chip{display:inline-flex; align-items:center; gap:8px; border:none; border-radius:18px; padding:12px 18px; font-size:24px; background:#eef2ff; box-shadow:0 3px 0 rgba(0,0,0,.08); text-align:left;}
 .chip:active{transform:translateY(2px);}
-.chip small{font-size:17px; color:#6b6790;}
+.chip small{font-size:17px; color:#64748b;}
 .cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
 .cat-grid.three{grid-template-columns:1fr 1fr 1fr;}
 .cat-box{border-radius:22px; padding:14px 16px;}
@@ -101,10 +101,10 @@ mark{background:#ffe066; border-radius:6px; padding:0 3px;}
 .progress > div{height:100%; background:linear-gradient(90deg,var(--green),#86efac); border-radius:12px; transition:width .4s;}
 .qmeta{display:flex; justify-content:space-between; font-size:20px; margin:8px 4px 12px;}
 .prompt{font-size:28px; font-weight:bold; text-align:center; margin:4px 0 8px;}
-.sub{font-size:21px; text-align:center; color:#6b6790; margin-bottom:10px;}
+.sub{font-size:21px; text-align:center; color:#64748b; margin-bottom:10px;}
 .bigshow{font-size:96px; text-align:center; line-height:1.1; margin:6px 0;}
 .bigword{font-size:44px; text-align:center; font-weight:bold; margin:4px 0 12px; letter-spacing:1px;}
-.showsentence{font-size:28px; text-align:center; background:#f1f0ff; border-radius:18px; padding:14px 18px; margin:8px 0; line-height:1.4;}
+.showsentence{font-size:28px; text-align:center; background:#f1f5f9; border-radius:18px; padding:14px 18px; margin:8px 0; line-height:1.4;}
 .showsentence.left{text-align:left; font-size:24px;}
 .visual{display:flex; justify-content:center; margin:8px 0;}
 .speak{width:72px; height:72px; border-radius:50%; border:none; font-size:36px; background:var(--yellow); box-shadow:0 5px 0 rgba(0,0,0,.15); vertical-align:middle;}
@@ -112,7 +112,7 @@ mark{background:#ffe066; border-radius:6px; padding:0 3px;}
 .speak.small{width:52px; height:52px; font-size:26px;}
 .opts{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:14px;}
 .opts.two{grid-template-columns:1fr 1fr;} .opts.three{grid-template-columns:1fr 1fr 1fr;} .opts.one{grid-template-columns:1fr;}
-.opt{min-height:88px; border:4px solid transparent; border-radius:24px; background:#f1f0ff; font-size:26px; box-shadow:0 6px 0 rgba(0,0,0,.1); padding:10px 14px; display:flex; align-items:center; justify-content:center; gap:12px; line-height:1.25;}
+.opt{min-height:88px; border:4px solid transparent; border-radius:24px; background:#f1f5f9; font-size:26px; box-shadow:0 6px 0 rgba(0,0,0,.1); padding:10px 14px; display:flex; align-items:center; justify-content:center; gap:12px; line-height:1.25;}
 .opt:active{transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,.1);}
 .opt .oe{font-size:40px;}
 .opt.correct{background:#dcfce7; border-color:var(--green);}
@@ -133,7 +133,7 @@ mark{background:#ffe066; border-radius:6px; padding:0 3px;}
 .calbox{background:#fff; border-radius:18px; padding:10px 12px; box-shadow:0 3px 0 rgba(0,0,0,.06); margin:6px;}
 .caltitle{text-align:center; font-weight:bold; font-size:22px; color:var(--pink); margin-bottom:4px;}
 table.cal{border-collapse:collapse; margin:0 auto; font-size:21px;}
-table.cal th{font-size:15px; color:#6b6790; padding:2px 6px;}
+table.cal th{font-size:15px; color:#64748b; padding:2px 6px;}
 table.cal td{width:44px; height:38px; text-align:center; border-radius:10px;}
 table.cal td.we{color:#d9480f;}
 table.cal td.mk{background:#ffd43b; font-weight:bold; color:var(--ink);}
@@ -156,7 +156,7 @@ table.colop tr.ans td{height:40px;}
 .blocks .bu{width:10px; height:10px; background:#ff7a45; border:1px solid #c2410c;}
 table.cdu{border-collapse:separate; border-spacing:6px; font-size:36px; margin:6px auto;}
 table.cdu th{background:#ede9fe; color:var(--purple); border-radius:10px; width:70px;}
-table.cdu td{background:#fff; border:3px solid #c7c2ff; border-radius:12px; width:70px; height:56px; text-align:center; font-weight:bold;}
+table.cdu td{background:#fff; border:3px solid #bfdbfe; border-radius:12px; width:70px; height:56px; text-align:center; font-weight:bold;}
 .opts.one .opt{min-height:70px; font-size:23px; justify-content:flex-start; text-align:left;}
 
 .shake{animation:shake .4s;}
@@ -165,7 +165,7 @@ table.cdu td{background:#fff; border:3px solid #c7c2ff; border-radius:12px; widt
 @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
 
 /* Ordenar */
-.slots{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center; min-height:96px; padding:14px; border:4px dashed #c7c2ff; border-radius:24px; background:#faf9ff; margin:10px 0;}
+.slots{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center; min-height:96px; padding:14px; border:4px dashed #bfdbfe; border-radius:24px; background:#f8fafc; margin:10px 0;}
 .pool{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; min-height:90px; padding:10px;}
 .tile{min-width:72px; min-height:76px; padding:0 18px; border:none; border-radius:20px; font-size:30px; font-weight:bold; color:#fff; box-shadow:0 5px 0 rgba(0,0,0,.18); display:inline-flex; align-items:center; gap:8px;}
 .tile:active{transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18);}
@@ -173,11 +173,11 @@ table.cdu td{background:#fff; border:3px solid #c7c2ff; border-radius:12px; widt
 .tile.ok{outline:5px solid var(--green);} .tile.no{outline:5px solid var(--red);}
 .long .slots, .long .pool{flex-direction:column; align-items:stretch;}
 .long .tile{font-size:20px; font-weight:normal; text-align:left; padding:12px 16px; line-height:1.35; width:100%;}
-.slot-hint{color:#a8a3d6; font-size:22px; align-self:center;}
+.slot-hint{color:#94a3b8; font-size:22px; align-self:center;}
 .suffix{font-size:48px; font-weight:bold; color:var(--purple);}
 
 /* Tocar palabras */
-.taps{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:14px 0; padding:14px; background:#faf9ff; border-radius:22px;}
+.taps{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:14px 0; padding:14px; background:#f8fafc; border-radius:22px;}
 .wtok{min-height:64px; min-width:56px; padding:6px 16px; border:4px solid #d9d6ff; border-radius:18px; background:#fff; font-size:30px; box-shadow:0 4px 0 rgba(0,0,0,.08);}
 .taps.chipsmode .wtok{font-size:24px;}
 .wtok.sel{background:#fff3c4; border-color:var(--orange);}
@@ -187,7 +187,7 @@ table.cdu td{background:#fff; border:3px solid #c7c2ff; border-radius:12px; widt
 
 /* Escribir */
 .typebox{display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:10px;}
-.typebox input{width:100%; max-width:760px; font-size:38px; padding:16px 20px; border-radius:20px; border:4px solid #c7c2ff; font-family:inherit; text-align:center; color:var(--ink); -webkit-user-select:text; user-select:text; letter-spacing:1px;}
+.typebox input{width:100%; max-width:760px; font-size:38px; padding:16px 20px; border-radius:20px; border:4px solid #bfdbfe; font-family:inherit; text-align:center; color:var(--ink); -webkit-user-select:text; user-select:text; letter-spacing:1px;}
 .typebox input:focus{outline:none; border-color:var(--purple);}
 .hint{font-size:28px; letter-spacing:6px; text-align:center; color:var(--purple);}
 
@@ -206,12 +206,16 @@ table.cdu td{background:#fff; border:3px solid #c7c2ff; border-radius:12px; widt
 .confetti{position:fixed; top:-60px; font-size:40px; pointer-events:none; animation:fall linear forwards; z-index:50;}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg);}}
 .review{font-size:20px;} .review li{margin:6px 0;}
-.toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#2d2a4a; color:#fff; padding:14px 22px; border-radius:18px; font-size:20px; z-index:60;}
+.toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:14px 22px; border-radius:18px; font-size:20px; z-index:60;}
 @media (max-width:700px){ .cat-grid,.cat-grid.three{grid-template-columns:1fr;} .opt{font-size:21px;} .opts.three{grid-template-columns:1fr;} .exam-card .t{font-size:24px;} }
 </style>
 </head>
 <body>
 <div id="app"></div>
+<script src="../comun/voz.js"></script>
+<script src="../comun/columna.js"></script>
+<script src="../comun/escritura.js"></script>
+<script src="../comun/errores.js"></script>
 <script>
 "use strict";
 /* ============================================================
@@ -221,7 +225,7 @@ const $app = document.getElementById('app');
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const sample = (a, n) => shuffle(a).slice(0, n);
-const TILE_COLORS = ['#7c4dff','#ff4f9a','#ff7a45','#2196f3','#22c55e','#e91e63','#00acc1','#8e24aa','#f4511e'];
+const TILE_COLORS = ['#3b82f6','#14b8a6','#ff7a45','#2196f3','#22c55e','#06b6d4','#00acc1','#8e24aa','#f4511e'];
 const stripEmoji = s => String(s).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}\u{20E3}]/gu, '').replace(/_{2,}/g, ' … ').replace(/\s+/g, ' ').trim();
 const noAccent = s => s.normalize('NFD').replace(/[\u0300\u0301\u0308]/g, '').normalize('NFC');
 
@@ -254,6 +258,7 @@ function speak(text, rate) {
   if (!('speechSynthesis' in window)) { toast('Este navegador no puede leer en voz alta 😕'); return; }
   const t = stripEmoji(text);
   if (!t) return;
+  if (window.Voz) { Voz.speak(t, { lang: 'es', rate }); return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(t);
   u.lang = esVoice ? esVoice.lang : 'es-MX'; u.rate = rate || 0.85; u.pitch = 1.05;
@@ -280,13 +285,13 @@ function beep(good) {
 }
 function toast(msg) { const t = h('div', { class: 'toast' }, msg); document.body.append(t); setTimeout(() => t.remove(), 2200); }
 function confetti(n = 30) {
-  const em = ['🎉','⭐','🌈','💖','✨','🦄','🎈','📚'];
+  const em = ['🎉','⭐','🌈','👍','✨','🚀','🎈','📚'];
   for (let i = 0; i < n; i++) {
     const c = h('div', { class: 'confetti', style: { left: Math.random() * 100 + 'vw', animationDuration: (2 + Math.random() * 2) + 's', animationDelay: Math.random() * 0.8 + 's' } }, pick(em));
     document.body.append(c); setTimeout(() => c.remove(), 5000);
   }
 }
-const PRAISE = ['¡Muy bien! 🎉', '¡Excelente! 🌟', '¡Súper! 💪', '¡Lo lograste! 🥳', '¡Genial! 🦄', '¡Perfecto! ✨'];
+const PRAISE = ['¡Muy bien! 🎉', '¡Excelente! 🌟', '¡Súper! 💪', '¡Lo lograste! 🥳', '¡Genial! 🚀', '¡Perfecto! ✨'];
 const TRY_AGAIN = ['¡Casi! Intenta otra vez 💪', 'Uy, todavía no. ¡Tú puedes! 🌈', 'Mmm… piénsalo otra vez 🤔'];
 
 /* ---------- Progreso guardado ---------- */
@@ -385,7 +390,7 @@ const PART_OPTS = [{ label: 'Título', emoji: '🔤', value: 'titulo' }, { label
 function posterHTML(p, hl, labels) {
   const part = (cls, key, content, name) => `<div class="pp ${cls}${hl === key ? ' hl' : ''}">${hl === key ? '<span class="arrow">👉</span>' : ''}${labels ? `<span class="tag">${name}</span>` : ''}${content}</div>`;
   return `<div class="poster" style="background:${p.bg};border-color:${p.c};color:${p.c}">` +
-    part('p-t', 'titulo', p.t, 'Título') + part('p-i', 'imagen', p.i, 'Imagen') + part('p-x', 'texto', `<span style="color:#2d2a4a">${p.x}</span>`, 'Texto') + '</div>';
+    part('p-t', 'titulo', p.t, 'Título') + part('p-i', 'imagen', p.i, 'Imagen') + part('p-x', 'texto', `<span style="color:#1e293b">${p.x}</span>`, 'Texto') + '</div>';
 }
 const P18 = [['💧', 'Uso el agua conscientemente'], ['🚯', 'No tires basura al agua, la beberás después'], ['🌧️', 'Almacena el agua de lluvia ¡Es gratis!']];
 const PURPOSES = ['Dar a conocer un evento al público', 'Promover hábitos y actitudes positivas', 'Crear conciencia sobre una situación'];
@@ -629,7 +634,7 @@ const Q = {
    ============================================================ */
 const QTYPE = { L: '🔎 Busca la respuesta en el texto', S: '🔢 ¿En qué orden pasó?', V: '📖 ¿Qué significa la palabra?', I: '💡 ¿De qué trata?', F: '🤔 Piensa: la respuesta no está escrita tal cual', T: '🗂️ ¿Qué tipo de texto es? ¿Para qué sirve?', D: '💭 Piensa y dilo en voz alta' };
 const TEXTS = [
-  { id: 'cometa', kind: 'Cuento', emoji: '🪁', color: '#7c4dff', title: 'La cometa de Tomás',
+  { id: 'cometa', kind: 'Cuento', emoji: '🪁', color: '#3b82f6', title: 'La cometa de Tomás',
     text: `Había una vez un niño llamado Tomás que vivía cerca del mar. Un sábado, su abuelo le regaló una cometa roja con una cola muy larga. Tomás corrió a la playa para volarla, pero el viento era tan fuerte que la cometa se atoró en una palmera. Tomás se puso muy triste.
 
 Entonces llegó su amiga Rosa con una escoba larga. Entre los dos bajaron la cometa con mucho cuidado. Al final, la volaron juntos toda la tarde y Tomás aprendió que con ayuda todo es más fácil.`,
@@ -1132,7 +1137,7 @@ function clockSVG(hh, mm, size = 230) {
   for (let i = 0; i < 60; i++) { const a = i * Math.PI / 30, r1 = i % 5 ? 88 : 83; ticks.push(`<line x1="${c + r1 * Math.sin(a)}" y1="${c - r1 * Math.cos(a)}" x2="${c + 92 * Math.sin(a)}" y2="${c - 92 * Math.cos(a)}" stroke="#9b93c9" stroke-width="${i % 5 ? 1 : 3}"/>`); }
   const ha = ((hh % 12) + mm / 60) * 30, ma = mm * 6;
   const hand = (ang, len, w, col) => `<line x1="${c}" y1="${c}" x2="${c + len * Math.sin(ang * Math.PI / 180)}" y2="${c - len * Math.cos(ang * Math.PI / 180)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
-  return `<svg width="${size}" height="${size}" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96" fill="#fff" stroke="#7c4dff" stroke-width="6"/>${ticks.join('')}${num.join('')}${hand(ha, 45, 8, '#ff4f9a')}${hand(ma, 70, 5, '#2196f3')}<circle cx="100" cy="100" r="6" fill="#3a2e6e"/></svg>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96" fill="#fff" stroke="#3b82f6" stroke-width="6"/>${ticks.join('')}${num.join('')}${hand(ha, 45, 8, '#14b8a6')}${hand(ma, 70, 5, '#2196f3')}<circle cx="100" cy="100" r="6" fill="#3a2e6e"/></svg>`;
 }
 const clockName = (hh, mm) => mm === 0 ? `las ${hh} en punto` : mm === 30 ? `las ${hh} y media` : mm === 15 ? `las ${hh} y cuarto` : `las ${hh}:${String(mm).padStart(2, '0')}`;
 const hhmm = (hh, mm) => `${hh}:${String(mm).padStart(2, '0')}`;
@@ -1170,6 +1175,8 @@ function columnSteps(a, op, b) {
 const opWord = op => op === '+' ? 'más' : 'menos';
 function colQ(a, op, b) {
   const ans = op === '+' ? a + b : a - b;
+  // Paso a paso (unidades ➜ decenas, con "llevo" y "pido prestado") si está el componente de columna
+  if (window.Columna) return { type: 'column', a, op, b, prompt: `Resuelve en columna: ${a} ${op === '-' ? '−' : '+'} ${b}`, answer: [String(ans)], say: `¿Cuánto es ${a} ${opWord(op)} ${b}?`, explain: columnSteps(a, op, b), key: `col-${a}${op}${b}` };
   return numQ(`Resuelve en columna: ${a} ${op === '-' ? '−' : '+'} ${b}`, ans, { visual: columnHTML(a, op, b), say: `¿Cuánto es ${a} ${opWord(op)} ${b}?`, explain: columnSteps(a, op, b), key: `col-${a}${op}${b}` });
 }
 const COL_BOOK = [[85, '-', 74], [46, '+', 18], [86, '+', 39], [26, '+', 56], [85, '+', 25]];
@@ -1454,7 +1461,7 @@ const TOPICS = [
   ...TEXTS.map((tx, i) => i === 1 ? null : textTopic(tx, 'otros', 'comp-' + i)).filter(Boolean),
   /* ===================== CONCEPTOS MATEMÁTICOS ===================== */
   {
-    id: 'm-tiempo', section: 'mate', title: 'El tiempo y el reloj', es: 'Horario, minutero, a.m./p.m.', emoji: '🕐', color: '#7c4dff', pages: 'p. 35 y cuaderno', book: 'Pensamiento matemático',
+    id: 'm-tiempo', section: 'mate', title: 'El tiempo y el reloj', es: 'Horario, minutero, a.m./p.m.', emoji: '🕐', color: '#3b82f6', pages: 'p. 35 y cuaderno', book: 'Pensamiento matemático',
     explain: () => h('div', { class: 'explain' },
       KEY('⏳ El ', B('tiempo'), ' es la ', B('duración que mide un suceso'), ': cuánto dura algo.'),
       P('Un instrumento para medir el tiempo es el ', B('reloj'), ': mide ', B('horas, minutos y segundos'), '.'),
@@ -1478,7 +1485,7 @@ const TOPICS = [
     exam: () => [factQ(), factQ(), longerQ(), longerQ(), monthDaysQ()],
   },
   {
-    id: 'm-linea', section: 'mate', title: 'Línea de tiempo', es: 'Ordenar sucesos por año', emoji: '📏', color: '#ff4f9a', pages: 'p. 36', book: 'Pensamiento matemático',
+    id: 'm-linea', section: 'mate', title: 'Línea de tiempo', es: 'Ordenar sucesos por año', emoji: '📏', color: '#14b8a6', pages: 'p. 36', book: 'Pensamiento matemático',
     explain: () => h('div', { class: 'explain' },
       P('Una ', B('línea de tiempo'), ' ordena los sucesos del ', B('más antiguo'), ' al ', B('más reciente'), '. Empieza en el año en que naciste.'),
       h('div', { class: 'tline' }, [['2019', '👶 Nací'], ['2020', '🚶 Caminé'], ['2022', '🎨 Preescolar'], ['2025', '🏫 1° primaria'], ['2026', '⭐ 2° primaria']].map(([y, t]) => h('div', { class: 'tstep' }, h('b', null, y), h('span', null, t)))),
@@ -1564,7 +1571,7 @@ const TOPICS = [
     exam: () => [1, 2, 3, 4].map(() => cmpQ(...randCmp())),
   },
   {
-    id: 'm-antsuc', section: 'mate', title: 'Antecesor y sucesor', es: 'El de antes y el de después', emoji: '↔️', color: '#e91e63', pages: 'p. 53', book: 'Pensamiento matemático',
+    id: 'm-antsuc', section: 'mate', title: 'Antecesor y sucesor', es: 'El de antes y el de después', emoji: '↔️', color: '#06b6d4', pages: 'p. 53', book: 'Pensamiento matemático',
     explain: () => h('div', { class: 'explain' },
       KEY('⬅️ ', B('Antecesor'), ' = el que va antes (−1) · ', B('Sucesor'), ' = el que va después (+1) ➡️'),
       h('p', { class: 'story center' }, '649 ⬅️ ', B('650'), ' ➡️ 651'),
@@ -1606,7 +1613,7 @@ const TOPICS = [
   },
   /* ===================== LENGUAJES ===================== */
   {
-    id: 'cuento', section: 'lenguajes', title: 'El cuento', es: 'Inicio, desarrollo y cierre', emoji: '📖', color: '#7c4dff', pages: 'p. 4 y cuaderno',
+    id: 'cuento', section: 'lenguajes', title: 'El cuento', es: 'Inicio, desarrollo y cierre', emoji: '📖', color: '#3b82f6', pages: 'p. 4 y cuaderno',
     explain: () => h('div', { class: 'explain' },
       P('El ', B('cuento'), ' es una ', B('narración breve e imaginaria'), ' (inventada), creada por un ', B('autor'), ', con pocos personajes y un problema.'),
       KEY('🧩 Tiene ', B('3 partes'), ': inicio ➜ desarrollo ➜ cierre'),
@@ -1626,7 +1633,7 @@ const TOPICS = [
     exam: () => [Q.frag(), Q.frag(), Q.partWhat(), Q.orderStory(), Q.cuentoDef()],
   },
   {
-    id: 'sustantivos', section: 'lenguajes', title: 'Sustantivos', es: 'Comunes y propios', emoji: '🏷️', color: '#ff4f9a', pages: 'p. 5, 8 y cuaderno',
+    id: 'sustantivos', section: 'lenguajes', title: 'Sustantivos', es: 'Comunes y propios', emoji: '🏷️', color: '#14b8a6', pages: 'p. 5, 8 y cuaderno',
     explain: () => h('div', { class: 'explain' },
       P('Los ', B('sustantivos'), ' son palabras que ', B('nombran'), ' personas, animales, lugares o cosas (¡también ideas y sentimientos!).'),
       h('div', { class: 'cat-grid' },
@@ -1725,7 +1732,7 @@ const TOPICS = [
     exam: () => sample(CW, 4).map(x => Q.dictC(x)),
   },
   {
-    id: 'dictn', section: 'dictado', title: 'Dictado: palabras difíciles', es: 'Para practicar más', emoji: '📓', color: '#e91e63', pages: 'cuaderno',
+    id: 'dictn', section: 'dictado', title: 'Dictado: palabras difíciles', es: 'Para practicar más', emoji: '📓', color: '#06b6d4', pages: 'cuaderno',
     explain: () => dictExplain(NW, [KEY('⚠️ ¡Cuidado con estas! ', h('br'),
       h('span', { class: 'good' }, 'bicicleta'), ' no ', h('span', { class: 'bad' }, 'bicicelta'), ' · ',
       h('span', { class: 'good' }, 'autor'), ' no ', h('span', { class: 'bad' }, 'auter'), ' · ',
@@ -1825,7 +1832,7 @@ function startExam(sectionId) {
 function showResults({ title, score, total, review, id, again, next, nextLabel }) {
   const stars = starsFor(score, total);
   saveBest(id, stars);
-  const msg = stars === 3 ? '¡Increíble! Eres una estrella 🌟' : stars === 2 ? '¡Muy bien! Ya casi lo dominas 💪' : stars === 1 ? '¡Buen intento! Vamos a practicar un poquito más 🌈' : '¡No te rindas! Repasa la explicación y vuelve a intentar 💖';
+  const msg = stars === 3 ? '¡Increíble! Eres una estrella 🌟' : stars === 2 ? '¡Muy bien! Ya casi lo dominas 💪' : stars === 1 ? '¡Buen intento! Vamos a practicar un poquito más 🌈' : '¡No te rindas! Repasa la explicación y vuelve a intentar 💙';
   const mistakes = review.filter(r => !r.ok);
   screen(title, goHome,
     h('div', { class: 'card center' },
@@ -1855,7 +1862,7 @@ function runQuiz({ title, questions, mode, onDone }) {
   function render() {
     const q = questions[idx];
     window.__curQ = q; // (para pruebas)
-    let tries = 0, done = false;
+    let tries = 0, done = false, given = ''; // given = lo que contestó (para "Errores para repasar")
     const fb = h('div', { class: 'feedback' });
     const actions = h('div', { class: 'actions' });
     const scoreEl = h('span', null, `⭐ ${score}`);
@@ -1868,7 +1875,10 @@ function runQuiz({ title, questions, mode, onDone }) {
       scoreEl.textContent = `⭐ ${score}`;
       actions.innerHTML = '';
       if (q.speak) actions.append(h('button', { class: 'big-btn yellow', onclick: () => speak(q.speak) }, '🔊 Escuchar'));
-      actions.append(h('button', { class: 'big-btn green', onclick: next }, idx + 1 < questions.length ? 'Siguiente ➜' : 'Ver resultado 🏁'));
+      const nb = h('button', { class: 'big-btn green', onclick: next }, idx + 1 < questions.length ? 'Siguiente ➜' : 'Ver resultado 🏁');
+      actions.append(nb);
+      // Que "Siguiente" quede a la vista sin tener que hacer scroll
+      setTimeout(() => { try { nb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }, 150);
     }
     // Devuelve true si la pregunta terminó.
     function result(ok, answerText, extraMsg) {
@@ -1883,6 +1893,7 @@ function runQuiz({ title, questions, mode, onDone }) {
         return true;
       }
       beep(false);
+      if (window.Errores) Errores.log({ materia: 'Español', tema: title, pregunta: q.prompt + context, respuesta: given, correcta: answerText, modo: exam ? 'examen' : 'práctica' });
       if (!exam && tries === 0) {
         tries++;
         fb.append(h('div', null, extraMsg || pick(TRY_AGAIN)));
@@ -1922,6 +1933,14 @@ function runQuiz({ title, questions, mode, onDone }) {
         show, model));
     }
 
+    if (q.type === 'column') {
+      // Cuenta como correcta al primer intento solo si no hubo errores en ningún paso
+      body.append(Columna.create({ a: q.a, b: q.b, op: q.op, speak, onDone: ({ mistakes, errs }) => {
+        if (mistakes && window.Errores) Errores.log({ materia: 'Español', tema: title, pregunta: q.prompt, respuesta: errs.join(' · '), correcta: q.answer[0], modo: exam ? 'examen' : 'práctica' });
+        tries = mistakes ? 1 : 0; result(true, q.answer[0]);
+      } }));
+    }
+
     if (q.type === 'mc') {
       const opts = h('div', { class: 'opts' + (q.layout ? ' ' + q.layout : '') });
       const co = q.options.find(o => o.value === q.answer) || {};
@@ -1929,12 +1948,13 @@ function runQuiz({ title, questions, mode, onDone }) {
       q.options.forEach(o => {
         const b = h('button', { class: 'opt', onclick: () => {
           if (done || b.disabled) return;
+          given = [o.emoji, o.label].filter(Boolean).join(' ') || String(o.value);
           const ok = o.value === q.answer;
           b.classList.add(ok ? 'correct' : 'wrong', ok ? 'pop' : 'shake');
           const ended = result(ok, correctLabel);
           if (!ok) b.disabled = true;
           if (ended) opts.querySelectorAll('.opt').forEach(x => { x.disabled = true; if (x.dataset.v === String(q.answer)) x.classList.add('correct'); });
-        } }, o.emoji ? h('span', { class: 'oe' }, o.emoji) : null, o.label ? h('span', null, o.label, o.sub ? h('div', { style: { fontSize: '17px', color: '#6b6790' } }, o.sub) : null) : null);
+        } }, o.emoji ? h('span', { class: 'oe' }, o.emoji) : null, o.label ? h('span', null, o.label, o.sub ? h('div', { style: { fontSize: '17px', color: '#64748b' } }, o.sub) : null) : null);
         b.dataset.v = String(o.value);
         opts.append(b);
       });
@@ -1960,6 +1980,7 @@ function runQuiz({ title, questions, mode, onDone }) {
         if (!pool.children.length && !done) pool.append(h('span', { class: 'slot-hint' }, '¡Listo! Toca "Comprobar" ✔'));
       }
       function doCheck() {
+        given = placed.map(t => t.txt).join(sep);
         const marks = placed.map((t, i) => t.txt === q.answer[i]);
         const ok = marks.every(Boolean);
         draw(marks);
@@ -1983,6 +2004,7 @@ function runQuiz({ title, questions, mode, onDone }) {
       const updateCheck = () => { check.disabled = done || !btns.some(b => b.classList.contains('sel')); };
       function doCheck() {
         if (done) return;
+        given = btns.filter(b => b.classList.contains('sel')).map(b => b.textContent).join(', ') || '(nada)';
         const extra = btns.filter(b => b.classList.contains('sel') && !b._ok);
         const missing = btns.filter(b => !b.classList.contains('sel') && b._ok);
         const ok = !extra.length && !missing.length;
@@ -2008,6 +2030,7 @@ function runQuiz({ title, questions, mode, onDone }) {
       const norm = s => s.normalize('NFC').trim().replace(/\s+/g, ' ').replace(/[.!]+$/, '').trim();
       function doCheck() {
         if (done) return;
+        given = input.value.trim();
         let v = norm(input.value);
         if (q.numeric) v = v.replace(/[\s,]/g, '');
         if (!v) { input.focus(); return; }
@@ -2028,7 +2051,7 @@ function runQuiz({ title, questions, mode, onDone }) {
         if (ended) { input.disabled = true; check.disabled = true; }
         else { try { input.focus({ preventScroll: true }); } catch (e) {} }
       }
-      body.append(h('div', { class: 'typebox' }, input));
+      body.append(window.Escritura ? Escritura.pad({ q, input, lang: 'es', submit: doCheck, typebox: h('div', { class: 'typebox' }, input) }) : h('div', { class: 'typebox' }, input));
       actions.append(check);
       setTimeout(() => { try { input.focus({ preventScroll: true }); } catch (e) {} }, 50);
     }
@@ -2045,6 +2068,7 @@ function runQuiz({ title, questions, mode, onDone }) {
 }
 
 showHome();
+if (window.Escritura) Escritura.borrador();
 // Enlace directo a una sección desde el calendario (p. ej. #grammar)
 if (location.hash) { const el = document.getElementById('sec-' + location.hash.slice(1)); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 50); }
 </script>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi Examen">
+<meta name="theme-color" content="#0ea5e9">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<title>Mi Examen · Matemáticas 🧮</title>
+<style>
+:root{--blue:#3b82f6; --sky:#0ea5e9; --teal:#14b8a6; --green:#22c55e; --orange:#f97316; --yellow:#fde68a; --ink:#1e293b; --muted:#64748b;}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; min-height:100%;}
+html{background:#e0f2fe linear-gradient(160deg,#e0f2fe 0%,#f0fdf4 55%,#fef9c3 100%) no-repeat; background-size:100% 100%; min-height:100%;}
+body{min-height:100vh; font-family:"Chalkboard SE","Trebuchet MS","Segoe UI",system-ui,sans-serif; color:var(--ink); -webkit-user-select:none; user-select:none; touch-action:manipulation; -webkit-text-size-adjust:100%;}
+button{font-family:inherit; cursor:pointer; touch-action:manipulation; color:var(--ink);}
+header{display:flex; align-items:center; gap:12px; padding:12px 18px; padding-top:max(12px, env(safe-area-inset-top));}
+header h1{flex:1; margin:0; font-size:28px; text-align:center;}
+.iconbtn{min-width:64px; height:64px; border:none; border-radius:20px; background:#fff; font-size:30px; box-shadow:0 4px 0 rgba(0,0,0,.12); text-decoration:none; display:flex; align-items:center; justify-content:center;}
+main{max-width:980px; margin:0 auto; padding:8px 18px 90px;}
+.card{background:#fff; border-radius:28px; padding:22px 24px; box-shadow:0 8px 24px rgba(30,60,110,.12); margin-bottom:18px;}
+.hello{font-size:22px; text-align:center; margin:0 0 10px;}
+.section-head{margin:24px 4px 10px;} .section-head h2{margin:0; font-size:28px;} .section-head p{margin:4px 0 0; color:var(--muted); font-size:18px;}
+.topics{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px;}
+.topic{border:none; border-radius:24px; padding:16px 18px; color:#fff; text-align:left; min-height:150px; box-shadow:0 7px 0 rgba(0,0,0,.15); display:flex; flex-direction:column; gap:4px;}
+.topic:active{transform:translateY(5px); box-shadow:0 2px 0 rgba(0,0,0,.15);}
+.topic .emo{font-size:40px;} .topic .t{font-size:22px; font-weight:bold; color:#fff; line-height:1.15;} .topic .s{font-size:16px; color:#fff; opacity:.95;} .topic .stars{font-size:20px; margin-top:auto;}
+.big-btn{display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:72px; padding:0 30px; border:none; border-radius:24px; font-size:26px; font-weight:bold; color:#fff; background:var(--blue); box-shadow:0 6px 0 rgba(0,0,0,.18);}
+.big-btn:active{transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,.18);}
+.big-btn.green{background:var(--green);} .big-btn.orange{background:var(--orange);} .big-btn.sky{background:var(--sky);}
+.actions{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:16px;}
+.progress{height:18px; background:#fff; border-radius:12px; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,.08);}
+.progress > div{height:100%; background:linear-gradient(90deg,var(--green),#86efac); transition:width .4s;}
+.qmeta{display:flex; justify-content:space-between; font-size:20px; margin:8px 4px 12px;}
+.story{font-size:26px; line-height:1.45; background:#f0f9ff; border-radius:20px; padding:16px 20px; margin:0 0 12px;}
+.story .speak{border:none; background:var(--yellow); border-radius:50%; width:52px; height:52px; font-size:24px; vertical-align:middle; margin-left:6px;}
+.ask{font-size:26px; font-weight:bold; text-align:center; margin:8px 0;}
+.opts{display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:620px; margin:10px auto;}
+.opt{min-height:96px; border:4px solid transparent; border-radius:24px; background:#f1f5f9; font-size:30px; font-weight:bold; box-shadow:0 6px 0 rgba(0,0,0,.1);}
+.opt.ok{background:#dcfce7; border-color:var(--green);} .opt.no{background:#fee2e2; border-color:#f87171; animation:shake .4s;}
+.answer{font-size:28px; text-align:center; background:#dcfce7; color:#166534; border-radius:20px; padding:14px; margin-top:14px; font-weight:bold;}
+.mental{font-size:84px; font-weight:bold; text-align:center; margin:6px 0;}
+.mental .box{display:inline-block; min-width:120px; border-bottom:6px solid var(--blue); color:var(--blue);}
+.mental.ok .box{color:var(--green); border-color:var(--green);} .mental.no .box{color:#ef4444; border-color:#ef4444; animation:shake .4s;}
+.pad{display:grid; grid-template-columns:repeat(3,90px); gap:12px; justify-content:center; margin-top:10px;}
+.pad button{height:80px; border:none; border-radius:20px; font-size:40px; font-weight:bold; background:#f1f5f9; box-shadow:0 5px 0 rgba(0,0,0,.12);}
+.pad button:active{transform:translateY(3px);} .pad .del{background:var(--yellow); font-size:30px;} .pad .chk{background:var(--green); color:#fff;}
+.fb{text-align:center; font-size:24px; min-height:36px; margin-top:10px;}
+.fb.good{color:#166534;} .fb.bad{color:#9a3412;}
+.result-stars{font-size:84px; text-align:center; letter-spacing:10px;} .result-score{font-size:40px; text-align:center; font-weight:bold;}
+.confetti{position:fixed; top:-60px; font-size:40px; pointer-events:none; animation:fall linear forwards; z-index:50;}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.typebox{display:flex;justify-content:center;margin-top:10px}
+.typebox input{font-size:40px;width:220px;text-align:center;padding:10px;border-radius:18px;border:4px solid #bfdbfe;font-family:inherit;-webkit-user-select:text;user-select:text}
+.exam-card{background:linear-gradient(135deg,#f97316,#3b82f6);width:100%;min-height:100px;flex-direction:row;align-items:center;gap:18px;margin-bottom:6px}
+.exam-card .emo{font-size:56px}.exam-card .t{font-size:28px}.exam-card .stars{margin:0 0 0 auto;font-size:26px}
+.sh-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.sh-row h2{flex:1}
+.sec-exam{border:none;border-radius:18px;padding:10px 16px;min-height:52px;font-size:19px;font-weight:bold;background:#fff;box-shadow:0 4px 0 rgba(0,0,0,.1)}
+.sec-exam:active{transform:translateY(3px)}
+.review{text-align:left;font-size:20px;background:#fff7ed;border-radius:18px;padding:12px 18px;margin-top:10px}.review li{margin:4px 0}
+.next-btn{min-width:240px}
+.tip{font-size:19px; color:var(--muted); text-align:center; margin-top:10px;}
+@media (max-width:600px){ .story{font-size:22px;} .mental{font-size:60px;} .opt{font-size:24px;} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../comun/voz.js"></script>
+<script src="../comun/columna.js"></script>
+<script src="../comun/escritura.js"></script>
+<script src="../comun/errores.js"></script>
+<script>
+"use strict";
+const $app = document.getElementById('app');
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k === 'style' && typeof v === 'object') Object.assign(e.style, v);
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const speak = (t, rate) => window.Voz && Voz.speak(String(t).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, ''), { lang: 'es', rate });
+let actx = null;
+function beep(good) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    (good ? [660, 880, 1175] : [300, 220]).forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + i * 0.1;
+      o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.2);
+    });
+  } catch (e) {}
+}
+function confetti(n) {
+  for (let i = 0; i < n; i++) {
+    const c = h('div', { class: 'confetti', style: { left: Math.random() * 100 + 'vw', animationDuration: (2 + Math.random() * 2) + 's', animationDelay: Math.random() * 0.6 + 's' } }, pick(['🎉', '⭐', '✨', '🎈', '🏆', '🚀']));
+    document.body.append(c); setTimeout(() => c.remove(), 5000);
+  }
+}
+const STORE = 'mi-examen-mate-v1';
+const progress = (() => { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; } })();
+function saveBest(id, s) { if ((progress[id] || 0) < s) { progress[id] = s; try { localStorage.setItem(STORE, JSON.stringify(progress)); } catch (e) {} } }
+const starsFor = (ok, total) => { const p = total ? ok / total : 0; return p >= 0.9 ? 3 : p >= 0.7 ? 2 : p >= 0.4 ? 1 : 0; };
+const starStr = n => '⭐'.repeat(n) + '☆'.repeat(3 - n);
+
+/* ============================================================
+   GENERADORES
+   ============================================================ */
+// Mecanizados: [a, op, b]
+function mec(kind) {
+  for (;;) {
+    const a = ri(11, 99), b = ri(11, 99), su = (a % 10) + (b % 10);
+    if (kind === 'sumno') { if (su < 10 && a + b < 100) return [a, '+', b]; continue; }
+    if (kind === 'sum') { if (su >= 10 && a + b < 100) return [a, '+', b]; continue; }
+    if (kind === 'sum100') { if (su >= 10 && a + b >= 100) return [a, '+', b]; continue; }
+    if (kind === 'resno') { if (a > b && a % 10 >= b % 10) return [a, '-', b]; continue; }
+    if (kind === 'res') { if (a > b + 9 && a % 10 < b % 10) return [a, '-', b]; continue; }
+  }
+}
+// 3 cifras: llevando / pidiendo prestado en cualquier columna (sin pedir prestado a un 0)
+const digitsOf = n => String(n).split('').reverse().map(Number);
+function mec3(kind) {
+  for (;;) {
+    const a = ri(101, 999), b = ri(101, 999), A = digitsOf(a), B = digitsOf(b);
+    if (kind === 'sum3k') { if (a + b >= 1000) return [a, '+', b]; continue; } // pasa de 1000 (UM)
+    if (kind === 'sum3no' || kind === 'sum3') {
+      if (a + b > 999) continue;
+      const carries = [0, 1, 2].some(i => A[i] + B[i] + (i && A[i - 1] + B[i - 1] >= 10 ? 1 : 0) >= 10);
+      if ((kind === 'sum3') === carries) return [a, '+', b];
+      continue;
+    }
+    if (a <= b) continue;
+    const borrows = [0, 1].some(i => A[i] < B[i]);
+    if (kind === 'res3no') { if (!borrows) return [a, '-', b]; continue; }
+    if (!borrows) continue;
+    // válido si ningún paso pide prestado a un 0 (sería préstamo en cadena)
+    const { steps } = Columna.plan(a, b, '-');
+    if (steps.every(st => st.expect >= 0 && (st.kind !== 'borrow' || st.from >= 1))) return [a, '-', b];
+  }
+}
+// Restas con ceros: hay que pedirle prestado a un 0 (el préstamo "baja" en cadena)
+function mec0(kind) {
+  for (;;) {
+    let a, b;
+    if (kind === 'one') { const u = ri(0, 8); a = ri(1, 9) * 100 + u; b = ri(10, a - 1); if (b % 10 <= u) continue; }   // 503 − 128
+    else if (kind === 'two') { a = ri(1, 9) * 100; b = ri(11, a - 1); if (b % 10 === 0) continue; }                    // 500 − 247
+    else return pick([() => mec0('one'), () => mec0('two'), () => mec3('res3')])();
+    const { steps } = Columna.plan(a, b, '-');
+    if (steps.some(st => st.chain)) return [a, '-', b];
+  }
+}
+const CERO_EJEMPLOS = [[503, 128], [400, 156], [302, 175], [600, 248], [805, 269]];
+// Razonados: historias con sumas y restas (contexto mexicano)
+const NAMES = ['Mateo', 'Sofía', 'Diego', 'Valeria', 'Leo', 'Regina', 'Santi', 'Ximena', 'Tomás', 'Camila', 'Iker', 'Renata'];
+const STORIES = [
+  { op: '+', f: (n, a, b) => [`${n} tiene ${a} estampas. Su tío le regala ${b} más. ¿Cuántas estampas tiene ahora?`, 'estampas'] },
+  { op: '+', f: (n, a, b) => [`En una caja hay ${a} crayolas y en otra caja hay ${b}. ¿Cuántas crayolas hay en total?`, 'crayolas'] },
+  { op: '+', f: (n, a, b) => [`En la mañana se vendieron ${a} tamales y en la tarde ${b}. ¿Cuántos tamales se vendieron en todo el día?`, 'tamales'] },
+  { op: '+', f: (n, a, b) => [`${n} leyó ${a} páginas el lunes y ${b} páginas el martes. ¿Cuántas páginas leyó en los dos días?`, 'páginas'] },
+  { op: '+', f: (n, a, b) => [`En el camión escolar iban ${a} alumnos. En la siguiente parada se subieron ${b}. ¿Cuántos alumnos van ahora?`, 'alumnos'] },
+  { op: '+', f: (n, a, b) => [`${n} ahorró ${a} pesos y su abuelita le dio ${b} pesos. ¿Cuántos pesos tiene en total?`, 'pesos'] },
+  { op: '-', f: (n, a, b) => [`${n} tenía ${a} canicas y regaló ${b} a sus amigos. ¿Cuántas canicas le quedan?`, 'canicas'] },
+  { op: '-', f: (n, a, b) => [`En el árbol había ${a} pajaritos. Se fueron volando ${b}. ¿Cuántos pajaritos quedan?`, 'pajaritos'] },
+  { op: '-', f: (n, a, b) => [`${n} tiene ${a} pesos y compra una pelota de ${b} pesos. ¿Cuántos pesos le sobran?`, 'pesos'] },
+  { op: '-', f: (n, a, b) => [`Una caja trae ${a} galletas. En el recreo se comieron ${b}. ¿Cuántas galletas quedan?`, 'galletas'] },
+  { op: '-', f: (n, a, b, m) => [`${n} tiene ${a} carritos y ${m} tiene ${b}. ¿Cuántos carritos más tiene ${n}?`, 'carritos más'] },
+  { op: '-', f: (n, a, b) => [`El libro tiene ${a} páginas. ${n} ya leyó ${b}. ¿Cuántas páginas le faltan por leer?`, 'páginas'] },
+];
+const KEYWORDS = { '+': 'Pistas de SUMA: "le regalan", "en total", "se subieron", "juntos", "ahora tiene más".', '-': 'Pistas de RESTA: "regaló", "se fueron", "le quedan", "le sobran", "le faltan", "¿cuántos más?".' };
+function razonado() {
+  const s = pick(STORIES), [n, m] = shuffle(NAMES);
+  const [a, , b] = mec(s.op === '+' ? pick(['sumno', 'sum', 'sum']) : pick(['resno', 'res', 'res']));
+  const [text, unit] = s.f(n, Math.max(a, b), Math.min(a, b), m);
+  return { text, unit, op: s.op, a: Math.max(a, b), b: Math.min(a, b) };
+}
+// Cálculo mental
+function mental(kind) {
+  if (kind === 'diez') { const a = ri(2, 9), b = 10 - a; return pick([[a, '+', b], [10, '-', a]]); }
+  if (kind === 'veinte') { const a = ri(3, 9), b = ri(3, 9); return pick([[a, '+', b], [a + b, '-', b]]); }
+  if (kind === 'decenas') { const a = ri(1, 7) * 10, b = ri(1, 9 - a / 10) * 10; return pick([[a, '+', b], [a + b, '-', b]]); }
+  if (kind === 'mas10') { const a = ri(11, 89); return pick([[a, '+', 10], [a, '-', 10], [a, '+', 20]]); }
+  if (kind === 'dobles') { const a = ri(2, 10); return [a, '+', a]; }
+  const a = ri(11, 89), b = ri(1, 9); return [a, '+', b];
+}
+const calc = ([a, op, b]) => op === '+' ? a + b : a - b;
+const sign = op => op === '+' ? '+' : '−';
+const word = op => op === '+' ? 'más' : 'menos';
+
+/* ============================================================
+   TEMAS
+   ============================================================ */
+const SECTIONS = [
+  { id: 'mecanizados', name: '🧮 Mecanizados', es: 'Sumas y restas en columna, de derecha a izquierda.' },
+  { id: 'razonados', name: '🧠 Razonados', es: 'Lee el problema, decide si es suma o resta y resuélvelo.' },
+  { id: 'mental', name: '⚡ Cálculo mental', es: 'Contesta rápido, sin hacer la cuenta en columna.' },
+  { id: 'ceros', name: '0️⃣ Restas con ceros', es: 'Cuando hay que pedirle prestado a un 0 (como 503 − 128). Primero miren juntos "Mira cómo se hace".' },
+];
+const TOPICS = [
+  { id: 'sumno', sec: 'mecanizados', t: 'Sumas sin llevar', s: 'Para calentar', e: '➕', c: '#0ea5e9', kind: 'col', gen: () => mec('sumno') },
+  { id: 'sum', sec: 'mecanizados', t: 'Sumas llevando', s: '"Llevo 1" a las decenas', e: '🔼', c: '#3b82f6', kind: 'col', gen: () => mec('sum') },
+  { id: 'sum100', sec: 'mecanizados', t: 'Sumas que pasan de 100', s: 'Ej. 85 + 25 = 110', e: '💯', c: '#6366f1', kind: 'col', gen: () => mec('sum100') },
+  { id: 'resno', sec: 'mecanizados', t: 'Restas sin pedir', s: 'Arriba hay más', e: '➖', c: '#14b8a6', kind: 'col', gen: () => mec('resno') },
+  { id: 'res', sec: 'mecanizados', t: 'Restas pidiendo prestado', s: 'Pide 1 decena', e: '🔄', c: '#0d9488', kind: 'col', gen: () => mec('res') },
+  { id: 'sum3no', sec: 'mecanizados', t: 'Sumas de 3 cifras', s: 'Sin llevar · C, D y U', e: '🧱', c: '#0284c7', kind: 'col', gen: () => mec3('sum3no') },
+  { id: 'sum3', sec: 'mecanizados', t: 'Sumas de 3 cifras llevando', s: 'Ej. 358 + 267', e: '🏗️', c: '#1d4ed8', kind: 'col', gen: () => mec3('sum3') },
+  { id: 'sum3k', sec: 'mecanizados', t: 'Sumas que pasan de 1000', s: 'Ej. 647 + 934 = 1581', e: '🚀', c: '#4338ca', kind: 'col', gen: () => mec3('sum3k') },
+  { id: 'res3no', sec: 'mecanizados', t: 'Restas de 3 cifras', s: 'Sin pedir prestado', e: '📉', c: '#0f766e', kind: 'col', gen: () => mec3('res3no') },
+  { id: 'res3', sec: 'mecanizados', t: 'Restas de 3 cifras pidiendo', s: 'Ej. 642 − 375', e: '🔁', c: '#115e59', kind: 'col', gen: () => mec3('res3') },
+  { id: 'mezcla', sec: 'mecanizados', t: 'Mezcla', s: 'De todo un poco', e: '🎲', c: '#f97316', kind: 'col', gen: () => pick([() => mec(pick(['sum', 'sum', 'sumno', 'res', 'res', 'resno', 'sum100'])), () => mec3(pick(['sum3', 'res3', 'sum3no', 'res3no', 'sum3k']))])() },
+  { id: 'razon', sec: 'razonados', t: 'Problemas', s: '¿Suma o resta?', e: '📖', c: '#8b5cf6', kind: 'razon', n: 6 },
+  { id: 'm-diez', sec: 'mental', t: 'Amigos del 10', s: '3 + 7, 10 − 4…', e: '🔟', c: '#22c55e', kind: 'mental', gen: () => mental('diez') },
+  { id: 'm-veinte', sec: 'mental', t: 'Hasta 20', s: '8 + 6, 15 − 7…', e: '✋', c: '#16a34a', kind: 'mental', gen: () => mental('veinte') },
+  { id: 'm-dobles', sec: 'mental', t: 'Dobles', s: '6 + 6, 8 + 8…', e: '👯', c: '#65a30d', kind: 'mental', gen: () => mental('dobles') },
+  { id: 'm-decenas', sec: 'mental', t: 'Decenas', s: '30 + 40, 80 − 20…', e: '🧱', c: '#ca8a04', kind: 'mental', gen: () => mental('decenas') },
+  { id: 'm-mas10', sec: 'mental', t: 'Más 10 / menos 10', s: '47 + 10, 63 − 10…', e: '🪜', c: '#ea580c', kind: 'mental', gen: () => mental('mas10') },
+  { id: 'ceros-demo', sec: 'ceros', t: 'Mira cómo se hace', s: 'Paso a paso, para explicarlo juntos', e: '👩‍🏫', c: '#7c3aed', kind: 'demo' },
+  { id: 'res0', sec: 'ceros', t: 'Con un cero', s: 'Ej. 503 − 128', e: '0️⃣', c: '#9333ea', kind: 'col', gen: () => mec0('one') },
+  { id: 'res00', sec: 'ceros', t: 'Con dos ceros', s: 'Ej. 500 − 247', e: '💯', c: '#a21caf', kind: 'col', gen: () => mec0('two') },
+  { id: 'res0mix', sec: 'ceros', t: 'Mezcla con ceros', s: 'Con y sin ceros', e: '🎲', c: '#be185d', kind: 'col', gen: () => mec0('mix') },
+];
+
+/* ============================================================
+   PANTALLAS
+   ============================================================ */
+function screen(title, onBack, ...content) {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  $app.innerHTML = '';
+  $app.append(h('header', null,
+    onBack ? h('button', { class: 'iconbtn', 'aria-label': 'Inicio', onclick: onBack }, '🏠') : h('a', { class: 'iconbtn', href: '../', 'aria-label': 'Materias' }, '📚'),
+    h('h1', null, title), h('div', { style: { width: '64px' } })),
+    h('main', null, ...content));
+  window.scrollTo(0, 0);
+}
+let homeScroll = 0;
+function goHome() { showHome(); window.scrollTo(0, homeScroll); }
+function showHome() {
+  const content = [
+    h('div', { class: 'hello' }, '¡Hola! 👋 Elige qué quieres practicar.'),
+    h('button', { class: 'topic exam-card', onclick: () => { homeScroll = window.scrollY; startExam(); } },
+      h('div', { class: 'emo' }, '🏆'), h('div', null, h('div', { class: 't' }, 'Examen de Matemáticas'), h('div', { class: 's' }, '12 ejercicios de TODOS los temas')),
+      h('div', { class: 'stars' }, starStr(progress.exam || 0))),
+  ];
+  for (const sec of SECTIONS) {
+    content.push(h('div', { class: 'section-head', id: 'sec-' + sec.id },
+      h('div', { class: 'sh-row' }, h('h2', null, sec.name),
+        h('button', { class: 'sec-exam', onclick: () => { homeScroll = window.scrollY; startExam(sec.id); } }, '📝 Examen ' + starStr(progress['exam-' + sec.id] || 0))),
+      h('p', null, sec.es)));
+    content.push(h('div', { class: 'topics' }, TOPICS.filter(t => t.sec === sec.id).map(t =>
+      h('button', { class: 'topic', style: { background: t.c }, onclick: () => { homeScroll = window.scrollY; start(t); } },
+        h('div', { class: 'emo' }, t.e), h('div', { class: 't' }, t.t), h('div', { class: 's' }, t.s), h('div', { class: 'stars' }, t.kind === 'demo' ? '📖 Explicación' : starStr(progress[t.id] || 0))))));
+  }
+  screen('Matemáticas 🧮', null, ...content);
+}
+
+const itemFor = t => ({ kind: t.kind, data: t.kind === 'razon' ? razonado() : t.gen() });
+function start(t) {
+  if (t.kind === 'demo') return showDemo(0);
+  runSet({ id: t.id, title: t.e + ' ' + t.t, total: t.n || (t.kind === 'mental' ? 10 : 6), next: () => itemFor(t), again: () => start(t) });
+}
+// Examen: por bloque (8 ejercicios) o de todo (12), repartiendo los temas por turnos
+function startExam(secId) {
+  const sec = SECTIONS.find(x => x.id === secId);
+  const total = sec ? 8 : 12;
+  const pools = (sec ? [sec] : SECTIONS).map(x => shuffle(TOPICS.filter(t => t.sec === x.id && t.kind !== 'demo')));
+  const order = [];
+  for (let k = 0; order.length < total; k++) { const pool = pools[k % pools.length]; order.push(pool[Math.floor(k / pools.length) % pool.length]); }
+  let j = 0;
+  runSet({ id: sec ? 'exam-' + sec.id : 'exam', title: sec ? '📝 Examen: ' + sec.name.replace(/^\S+\s/, '') : '🏆 Examen de Matemáticas', total, exam: true,
+    next: () => itemFor(order[j++]), again: () => startExam(secId) });
+}
+
+function runSet({ id, title, total, next, again, exam }) {
+  let i = 0, clean = 0;
+  const review = [];
+  const seen = new Set();
+  const nextItem = () => { for (let tries = 0; tries < 30; tries++) { const x = next(); const k = JSON.stringify(x); if (!seen.has(k)) { seen.add(k); return x; } } return next(); };
+  function frame(body) {
+    screen(title, () => { if (confirm('¿Salir? Se perderá el avance.')) goHome(); },
+      h('div', { class: 'progress' }, h('div', { style: { width: (i / total * 100) + '%' } })),
+      h('div', { class: 'qmeta' }, h('span', null, `Ejercicio ${i + 1} de ${total}`), h('span', null, exam ? '🏆 Examen' : '🧠 Práctica'), h('span', null, `⭐ ${clean}`)),
+      body);
+  }
+  // Botón "Siguiente": aparece donde está su mano y se desliza a la vista (sin hacer scroll)
+  const nextBtn = () => {
+    const b = h('button', { class: 'big-btn green next-btn', onclick: () => { i++; i < total ? render() : results({ id, title, ok: clean, total, review, again, exam }); } }, i + 1 < total ? 'Siguiente ➜' : 'Ver resultado 🏁');
+    setTimeout(() => { try { b.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { b.scrollIntoView(false); } }, 120);
+    return b;
+  };
+  function render() {
+    const it = nextItem();
+    if (it.kind === 'col') renderColumn(...it.data);
+    else if (it.kind === 'razon') renderRazon(it.data);
+    else renderMental(it.data);
+  }
+  function renderColumn(a, op, b, extra) {
+    const card = h('div', { class: 'card' });
+    if (extra && extra.head) card.append(extra.head);
+    const w = Columna.create({ a, b, op, speak, exam, onDone: ({ mistakes, side, errs }) => {
+      const r = op === '+' ? a + b : a - b;
+      const bad = mistakes || (extra && extra.fails);
+      if (bad && window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: `${extra && extra.label ? 'Problema: ' : 'Resuelve en columna: '}${a} ${sign(op)} ${b}`, respuesta: [extra && extra.fails ? 'Eligió la operación equivocada' : '', ...(errs || [])].filter(Boolean).join(' · '), correcta: String(r), modo: exam ? 'examen' : 'práctica' });
+      if (!bad) clean++; else review.push(`${extra && extra.label ? extra.label + ' ➜ ' : ''}${a} ${sign(op)} ${b} = ${r}`);
+      beep(true); confetti(bad ? 10 : 24);
+      // El resultado y "Siguiente" ocupan el lugar del recuadro para escribir
+      side.innerHTML = '';
+      if (extra && extra.after) side.append(extra.after(r));
+      side.append(nextBtn());
+    } });
+    card.append(w);
+    frame(card);
+  }
+  function renderRazon(p) {
+    const card = h('div', { class: 'card' });
+    const story = h('div', { class: 'story' }, p.text, ' ', h('button', { class: 'speak', 'aria-label': 'Escuchar', onclick: () => speak(p.text) }, '🔊'));
+    const fb = h('div', { class: 'fb' });
+    let fails = 0, locked = false;
+    const goColumn = () => renderColumn(p.a, p.op, p.b, {
+      fails, label: p.op === '+' ? 'Era suma' : 'Era resta',
+      head: h('div', null, h('div', { class: 'story' }, p.text), h('div', { class: 'ask' }, `${p.op === '+' ? '➕ Es SUMA' : '➖ Es RESTA'}: ${p.a} ${sign(p.op)} ${p.b}`)),
+      after: r => { const a = h('div', { class: 'answer' }, `Respuesta: ${r} ${p.unit} ✅`); speak(`Respuesta: ${r} ${p.unit}`); return a; },
+    });
+    const btns = ['+', '-'].map(op => {
+      const b = h('button', { class: 'opt', onclick: () => {
+        if (locked) return;
+        if (op === p.op) { locked = true; b.classList.add('ok'); beep(true); setTimeout(goColumn, 350); return; }
+        fails++; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); beep(false);
+        if (window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: p.text + ' ¿Suma o resta?', respuesta: op === '+' ? 'Sumar' : 'Restar', correcta: p.op === '+' ? 'Sumar' : 'Restar', modo: exam ? 'examen' : 'práctica' });
+        fb.className = 'fb bad'; fb.textContent = '🤔 ' + KEYWORDS[p.op];
+        if (exam) { // en examen: un solo intento, se muestra la correcta y seguimos
+          locked = true; btns.find(x => x !== b).classList.add('ok');
+          fb.textContent = `Era ${p.op === '+' ? 'SUMA' : 'RESTA'}. ` + KEYWORDS[p.op];
+          setTimeout(goColumn, 2200);
+        }
+      } }, op === '+' ? '➕ Sumar' : '➖ Restar');
+      return b;
+    });
+    card.append(story, h('div', { class: 'ask' }, '¿Qué tienes que hacer?'), h('div', { class: 'opts' }, btns), fb,
+      h('div', { class: 'tip' }, '✏️ Si quieres, usa el Borrador para dibujar el problema.'));
+    frame(card);
+    speak(p.text);
+  }
+  function renderMental(q) {
+    const ans = calc(q);
+    let tries = 0, done = false;
+    const box = h('span', { class: 'box' }, '?');
+    const line = h('div', { class: 'mental' }, `${q[0]} ${sign(q[1])} ${q[2]} = `, box);
+    const fb = h('div', { class: 'fb' });
+    const actions = h('div', { class: 'actions' });
+    // Respuesta con las mismas cajitas de Español/Inglés: ✍️ escribir (primero), 🔢 números o ⌨️ teclado
+    const input = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', 'aria-label': 'Respuesta' });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
+    const check = h('button', { class: 'big-btn', onclick: () => doCheck() }, 'Comprobar ✔');
+    const finish = ok => {
+      done = true; input.disabled = true; check.remove(); box.textContent = String(ans);
+      if (ok && !tries) clean++; else review.push(`${q[0]} ${sign(q[1])} ${q[2]} = ${ans}`);
+      actions.append(nextBtn());
+    };
+    function doCheck() {
+      if (done) return;
+      const v = input.value.replace(/\s/g, '');
+      if (!v) { input.focus(); return; }
+      if (+v === ans) {
+        line.className = 'mental ok'; beep(true);
+        fb.className = 'fb good'; fb.textContent = pick(['¡Muy bien! 🎉', '¡Excelente! 🌟', '¡Súper! 💪', '¡Rapidísimo! 🚀']);
+        speak(`¡Muy bien! ${q[0]} ${word(q[1])} ${q[2]} es igual a ${ans}`);
+        finish(true);
+      } else {
+        tries++; beep(false); line.className = 'mental'; void line.offsetWidth; line.className = 'mental no';
+        if (window.Errores) Errores.log({ materia: 'Matemáticas', tema: title, pregunta: `${q[0]} ${sign(q[1])} ${q[2]} = ?`, respuesta: v, correcta: String(ans), modo: exam ? 'examen' : 'práctica' });
+        fb.className = 'fb bad';
+        if (exam || tries >= 2) { fb.textContent = `La respuesta es ${ans}. ${tipFor(q)}`; finish(false); }
+        else fb.textContent = '¡Casi! Revisa y corrige tu respuesta 💪';
+      }
+    }
+    const answerPad = window.Escritura
+      ? Escritura.pad({ q: { answer: [String(ans)], numeric: true }, input, lang: 'es', submit: doCheck, typebox: h('div', { class: 'typebox' }, input) })
+      : h('div', { class: 'typebox' }, input);
+    actions.append(check);
+    frame(h('div', { class: 'card' }, h('div', { style: { textAlign: 'center' } }, h('button', { class: 'big-btn sky', style: { minHeight: '52px', fontSize: '20px' }, onclick: () => speak(`¿Cuánto es ${q[0]} ${word(q[1])} ${q[2]}?`) }, '🔊 Escuchar')), line, answerPad, fb, actions));
+  }
+  render();
+}
+// "Mira cómo se hace": para que papá/mamá expliquen las restas con ceros paso a paso
+function showDemo(k) {
+  const [a, b] = CERO_EJEMPLOS[k % CERO_EJEMPLOS.length];
+  const card = h('div', { class: 'card' },
+    h('div', { class: 'story', style: { fontSize: '20px' } },
+      h('b', null, '👩‍🏫 Para explicar: '), '¿Qué pasa si hay que pedir prestado y el vecino es un ', h('b', null, '0'), '? ¡El 0 no tiene nada que prestar! Entonces:',
+      h('ol', { style: { margin: '8px 0 0', paddingLeft: '26px', lineHeight: '1.5' } },
+        h('li', null, 'Las unidades no alcanzan (arriba hay menos que abajo).'),
+        h('li', null, 'Las decenas tienen 0: vamos con las ', h('b', null, 'centenas'), '. Prestan 1 y quedan con uno menos.'),
+        h('li', null, 'Ese 1 llega a las decenas como ', h('b', null, '10'), '.'),
+        h('li', null, 'Ahora las decenas sí prestan: el 10 se vuelve ', h('b', null, '9'), ' y las unidades reciben 10.'),
+        h('li', null, 'Ya se puede restar: unidades, decenas y centenas.'))),
+    h('div', { class: 'ask' }, `Ejemplo ${k % CERO_EJEMPLOS.length + 1} de ${CERO_EJEMPLOS.length}: toquen ▶ para ver cada paso`),
+    Columna.create({ a, b, op: '-', speak, demo: true, onDone: ({ side }) => {
+      beep(true); confetti(16);
+      side.innerHTML = '';
+      side.append(h('button', { class: 'big-btn sky next-btn', onclick: () => showDemo(k + 1) }, 'Otro ejemplo ▶'),
+        h('button', { class: 'big-btn green next-btn', style: { marginTop: '12px' }, onclick: () => start(TOPICS.find(t => t.id === 'res0')) }, '¡Ahora tú! ✍️'));
+    } }));
+  screen('👩‍🏫 Restas con ceros', goHome, card);
+}
+function tipFor([a, op, b]) {
+  if (b === 10 || b === 20) return `Solo cambian las decenas: ${op === '+' ? 'suma' : 'resta'} ${b / 10} a las decenas.`;
+  if (a % 10 === 0 && b % 10 === 0) return `Piensa en decenas: ${a / 10} ${sign(op)} ${b / 10} = ${calc([a / 10, op, b / 10])}, luego agrega el 0.`;
+  if (a === b) return `Es un doble: ${a} + ${a}.`;
+  return 'Puedes contar con los dedos o buscar el 10.';
+}
+function results({ id, title, ok, total, review, again, exam }) {
+  const stars = starsFor(ok, total);
+  saveBest(id, stars);
+  const msg = stars === 3 ? '¡Increíble! 🌟' : stars === 2 ? '¡Muy bien! Ya casi lo dominas 💪' : stars === 1 ? '¡Buen intento! Vamos a practicar un poquito más 🙂' : '¡No te rindas! Inténtalo otra vez 💙';
+  screen(title, goHome,
+    h('div', { class: 'card', style: { textAlign: 'center' } },
+      h('div', { class: 'result-stars' }, starStr(stars)),
+      h('div', { class: 'result-score' }, `${ok} / ${total}`),
+      h('p', { style: { fontSize: '20px', color: '#64748b' } }, 'Ejercicios resueltos sin errores'),
+      h('p', { style: { fontSize: '26px' } }, msg),
+      review.length ? h('div', { class: 'review' }, h('b', null, 'Para repasar:'), h('ul', null, review.map(r => h('li', null, r)))) : null),
+    h('div', { class: 'actions' },
+      h('button', { class: 'big-btn orange', onclick: again }, '🔁 Otra vez'),
+      h('button', { class: 'big-btn', onclick: goHome }, '🏠 Inicio')));
+  if (stars >= 2) { confetti(stars === 3 ? 40 : 20); beep(true); }
+}
+
+showHome();
+if (window.Escritura) Escritura.borrador();
+if (location.hash) { const el = document.getElementById('sec-' + location.hash.slice(1)); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 50); }
+</script>
+<a href="../" style="position:fixed;right:12px;bottom:12px;background:rgba(255,255,255,.9);padding:8px 14px;border-radius:14px;font:600 16px -apple-system,system-ui,sans-serif;color:#475569;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.15);z-index:5">📚 Materias</a>
+</body>
+</html>

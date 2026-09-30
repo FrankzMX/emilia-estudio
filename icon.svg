@@ -1,8 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7eb3"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0d9488"/></linearGradient></defs>
 <rect width="180" height="180" fill="url(#g)"/>
-<path d="M90 128 C40 95 38 62 60 52 C74 46 86 54 90 64 C94 54 106 46 120 52 C142 62 140 95 90 128Z" fill="#fff" opacity=".95"/>
-<path d="M90 118 C52 92 52 68 66 61 C76 57 85 63 90 72 C95 63 104 57 114 61 C128 68 128 92 90 118Z" fill="#ff3d7f"/>
-<text x="90" y="38" font-family="Arial Rounded MT Bold,Arial,sans-serif" font-weight="900" font-size="34" fill="#fff" text-anchor="middle">Mi</text>
-<text x="90" y="162" font-family="Arial Rounded MT Bold,Arial,sans-serif" font-weight="900" font-size="30" fill="#fff" text-anchor="middle">Examen</text>
+<!-- cuerpo -->
+<ellipse cx="90" cy="112" rx="52" ry="56" fill="#f97316"/>
+<ellipse cx="90" cy="128" rx="32" ry="34" fill="#fed7aa"/>
+<g fill="#fb923c"><path d="M76 118 q6 6 12 0"/></g>
+<g stroke="#fdba74" stroke-width="3" fill="none" stroke-linecap="round"><path d="M76 124 q7 6 14 0"/><path d="M90 124 q7 6 14 0"/><path d="M82 138 q8 6 16 0"/></g>
+<!-- alas -->
+<path d="M40 104 Q30 132 52 150 Q50 124 60 106 Z" fill="#ea580c"/><path d="M140 104 Q150 132 128 150 Q130 124 120 106 Z" fill="#ea580c"/>
+<!-- ojos -->
+<circle cx="70" cy="86" r="20" fill="#fff"/><circle cx="110" cy="86" r="20" fill="#fff"/>
+<circle cx="73" cy="88" r="9" fill="#1e293b"/><circle cx="107" cy="88" r="9" fill="#1e293b"/>
+<circle cx="76" cy="84" r="3" fill="#fff"/><circle cx="110" cy="84" r="3" fill="#fff"/>
+<path d="M84 100 L96 100 L90 110 Z" fill="#facc15"/>
+<!-- birrete -->
+<path d="M90 30 L142 48 L90 66 L38 48 Z" fill="#1e293b"/>
+<path d="M64 56 L64 70 Q90 82 116 70 L116 56 L90 66 Z" fill="#334155"/>
+<path d="M142 48 L142 74" stroke="#facc15" stroke-width="4"/><circle cx="142" cy="78" r="6" fill="#facc15"/>
+<!-- libro -->
+<rect x="62" y="150" width="56" height="18" rx="4" fill="#2563eb"/><rect x="66" y="152" width="48" height="6" rx="2" fill="#fff"/>
 </svg>
